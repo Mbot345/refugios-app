@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+<article class="login-section">
+  <h2 class="login-section__title">Iniciar sesión</h2>
+  <form class="login-section__form" method="post" action="/login">
+    <label class="login-section__label">Usuario
+      <input class="login-section__input login-section__input--username" type="text" name="username"
+             value="{{ username or '' }}" required autofocus>
+    </label>
+    <label class="login-section__label">Contraseña
+      <input class="login-section__input login-section__input--password" type="password" name="password" required>
+    </label>
+    <button class="login-section__button" type="submit">Entrar</button>
+  </form>
+  <p class="login-section__footer">¿No tienes cuenta? <a class="login-section__link" href="/registro">Regístrate</a></p>
+</article>
+{% endblock %}

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Refugios App{% endblock %}</title>
+</head>
+<body>
+  <header>
+    <a href="/mascotas">Refugios App</a>
+    {% if request.session.get('user_id') %}
+    <form action="/logout" method="post" style="display:inline"><button type="submit">Cerrar sesión</button></form>
+    {% endif %}
+  </header>
+  {% if flash %}<p role="status">{{ flash }}</p>{% endif %}
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

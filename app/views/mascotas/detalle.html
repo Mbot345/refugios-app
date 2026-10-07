@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ mascota.nombre }} | Refugios App{% endblock %}
+{% block content %}
+<h1>{{ mascota.nombre }}</h1>
+<dl>
+  <dt>Especie</dt><dd>{{ mascota.especie }}</dd>
+  <dt>Raza</dt><dd>{{ mascota.raza or "No especificada" }}</dd>
+  <dt>Sexo</dt><dd>{{ mascota.sexo }}</dd>
+  <dt>Fecha de nacimiento</dt><dd>{{ mascota.fecha_nacimiento or "No especificada" }}</dd>
+  <dt>Descripción</dt><dd>{{ mascota.descripcion or "Sin descripción" }}</dd>
+  <dt>Estado</dt><dd>{{ mascota.estado|replace('_', ' ')|title }}</dd>
+  <dt>Refugio</dt><dd>{{ mascota.refugio.nombre }} — {{ mascota.refugio.ciudad }}</dd>
+</dl>
+<p><a href="/mascotas/{{ mascota.id }}/editar">Editar</a> <a href="/mascotas">Volver</a></p>
+<form action="/mascotas/{{ mascota.id }}/eliminar" method="post" onsubmit="return confirm('¿Eliminar esta mascota?')"><button type="submit">Eliminar</button></form>
+{% endblock %}

@@ -2,7 +2,33 @@
 {% block title %}Mascotas{% endblock %}
 {% block content %}
 <article class="pets-section">
-  <h2 class="pets-section__title">Mascotas</h2>
-  <p class="pets-section__description">Sección protegida. Aquí irá el CRUD de mascotas.</p>
+  <header class="pets-section__header">
+    <h2 class="pets-section__title">Mascotas</h2>
+    <a class="pets-section__new" href="/mascotas/nueva" role="button">+ Nueva mascota</a>
+  </header>
+  {% if mascotas %}
+  <div class="overflow-auto">
+    <table class="pets-section__table">
+      <thead><tr><th>Nombre</th><th>Especie</th><th>Raza</th><th>Sexo</th><th>Nacimiento</th><th>Refugio</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>
+        {% for m in mascotas %}
+        <tr>
+          <td>{{ m.nombre }}</td><td>{{ m.especie }}</td><td>{{ m.raza or '—' }}</td><td>{{ m.sexo }}</td>
+          <td>{{ m.fecha_nacimiento or '—' }}</td><td>{{ m.refugio.nombre }}</td>
+          <td><span class="pets-section__badge pets-section__badge--{{ m.estado }}">{{ m.estado|replace('_', ' ')|capitalize }}</span></td>
+          <td class="pets-section__actions">
+            <a class="pets-section__action" href="/mascotas/{{ m.id }}/editar">Editar</a>
+            <form class="pets-section__delete-form" method="post" action="/mascotas/{{ m.id }}/eliminar" onsubmit="return confirm('¿Seguro que quieres eliminar esta mascota?')">
+              <button class="pets-section__action pets-section__action--danger" type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="pets-section__empty">Aún no hay mascotas registradas.</p>
+  {% endif %}
 </article>
 {% endblock %}

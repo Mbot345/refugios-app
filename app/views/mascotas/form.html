@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{% if mascota %}Editar mascota{% else %}Nueva mascota{% endif %}{% endblock %}
+{% block content %}
+<article class="pet-form">
+  <h2 class="pet-form__title">{% if mascota %}Editar mascota{% else %}Nueva mascota{% endif %}</h2>
+  {% if not refugios %}<p class="pet-form__warning">No hay refugios registrados. Primero crea al menos uno.</p>{% endif %}
+  <form class="pet-form__form" method="post" action="{% if mascota %}/mascotas/{{ mascota.id }}/editar{% else %}/mascotas{% endif %}">
+    <label class="pet-form__label">Nombre
+      <input class="pet-form__input" type="text" name="nombre" maxlength="80" value="{{ datos.nombre or '' }}" required autofocus>
+    </label>
+    <div class="grid">
+      <label class="pet-form__label">Especie
+        <select class="pet-form__select" name="especie" required>
+          <option value="" disabled {% if not datos.especie %}selected{% endif %}>Selecciona...</option>
+          {% for e in especies %}<option value="{{ e }}" {% if datos.especie == e %}selected{% endif %}>{{ e }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="pet-form__label">Sexo
+        <select class="pet-form__select" name="sexo" required>
+          <option value="" disabled {% if not datos.sexo %}selected{% endif %}>Selecciona...</option>
+          {% for s in sexos %}<option value="{{ s }}" {% if datos.sexo == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+        </select>
+      </label>
+    </div>
+    <div class="grid">
+      <label class="pet-form__label">Raza (opcional)<input class="pet-form__input" type="text" name="raza" maxlength="80" value="{{ datos.raza or '' }}"></label>
+      <label class="pet-form__label">Fecha de nacimiento (opcional)<input class="pet-form__input" type="date" name="fecha_nacimiento" value="{{ datos.fecha_nacimiento or '' }}"></label>
+    </div>
+    <div class="grid">
+      <label class="pet-form__label">Refugio
+        <select class="pet-form__select" name="refugio_id" required>
+          <option value="" disabled {% if not datos.refugio_id %}selected{% endif %}>Selecciona...</option>
+          {% for r in refugios %}<option value="{{ r.id }}" {% if datos.refugio_id|string == r.id|string %}selected{% endif %}>{{ r.nombre }} ({{ r.ciudad }})</option>{% endfor %}
+        </select>
+      </label>
+      <label class="pet-form__label">Estado
+        <select class="pet-form__select" name="estado" required>
+          {% for st in estados %}<option value="{{ st }}" {% if datos.estado == st %}selected{% endif %}>{{ st|replace('_', ' ')|capitalize }}</option>{% endfor %}
+        </select>
+      </label>
+    </div>
+    <label class="pet-form__label">Descripción (opcional)<textarea class="pet-form__textarea" name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea></label>
+    <div class="pet-form__actions">
+      <button class="pet-form__button" type="submit" {% if not refugios %}disabled{% endif %}>Guardar</button>
+      <a class="pet-form__button pet-form__button--cancel secondary" href="/mascotas" role="button">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

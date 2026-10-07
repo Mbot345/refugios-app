@@ -9,3 +9,26 @@
 
 /* ---------- Navbar ---------- */
 .header__form { margin: 0; }
+
+/* ---------- Mascotas: lista ---------- */
+.pets-section__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.pets-section__title { margin: 0; }
+.pets-section__actions { white-space: nowrap; }
+.pets-section__delete-form { display: inline; margin: 0; }
+.pets-section__action { display: inline-block; padding: 0; border: none; background: none; font-size: 0.9rem; color: #3b82f6; cursor: pointer; text-decoration: underline; }
+.pets-section__action--danger { color: #d33c3c; margin-left: 0.75rem; }
+.pets-section__empty { text-align: center; color: #6b7280; }
+.pets-section__badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: #fff; }
+.pets-section__badge--disponible { background: #2e9e5b; }
+.pets-section__badge--en_proceso { background: #d89614; }
+.pets-section__badge--adoptada { background: #6b7280; }
+
+/* ---------- Mascotas: formulario ---------- */
+.pet-form__warning { color: #d33c3c; }
+.pet-form__actions { display: flex; gap: 1rem; align-items: center; }
+.pet-form__button--cancel { display: inline-block; }
+
+@media (max-width: 700px) {
+  .pets-section__header { align-items: flex-start; gap: 1rem; flex-direction: column; }
+  .pets-section__actions { white-space: normal; }
+}

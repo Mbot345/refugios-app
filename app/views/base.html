@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Refugios App{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+<body>
+  <header class="container header">
+    <nav class="header__nav">
+      <ul class="header__list">
+        <li class="header__item">
+          <strong><a class="header__brand" href="/">🐾 Refugios App</a></strong>
+        </li>
+      </ul>
+      <ul class="header__list">
+        {% if user %}
+          <li class="header__item header__user">Hola, {{ user.username }}</li>
+          <li class="header__item">
+            <form class="header__form" method="post" action="/logout">
+              <button class="secondary header__logout" type="submit">Cerrar sesión</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="header__item"><a class="header__link" href="/login">Iniciar sesión</a></li>
+          <li class="header__item"><a class="header__link" href="/registro">Registrarse</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container main-content">
+    {% for m in get_flashed_messages(request) %}
+      <article class="flash flash--{{ m.category }}">{{ m.message }}</article>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

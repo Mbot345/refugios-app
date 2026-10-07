@@ -1,0 +1,11 @@
+/* ---------- Mensajes flash ---------- */
+.flash {
+  margin: 0 0 1rem 0;
+  padding: 0.75rem 1rem;
+}
+.flash--success { border-left: 5px solid #2e9e5b; }
+.flash--error { border-left: 5px solid #d33c3c; }
+.flash--info { border-left: 5px solid #3b82f6; }
+
+/* ---------- Navbar ---------- */
+.header__form { margin: 0; }

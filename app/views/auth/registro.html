@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+<article class="register-section">
+  <h2 class="register-section__title">Crear cuenta</h2>
+  <form class="register-section__form" method="post" action="/registro">
+    <label class="register-section__label">Usuario
+      <input class="register-section__input register-section__input--username" type="text" name="username"
+             value="{{ username or '' }}" required autofocus>
+    </label>
+    <label class="register-section__label">Correo
+      <input class="register-section__input register-section__input--email" type="email" name="email"
+             value="{{ email or '' }}" required>
+    </label>
+    <label class="register-section__label">Contraseña (mínimo 8 caracteres)
+      <input class="register-section__input register-section__input--password" type="password" name="password" required>
+    </label>
+    <label class="register-section__label">Repetir contraseña
+      <input class="register-section__input register-section__input--password2" type="password" name="password2" required>
+    </label>
+    <button class="register-section__button" type="submit">Registrarme</button>
+  </form>
+  <p class="register-section__footer">¿Ya tienes cuenta? <a class="register-section__link" href="/login">Inicia sesión</a></p>
+</article>
+{% endblock %}

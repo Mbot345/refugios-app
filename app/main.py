@@ -1,17 +1,20 @@
+from pathlib import Path
+
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.controllers import auth, home, mascotas
+from app.controllers import animales, auth, home
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.deps import NotAuthenticated
-from pathlib import Path
-from fastapi.staticfiles import StaticFiles
+from app.core.deps import Forbidden, NotAuthenticated
+from app.core.flash import flash
 
 app = FastAPI(title="Refugios App")
+
 BASE_DIR = Path(__file__).resolve().parent
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
@@ -30,9 +33,16 @@ async def not_authenticated_handler(request: Request, exc: NotAuthenticated):
     return RedirectResponse("/login", status_code=303)
 
 
+@app.exception_handler(Forbidden)
+async def forbidden_handler(request: Request, exc: Forbidden):
+    """Con sesión pero sin el rol necesario, se avisa y se vuelve al inicio."""
+    flash(request, exc.message, "error")
+    return RedirectResponse("/", status_code=303)
+
+
 app.include_router(home.router)
 app.include_router(auth.router)
-app.include_router(mascotas.router)
+app.include_router(animales.router)
 
 
 @app.get("/health")

@@ -2,8 +2,16 @@
 {% block content %}
 <article class="home-section">
   <h1 class="home-section__title">Adopta, no compres</h1>
-  <p class="home-section__description">Plataforma que conecta refugios, adoptantes y campañas de salud animal.</p>
-  <a class="home-section__button" href="/login" role="button">Iniciar sesión</a>
-  <a class="home-section__button home-section__button--secondary secondary" href="/registro" role="button">Crear cuenta</a>
+  <p class="home-section__description">Plataforma que conecta fundaciones, adoptantes y animales rescatados.</p>
+  {% if user %}
+    {% if user.rol in ['admin', 'trabajador'] %}
+      <a class="home-section__button" href="/animales" role="button">Gestionar animales</a>
+    {% else %}
+      <p class="home-section__note">El catálogo público estará disponible próximamente.</p>
+    {% endif %}
+  {% else %}
+    <a class="home-section__button" href="/login" role="button">Iniciar sesión</a>
+    <a class="home-section__button home-section__button--secondary secondary" href="/registro" role="button">Crear cuenta</a>
+  {% endif %}
 </article>
 {% endblock %}

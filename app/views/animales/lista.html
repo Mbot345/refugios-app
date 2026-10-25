@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Animales{% endblock %}
+{% block content %}
+<article class="animals-section">
+  <header class="animals-section__header">
+    <h2 class="animals-section__title">
+      {% if user.rol == 'trabajador' %}Animales de mi fundación{% else %}Animales{% endif %}
+    </h2>
+    <a class="animals-section__new" href="/animales/nuevo" role="button">+ Nuevo animal</a>
+  </header>
+
+  {% if animales %}
+  <div class="overflow-auto">
+    <table class="animals-section__table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Especie</th>
+          <th>Tamaño</th>
+          <th>Edad aprox.</th>
+          <th>Fundación</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in animales %}
+        <tr>
+          <td>{{ a.nombre }}</td>
+          <td>{{ a.especie }}</td>
+          <td>{{ a.tamano|capitalize }}</td>
+          <td>{% if a.edad_meses is not none %}{{ a.edad_meses }} meses{% else %}—{% endif %}</td>
+          <td>{{ a.fundacion.nombre }}</td>
+          <td>
+            <span class="animals-section__badge animals-section__badge--{{ a.estado }}">
+              {{ a.estado|replace('_', ' ')|capitalize }}
+            </span>
+          </td>
+          <td class="animals-section__actions">
+            <a class="animals-section__action" href="/animales/{{ a.id }}/editar">Editar</a>
+            <form class="animals-section__delete-form" method="post" action="/animales/{{ a.id }}/eliminar"
+                  onsubmit="return confirm('¿Seguro que quieres eliminar este animal?')">
+              <button class="animals-section__action animals-section__action--danger" type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="animals-section__empty">Aún no hay animales registrados.</p>
+  {% endif %}
+</article>
+{% endblock %}

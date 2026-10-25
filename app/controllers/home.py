@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, Request
 
+from app.core.deps import get_optional_user
 from app.core.templates import templates
+from app.models.user import User
 
 router = APIRouter()
 
 
 @router.get("/")
-def home(request: Request):
-    if request.session.get("user_id"):
-        return RedirectResponse("/mascotas", status_code=303)
-    return templates.TemplateResponse(request, "home.html")
+def home(request: Request, user: User | None = Depends(get_optional_user)):
+    return templates.TemplateResponse(request, "home.html", {"user": user})

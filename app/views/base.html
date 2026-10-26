@@ -17,6 +17,9 @@
       </ul>
             <ul class="header__list">
         {% if user %}
+          {% if user.rol == 'admin' %}
+            <li class="header__item"><a class="header__link" href="/admin">Panel</a></li>
+          {% endif %}
           {% if user.rol in ['admin', 'trabajador'] %}
             <li class="header__item"><a class="header__link" href="/animales">Animales</a></li>
           {% endif %}
@@ -41,5 +44,6 @@
 
     {% block content %}{% endblock %}
   </main>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

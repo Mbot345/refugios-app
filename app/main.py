@@ -7,7 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.controllers import animales, auth, home
+from app.controllers import admin, animales, auth, home
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import Forbidden, NotAuthenticated
@@ -43,6 +43,7 @@ async def forbidden_handler(request: Request, exc: Forbidden):
 app.include_router(home.router)
 app.include_router(auth.router)
 app.include_router(animales.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")

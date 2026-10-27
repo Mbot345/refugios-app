@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{% if fundacion %}Editar fundación{% else %}Nueva fundación{% endif %}{% endblock %}
+{% block content %}<article class="admin-form"><h2>{% if fundacion %}Editar fundación{% else %}Nueva fundación{% endif %}</h2>
+<form method="post" action="{% if fundacion %}/admin/fundaciones/{{ fundacion.id }}/editar{% else %}/admin/fundaciones{% endif %}">
+<label>Nombre<input type="text" name="nombre" maxlength="100" value="{{ datos.nombre or '' }}" required autofocus></label>
+<label>Descripción (opcional)<textarea name="descripcion" rows="3">{{ datos.descripcion or '' }}</textarea></label>
+<label>Dirección<input type="text" name="direccion" maxlength="200" value="{{ datos.direccion or '' }}" required></label>
+<div class="grid"><label>Provincia<select id="provincia_id" name="provincia_id" required><option value="" disabled {% if not datos.provincia_id %}selected{% endif %}>Selecciona...</option>{% for p in provincias %}<option value="{{ p.id }}" {% if datos.provincia_id|string == p.id|string %}selected{% endif %}>{{ p.nombre }}</option>{% endfor %}</select></label>
+<label>Ciudad<select id="ciudad_id" name="ciudad_id" required {% if not ciudades %}disabled{% endif %}>{% if not ciudades %}<option value="" disabled selected>Primero elige una provincia</option>{% else %}<option value="" disabled {% if not datos.ciudad_id %}selected{% endif %}>Selecciona...</option>{% for c in ciudades %}<option value="{{ c.id }}" {% if datos.ciudad_id|string == c.id|string %}selected{% endif %}>{{ c.nombre }}</option>{% endfor %}{% endif %}</select></label></div>
+<div class="grid"><label>Teléfono (opcional)<input name="telefono" maxlength="20" placeholder="0991234567" value="{{ datos.telefono or '' }}"></label><label>Correo de contacto<input type="email" name="email_contacto" maxlength="120" value="{{ datos.email_contacto or '' }}" required></label></div>
+<div class="admin-form__actions"><button type="submit">Guardar</button><a href="/admin/fundaciones" role="button" class="secondary">Cancelar</a></div></form></article>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='js/ciudades.js') }}"></script>{% endblock %}

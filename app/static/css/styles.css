@@ -32,3 +32,16 @@
   .animals-section__header { align-items: flex-start; gap: 1rem; flex-direction: column; }
   .animals-section__actions { white-space: normal; }
 }
+
+/* ---------- Administración ---------- */
+.admin-panel__links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+.admin-panel__summary { margin-bottom: 1rem; }
+.admin-panel__card-title { margin-top: 0; font-size: 1.1rem; }
+.admin-list__header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.admin-list__header h2 { margin: 0; }
+.admin-list__form { display: inline; margin: 0 0 0 0.75rem; }
+.admin-list__action { display: inline-block; padding: 0; border: none; background: none; font-size: 0.9rem; color: #3b82f6; cursor: pointer; text-decoration: underline; }
+.admin-list__action--danger { color: #d33c3c; }
+.admin-list__empty { text-align: center; color: #6b7280; }
+.admin-form__actions { display: flex; gap: 1rem; align-items: center; }
+.admin-form [hidden] { display: none; }

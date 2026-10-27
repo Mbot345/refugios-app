@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Fundaciones{% endblock %}
+{% block content %}<article class="admin-list"><header class="admin-list__header"><h2>Fundaciones</h2><div><a href="/admin" role="button" class="secondary">Volver al panel</a> <a href="/admin/fundaciones/nueva" role="button">+ Nueva fundación</a></div></header>
+{% if fundaciones %}<div class="overflow-auto"><table><thead><tr><th>Nombre</th><th>Ubicación</th><th>Contacto</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+{% for f in fundaciones %}<tr><td>{{ f.nombre }}</td><td>{{ f.ciudad.nombre }}, {{ f.ciudad.provincia.nombre }}</td><td>{{ f.email_contacto }}<br>{{ f.telefono or '' }}</td><td>{{ 'Activa' if f.activa else 'Inactiva' }}</td><td><a href="/admin/fundaciones/{{ f.id }}/editar">Editar</a><form class="admin-list__form" method="post" action="/admin/fundaciones/{{ f.id }}/estado"><button class="admin-list__action admin-list__action--danger" type="submit">{{ 'Desactivar' if f.activa else 'Activar' }}</button></form></td></tr>{% endfor %}
+</tbody></table></div>{% else %}<p class="admin-list__empty">Aún no hay fundaciones registradas.</p>{% endif %}</article>{% endblock %}

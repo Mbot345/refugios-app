@@ -57,3 +57,7 @@ def get_gestor(user: User = Depends(require_roles("admin", "trabajador"))) -> Us
     if user.rol == "trabajador" and user.fundacion_id is None:
         raise Forbidden("Tu cuenta de trabajador aún no está asociada a una fundación.")
     return user
+
+
+get_admin = require_roles("admin")
+

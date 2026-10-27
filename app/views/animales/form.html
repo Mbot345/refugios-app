@@ -70,7 +70,7 @@
         <option value="" disabled {% if not datos.fundacion_id %}selected{% endif %}>Selecciona...</option>
         {% for f in fundaciones %}
           <option value="{{ f.id }}" {% if datos.fundacion_id|string == f.id|string %}selected{% endif %}>
-            {{ f.nombre }} ({{ f.ciudad }})
+            {{ f.nombre }} ({{ f.ciudad.nombre }})
           </option>
         {% endfor %}
       </select>

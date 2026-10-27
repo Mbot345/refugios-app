@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.controllers import admin, animales, auth, home
-from app.core.config import settings
+from app.core.config import EN_VERCEL, settings
 from app.core.database import get_db
 from app.core.deps import Forbidden, NotAuthenticated
 from app.core.flash import flash
@@ -24,6 +24,7 @@ app.add_middleware(
     secret_key=settings.SECRET_KEY,
     max_age=60 * 60 * 8,
     same_site="lax",
+    https_only=EN_VERCEL,
 )
 
 

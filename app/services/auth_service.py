@@ -64,3 +64,11 @@ def authenticate(db: Session, username: str, password: str) -> User | None:
     if not verify_password(password, user.password_hash):
         return None
     return user
+
+def ruta_inicial(user: User) -> str:
+    """A dónde enviar al usuario después de iniciar sesión, según su rol."""
+    if user.rol == "admin":
+        return "/admin"
+    if user.rol == "trabajador":
+        return "/animales"
+    return "/"

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Panel de administración{% endblock %}
+{% block content %}
+<section class="admin-panel">
+  <h2>Panel de administración</h2>
+  <div class="admin-panel__links">
+    <a href="/admin/usuarios" role="button">Usuarios</a>
+    <a href="/admin/fundaciones" role="button" class="secondary">Fundaciones</a>
+    <a href="/animales" role="button" class="secondary">Animales</a>
+  </div>
+  <p>Usuarios registrados: <strong>{{ stats.usuarios_total }}</strong> ({{ stats.usuarios_activos }} activos)</p>
+  <div class="grid">
+    <article><h3>Animales por estado</h3><table><tbody>{% for estado, total in stats.animales.items() %}<tr><td>{{ estado|replace('_', ' ')|capitalize }}</td><td>{{ total }}</td></tr>{% endfor %}</tbody></table></article>
+    <article><h3>Solicitudes por estado</h3><table><tbody>{% for estado, total in stats.solicitudes.items() %}<tr><td>{{ estado|capitalize }}</td><td>{{ total }}</td></tr>{% endfor %}</tbody></table></article>
+  </div>
+  <article><h3>Actividad por fundación</h3><div class="overflow-auto"><table><thead><tr><th>Fundación</th><th>Estado</th><th>Animales</th><th>Solicitudes</th></tr></thead><tbody>
+  {% for f in stats.actividad %}<tr><td>{{ f.fundacion }}</td><td>{{ 'Activa' if f.activa else 'Inactiva' }}</td><td>{{ f.animales }}</td><td>{{ f.solicitudes }}</td></tr>{% else %}<tr><td colspan="4">Aún no hay fundaciones registradas.</td></tr>{% endfor %}
+  </tbody></table></div></article>
+</section>
+{% endblock %}

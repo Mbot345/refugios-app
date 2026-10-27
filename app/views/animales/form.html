@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}{% endblock %}
+{% block content %}
+<article class="animal-form">
+  <h2 class="animal-form__title">{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}</h2>
+
+  {% if not fundaciones %}
+    <p class="animal-form__warning">No hay fundaciones activas disponibles. Un administrador debe crear o activar una.</p>
+  {% endif %}
+
+  <form class="animal-form__form" method="post"
+        action="{% if animal %}/animales/{{ animal.id }}/editar{% else %}/animales{% endif %}">
+
+    <label class="animal-form__label">Nombre
+      <input class="animal-form__input" type="text" name="nombre" maxlength="80"
+             value="{{ datos.nombre or '' }}" required autofocus>
+    </label>
+
+    <div class="grid">
+      <label class="animal-form__label">Especie
+        <select class="animal-form__select" name="especie" required>
+          <option value="" disabled {% if not datos.especie %}selected{% endif %}>Selecciona...</option>
+          {% for e in especies %}
+            <option value="{{ e }}" {% if datos.especie == e %}selected{% endif %}>{{ e }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label class="animal-form__label">Sexo
+        <select class="animal-form__select" name="sexo" required>
+          <option value="" disabled {% if not datos.sexo %}selected{% endif %}>Selecciona...</option>
+          {% for s in sexos %}
+            <option value="{{ s }}" {% if datos.sexo == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div class="grid">
+      <label class="animal-form__label">Raza (opcional)
+        <input class="animal-form__input" type="text" name="raza" maxlength="80"
+               value="{{ datos.raza or '' }}">
+      </label>
+
+      <label class="animal-form__label">Tamaño
+        <select class="animal-form__select" name="tamano" required>
+          <option value="" disabled {% if not datos.tamano %}selected{% endif %}>Selecciona...</option>
+          {% for t in tamanos %}
+            <option value="{{ t }}" {% if datos.tamano == t %}selected{% endif %}>{{ t|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div class="grid">
+      <label class="animal-form__label">Edad aproximada en meses (opcional)
+        <input class="animal-form__input" type="number" name="edad_meses" min="0" max="360"
+               value="{{ datos.edad_meses or '' }}">
+      </label>
+
+      <label class="animal-form__label">Estado de salud
+        <input class="animal-form__input" type="text" name="estado_salud" maxlength="100"
+               value="{{ datos.estado_salud or '' }}" required>
+      </label>
+    </div>
+
+    {% if user.rol == 'admin' %}
+    <label class="animal-form__label">Fundación
+      <select class="animal-form__select" name="fundacion_id" required>
+        <option value="" disabled {% if not datos.fundacion_id %}selected{% endif %}>Selecciona...</option>
+        {% for f in fundaciones %}
+          <option value="{{ f.id }}" {% if datos.fundacion_id|string == f.id|string %}selected{% endif %}>
+            {{ f.nombre }} ({{ f.ciudad.nombre }})
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+    {% else %}
+    <p class="animal-form__info">Fundación: <strong>{{ fundaciones[0].nombre if fundaciones else '—' }}</strong></p>
+    {% endif %}
+
+    {% if animal %}
+    <p class="animal-form__info">Estado actual:
+      <strong>{{ animal.estado|replace('_', ' ')|capitalize }}</strong>
+      (cambia automáticamente con las solicitudes de preadopción)
+    </p>
+    {% endif %}
+
+    <label class="animal-form__label">Descripción (opcional)
+      <textarea class="animal-form__textarea" name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
+    </label>
+
+    <div class="animal-form__actions">
+      <button class="animal-form__button" type="submit">Guardar</button>
+      <a class="animal-form__button animal-form__button--cancel secondary" href="/animales" role="button">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

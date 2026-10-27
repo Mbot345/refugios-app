@@ -9,4 +9,4 @@
 <label>Ciudad<select id="ciudad_id" name="ciudad_id" required {% if not ciudades %}disabled{% endif %}>{% if not ciudades %}<option value="" disabled selected>Primero elige una provincia</option>{% else %}<option value="" disabled {% if not datos.ciudad_id %}selected{% endif %}>Selecciona...</option>{% for c in ciudades %}<option value="{{ c.id }}" {% if datos.ciudad_id|string == c.id|string %}selected{% endif %}>{{ c.nombre }}</option>{% endfor %}{% endif %}</select></label></div>
 <div class="grid"><label>Teléfono (opcional)<input name="telefono" maxlength="20" placeholder="0991234567" value="{{ datos.telefono or '' }}"></label><label>Correo de contacto<input type="email" name="email_contacto" maxlength="120" value="{{ datos.email_contacto or '' }}" required></label></div>
 <div class="admin-form__actions"><button type="submit">Guardar</button><a href="/admin/fundaciones" role="button" class="secondary">Cancelar</a></div></form></article>{% endblock %}
-{% block scripts %}<script src="{{ url_for('static', path='js/ciudades.js') }}"></script>{% endblock %}
+{% block scripts %}<script src="/static/js/ciudades.js"></script>{% endblock %}

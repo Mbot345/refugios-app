@@ -5,4 +5,4 @@
 <label>Rol<select id="rol" name="rol" required>{% for r in roles %}<option value="{{ r }}" {% if datos.rol == r %}selected{% endif %}>{{ r|capitalize }}</option>{% endfor %}</select></label>
 <label id="fundacion-wrapper">Fundación (solo para trabajadores)<select name="fundacion_id"><option value="">Selecciona...</option>{% for f in fundaciones %}<option value="{{ f.id }}" {% if datos.fundacion_id|string == f.id|string %}selected{% endif %}>{{ f.nombre }}</option>{% endfor %}</select></label>
 <div class="admin-form__actions"><button type="submit">Guardar</button><a href="/admin/usuarios" role="button" class="secondary">Cancelar</a></div></form></article>{% endblock %}
-{% block scripts %}<script src="{{ url_for('static', path='js/usuarios.js') }}"></script>{% endblock %}
+{% block scripts %}<script src="/static/js/usuarios.js"></script>{% endblock %}

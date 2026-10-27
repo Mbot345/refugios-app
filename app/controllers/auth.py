@@ -13,7 +13,7 @@ router = APIRouter()
 @router.get("/login")
 def login_form(request: Request):
     if request.session.get("user_id"):
-        return RedirectResponse("/mascotas", status_code=303)
+        return RedirectResponse("/", status_code=303)
     return templates.TemplateResponse(request, "auth/login.html")
 
 
@@ -34,7 +34,7 @@ def login(
     request.session.clear()
     request.session["user_id"] = user.id
     flash(request, f"Bienvenido, {user.username}.", "success")
-    return RedirectResponse("/mascotas", status_code=303)
+    return RedirectResponse(auth_service.ruta_inicial(user), status_code=303)
 
 
 @router.get("/registro")

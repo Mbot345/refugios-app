@@ -60,3 +60,4 @@ def get_gestor(user: User = Depends(require_roles("admin", "trabajador"))) -> Us
 
 
 get_admin = require_roles("admin")
+

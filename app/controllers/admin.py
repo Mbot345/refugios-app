@@ -4,18 +4,20 @@ from sqlalchemy.orm import Session
 
 from app.core.constants import ROLES
 from app.core.database import get_db
-from app.core.deps import get_admin
+from app.core.deps import get_admin, get_panel
 from app.core.flash import flash
 from app.core.templates import templates
 from app.models.fundacion import Fundacion
 from app.models.user import User
-from app.services import admin_service, fundacion_service, usuario_service
+from app.services import admin_service, animal_service, fundacion_service, usuario_service
 
-router = APIRouter(prefix="/admin", dependencies=[Depends(get_admin)])
+# Entran administrador y moderador. Las rutas exclusivas del administrador general
+# lo exigen con su propio Depends(get_admin) (toda ruta nueva debe hacer lo mismo).
+router = APIRouter(prefix="/admin", dependencies=[Depends(get_panel)])
 
 
 @router.get("")
-def panel(request: Request, db: Session = Depends(get_db), user: User = Depends(get_admin)):
+def panel(request: Request, db: Session = Depends(get_db), user: User = Depends(get_panel)):
     return templates.TemplateResponse(request, "admin/panel.html", {"user": user, "stats": admin_service.estadisticas(db)})
 
 
@@ -73,7 +75,7 @@ def _fundacion_form(request, db, user, fundacion=None, datos=None, status_code=2
 
 
 @router.get("/fundaciones")
-def fundaciones(request: Request, db: Session = Depends(get_db), user: User = Depends(get_admin)):
+def fundaciones(request: Request, db: Session = Depends(get_db), user: User = Depends(get_panel),):
     return templates.TemplateResponse(request, "admin/fundaciones.html", {"user": user, "fundaciones": fundacion_service.listar(db)})
 
 
@@ -114,15 +116,41 @@ def fundacion_editar(fundacion_id: int, request: Request, datos: dict = Depends(
 
 
 @router.post("/fundaciones/{fundacion_id}/estado")
-def fundacion_estado(fundacion_id: int, request: Request, db: Session = Depends(get_db)):
-    f = fundacion_service.obtener(db, fundacion_id)
-    if f is None: flash(request, "La fundación no existe.", "error")
-    else:
-        fundacion_service.cambiar_activa(db, f)
-        flash(request, f"Fundación «{f.nombre}» {'activada' if f.activa else 'desactivada'}.", "info")
+def fundacion_estado(
+    fundacion_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_panel),
+):
+    fundacion = fundacion_service.obtener(db, fundacion_id)
+    if fundacion is None:
+        flash(request, "La fundación no existe.", "error")
+        return RedirectResponse("/admin/fundaciones", status_code=303)
+
+    # El moderador solo puede suspender; reactivar es del administrador general
+    if user.rol == "moderador" and not fundacion.activa:
+        flash(request, "Solo un administrador general puede reactivar una fundación.", "error")
+        return RedirectResponse("/admin/fundaciones", status_code=303)
+
+    fundacion_service.cambiar_activa(db, fundacion)
+    accion = "reactivada" if fundacion.activa else "suspendida"
+    flash(request, f"Fundación «{fundacion.nombre}» {accion}.", "info")
     return RedirectResponse("/admin/fundaciones", status_code=303)
 
 
 @router.get("/provincias/{provincia_id}/ciudades")
-def ciudades_de_provincia(provincia_id: int, db: Session = Depends(get_db)):
+def ciudades_de_provincia(provincia_id: int, db: Session = Depends(get_db), user: User = Depends(get_admin)):
     return [{"id": c.id, "nombre": c.nombre} for c in fundacion_service.ciudades_de(db, provincia_id)]
+
+# ---------- Supervisión de animales (solo lectura) ----------
+@router.get("/animales")
+def animales_supervision(
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_panel),
+):
+    return templates.TemplateResponse(
+        request,
+        "admin/animales.html",
+        {"user": user, "animales": animal_service.listar_todos(db)},
+    )

@@ -7,7 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.controllers import admin, animales, auth, home
+from app.controllers import admin, animales, auth, fundacion, home
 from app.core.config import EN_VERCEL, settings
 from app.core.database import get_db
 from app.core.deps import Forbidden, NotAuthenticated
@@ -45,7 +45,7 @@ app.include_router(home.router)
 app.include_router(auth.router)
 app.include_router(animales.router)
 app.include_router(admin.router)
-
+app.include_router(fundacion.router)
 
 @app.get("/health")
 def health(db: Session = Depends(get_db)):

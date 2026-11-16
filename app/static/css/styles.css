@@ -69,3 +69,49 @@
 .foundation-team__you { color: #6b7280; }
 
 .foundation-profile__actions { display: flex; gap: 1rem; }
+
+/* ---------- Portada ---------- */
+.hero { text-align: center; padding: 2rem 1rem; }
+.hero__title { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.hero__text { color: #6b7280; }
+.hero__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+
+.home-sections__card { text-align: center; }
+.home-sections__title { margin-bottom: 0.5rem; }
+.home-sections__text { color: #6b7280; }
+
+/* ---------- Catálogo público ---------- */
+.catalog__grid, .foundations__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+.catalog__card, .foundations__card { margin: 0; }
+.catalog__photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  margin-bottom: 0.75rem;
+  font-size: 2.5rem;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+.catalog__name, .foundations__name { margin-bottom: 0.25rem; }
+.catalog__meta, .foundations__location { color: #6b7280; font-size: 0.9rem; }
+.catalog__foundation { font-weight: 600; margin-bottom: 0; }
+.catalog__empty, .foundations__empty { text-align: center; color: #6b7280; }
+.foundations__contact { font-size: 0.9rem; }
+.foundations__count { margin-bottom: 0; }
+
+/* ---------- Páginas informativas ---------- */
+.about__text { color: #374151; }
+.coming-soon { text-align: center; }
+.coming-soon__text { color: #6b7280; }
+
+/* ---------- Barra de navegación ---------- */
+.header__nav { flex-wrap: wrap; }
+.header__item { white-space: nowrap; }
+.header__user { font-size: 0.9rem; line-height: 1.2; text-align: right; }
+.header__role { display: block; font-size: 0.75rem; color: #6b7280; }
+.header__logout { margin: 0; padding: 0.4rem 0.9rem; }

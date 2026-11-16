@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,36 +7,66 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-
 <body>
+  {% set es_global = user and user.rol in ROLES_GLOBALES %}
+  {% set es_fundacion = user and user.rol in ROLES_FUNDACION %}
+  {% set es_personal = es_global or es_fundacion %}
+
   <header class="container header">
     <nav class="header__nav">
       <ul class="header__list">
         <li class="header__item">
-          <strong><a class="header__brand" href="/">🐾 Refugios App</a></strong>
+          <strong>
+            <a class="header__brand"
+               href="{% if es_global %}/admin{% elif es_fundacion %}/fundacion{% else %}/{% endif %}">
+              🐾 Refugios App
+            </a>
+          </strong>
         </li>
+
+        {% if not es_personal %}
+          <li class="header__item"><a class="header__link" href="/animales">Animales</a></li>
+          <li class="header__item"><a class="header__link" href="/fundaciones">Fundaciones</a></li>
+          <li class="header__item"><a class="header__link" href="/eventos">Campañas</a></li>
+          <li class="header__item"><a class="header__link" href="/quienes-somos">Quiénes somos</a></li>
+
+        {% elif user.rol == 'admin' %}
+          <li class="header__item"><a class="header__link" href="/admin">Panel</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/usuarios">Usuarios</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/fundaciones">Fundaciones</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/animales">Animales</a></li>
+
+        {% elif user.rol == 'moderador' %}
+          <li class="header__item"><a class="header__link" href="/admin">Moderación</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/fundaciones">Fundaciones</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/animales">Animales</a></li>
+
+        {% else %}
+          <li class="header__item"><a class="header__link" href="/fundacion">Mi fundación</a></li>
+          {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
+            <li class="header__item"><a class="header__link" href="/fundacion/animales">Animales</a></li>
+          {% endif %}
+          {% if user.rol == 'admin_fundacion' %}
+            <li class="header__item"><a class="header__link" href="/fundacion/equipo">Equipo</a></li>
+            <li class="header__item"><a class="header__link" href="/fundacion/perfil">Perfil</a></li>
+          {% endif %}
+        {% endif %}
       </ul>
+
       <ul class="header__list">
         {% if user %}
-        {% if user.rol in ROLES_GLOBALES %}
-        <li class="header__item">
-          <a class="header__link" href="/admin">{{ 'Panel' if user.rol == 'admin' else 'Moderación' }}</a>
-        </li>
-        {% elif user.rol in ROLES_FUNDACION %}
-        <li class="header__item"><a class="header__link" href="/fundacion">Mi fundación</a></li>
-        {% endif %}
-        {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
-        <li class="header__item"><a class="header__link" href="/animales">Animales</a></li>
-        {% endif %}
-        <li class="header__item header__user">Hola, {{ user.username }} ({{ user.rol|rol_nombre }})</li>
-        <li class="header__item">
-          <form class="header__form" method="post" action="/logout">
-            <button class="secondary header__logout" type="submit">Cerrar sesión</button>
-          </form>
-        </li>
+          <li class="header__item header__user">
+            Hola, {{ user.username }}
+            <span class="header__role">{{ user.rol|rol_nombre }}</span>
+          </li>
+          <li class="header__item">
+            <form class="header__form" method="post" action="/logout">
+              <button class="secondary header__logout" type="submit">Cerrar sesión</button>
+            </form>
+          </li>
         {% else %}
-        <li class="header__item"><a class="header__link" href="/login">Iniciar sesión</a></li>
-        <li class="header__item"><a class="header__link" href="/registro">Registrarse</a></li>
+          <li class="header__item"><a class="header__link" href="/login">Iniciar sesión</a></li>
+          <li class="header__item"><a class="header__link" href="/registro">Registrarse</a></li>
         {% endif %}
       </ul>
     </nav>
@@ -45,12 +74,12 @@
 
   <main class="container main-content">
     {% for m in get_flashed_messages(request) %}
-    <article class="flash flash--{{ m.category }}">{{ m.message }}</article>
+      <article class="flash flash--{{ m.category }}">{{ m.message }}</article>
     {% endfor %}
 
     {% block content %}{% endblock %}
   </main>
+
   {% block scripts %}{% endblock %}
 </body>
-
 </html>

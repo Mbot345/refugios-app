@@ -12,7 +12,7 @@ from app.models.user import User
 from app.services import animal_service as service
 
 # Solo administrador de fundación y encargado de animales (con fundación)
-router = APIRouter(prefix="/animales", dependencies=[Depends(get_gestor)])
+router = APIRouter(prefix="/fundacion/animales", dependencies=[Depends(get_gestor)])
 
 
 def datos_formulario(
@@ -54,7 +54,7 @@ def _render_form(
 
 def _no_existe(request: Request):
     flash(request, "El animal no existe o no pertenece a tu fundación.", "error")
-    return RedirectResponse("/animales", status_code=303)
+    return RedirectResponse("/fundacion/animales", status_code=303)
 
 
 # ---------- READ (lista) ----------
@@ -92,7 +92,7 @@ def crear(
 
     animal = service.crear(db, user, datos)
     flash(request, f"Animal «{animal.nombre}» registrado.", "success")
-    return RedirectResponse("/animales", status_code=303)
+    return RedirectResponse("/fundacion/animales", status_code=303)
 
 
 # ---------- UPDATE ----------
@@ -129,7 +129,7 @@ def editar(
 
     service.actualizar(db, user, animal, datos)
     flash(request, f"Animal «{animal.nombre}» actualizado.", "success")
-    return RedirectResponse("/animales", status_code=303)
+    return RedirectResponse("/fundacion/animales", status_code=303)
 
 
 # ---------- DELETE ----------
@@ -147,7 +147,7 @@ def eliminar(
     motivo = service.motivo_no_eliminable(animal)
     if motivo:
         flash(request, motivo, "error")
-        return RedirectResponse("/animales", status_code=303)
+        return RedirectResponse("/fundacion/animales", status_code=303)
 
     nombre = animal.nombre
     service.eliminar(db, animal)

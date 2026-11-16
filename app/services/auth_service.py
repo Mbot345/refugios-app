@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password, verify_password
 from app.models.user import User
+from app.core.constants import ROLES_FUNDACION, ROLES_GLOBALES
 
 
 def get_by_username(db: Session, username: str) -> User | None:
@@ -67,8 +68,8 @@ def authenticate(db: Session, username: str, password: str) -> User | None:
 
 def ruta_inicial(user: User) -> str:
     """A dónde enviar al usuario después de iniciar sesión, según su rol."""
-    if user.rol == "admin":
+    if user.rol in ROLES_GLOBALES:
         return "/admin"
-    if user.rol == "trabajador":
-        return "/animales"
+    if user.rol in ROLES_FUNDACION:
+        return "/fundacion"
     return "/"

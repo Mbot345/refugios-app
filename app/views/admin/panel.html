@@ -2,11 +2,16 @@
 {% block title %}Panel de administración{% endblock %}
 {% block content %}
 <section class="admin-panel">
-  <h2>Panel de administración</h2>
+    <h2 class="admin-panel__title">
+    {% if user.rol == 'admin' %}Panel de administración{% else %}Panel de moderación{% endif %}
+  </h2>
+
   <div class="admin-panel__links">
-    <a href="/admin/usuarios" role="button">Usuarios</a>
-    <a href="/admin/fundaciones" role="button" class="secondary">Fundaciones</a>
-    <a href="/animales" role="button" class="secondary">Animales</a>
+    {% if user.rol == 'admin' %}
+      <a class="admin-panel__link" href="/admin/usuarios" role="button">Usuarios</a>
+    {% endif %}
+    <a class="admin-panel__link secondary" href="/admin/fundaciones" role="button">Fundaciones</a>
+    <a class="admin-panel__link secondary" href="/admin/animales" role="button">Animales</a>
   </div>
   <p>Usuarios registrados: <strong>{{ stats.usuarios_total }}</strong> ({{ stats.usuarios_activos }} activos)</p>
   <div class="grid">

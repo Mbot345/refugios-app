@@ -4,10 +4,6 @@
 <article class="animal-form">
   <h2 class="animal-form__title">{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}</h2>
 
-  {% if not fundaciones %}
-    <p class="animal-form__warning">No hay fundaciones activas disponibles. Un administrador debe crear o activar una.</p>
-  {% endif %}
-
   <form class="animal-form__form" method="post"
         action="{% if animal %}/animales/{{ animal.id }}/editar{% else %}/animales{% endif %}">
 
@@ -64,20 +60,7 @@
       </label>
     </div>
 
-    {% if user.rol == 'admin' %}
-    <label class="animal-form__label">Fundación
-      <select class="animal-form__select" name="fundacion_id" required>
-        <option value="" disabled {% if not datos.fundacion_id %}selected{% endif %}>Selecciona...</option>
-        {% for f in fundaciones %}
-          <option value="{{ f.id }}" {% if datos.fundacion_id|string == f.id|string %}selected{% endif %}>
-            {{ f.nombre }} ({{ f.ciudad.nombre }})
-          </option>
-        {% endfor %}
-      </select>
-    </label>
-    {% else %}
-    <p class="animal-form__info">Fundación: <strong>{{ fundaciones[0].nombre if fundaciones else '—' }}</strong></p>
-    {% endif %}
+    <p class="animal-form__info">Fundación: <strong>{{ user.fundacion.nombre }}</strong></p>
 
     {% if animal %}
     <p class="animal-form__info">Estado actual:

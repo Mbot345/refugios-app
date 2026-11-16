@@ -45,3 +45,27 @@
 .admin-list__empty { text-align: center; color: #6b7280; }
 .admin-form__actions { display: flex; gap: 1rem; align-items: center; }
 .admin-form [hidden] { display: none; }
+
+/* ---------- Panel de fundación ---------- */
+.foundation-panel__role { color: #6b7280; }
+.foundation-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.foundation-panel__card { margin: 0; }
+.foundation-panel__soon { color: #6b7280; font-style: italic; }
+
+.foundation-team__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.foundation-team__title { margin: 0; }
+.foundation-team__inline-form { display: inline-flex; gap: 0.5rem; align-items: center; margin: 0 0.5rem 0 0; }
+.foundation-team__select--small { margin: 0; padding: 0.25rem 2rem 0.25rem 0.5rem; width: auto; }
+.foundation-team__button--small { margin: 0; padding: 0.25rem 0.75rem; width: auto; }
+.foundation-team__you { color: #6b7280; }
+
+.foundation-profile__actions { display: flex; gap: 1rem; }

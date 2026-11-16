@@ -4,14 +4,17 @@
   <h1 class="home-section__title">Adopta, no compres</h1>
   <p class="home-section__description">Plataforma que conecta fundaciones, adoptantes y animales rescatados.</p>
   {% if user %}
-    {% if user.rol in ['admin', 'trabajador'] %}
-      <a class="home-section__button" href="/animales" role="button">Gestionar animales</a>
-    {% else %}
-      <p class="home-section__note">El catálogo público estará disponible próximamente.</p>
-    {% endif %}
+  {% if user.rol in ROLES_GLOBALES %}
+  <a class="home-section__button" href="/admin" role="button">Ir al panel</a>
+  {% elif user.rol in ROLES_FUNDACION %}
+  <a class="home-section__button" href="/fundacion" role="button">Ir a mi fundación</a>
   {% else %}
-    <a class="home-section__button" href="/login" role="button">Iniciar sesión</a>
-    <a class="home-section__button home-section__button--secondary secondary" href="/registro" role="button">Crear cuenta</a>
+  <p class="home-section__note">El catálogo público estará disponible próximamente.</p>
+  {% endif %}
+  {% else %}
+  <a class="home-section__button" href="/login" role="button">Iniciar sesión</a>
+  <a class="home-section__button home-section__button--secondary secondary" href="/registro" role="button">Crear
+    cuenta</a>
   {% endif %}
 </article>
 {% endblock %}

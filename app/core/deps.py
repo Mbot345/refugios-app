@@ -1,6 +1,7 @@
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
+from app.core.constants import ROLES_FUNDACION
 from app.core.database import get_db
 from app.models.user import User
 
@@ -52,12 +53,19 @@ def require_roles(*roles: str):
     return checker
 
 
-def get_gestor(user: User = Depends(require_roles("admin", "trabajador"))) -> User:
-    """Admin o trabajador. El trabajador además debe tener fundación asignada."""
-    if user.rol == "trabajador" and user.fundacion_id is None:
-        raise Forbidden("Tu cuenta de trabajador aún no está asociada a una fundación.")
-    return user
+def require_fundacion(*roles: str):
+    """Como require_roles, pero además exige tener una fundación asignada."""
+
+    def checker(user: User = Depends(require_roles(*roles))) -> User:
+        if user.fundacion_id is None:
+            raise Forbidden("Tu cuenta aún no está asociada a una fundación.")
+        return user
+
+    return checker
 
 
 get_admin = require_roles("admin")
-
+get_panel = require_roles("admin", "moderador")
+get_gestor = require_fundacion("admin_fundacion", "encargado_animales")  # CRUD de animales
+get_miembro_fundacion = require_fundacion(*ROLES_FUNDACION)
+get_admin_fundacion = require_fundacion("admin_fundacion")

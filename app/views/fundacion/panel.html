@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Mi fundación{% endblock %}
+{% block content %}
+<section class="foundation-panel">
+  <h2 class="foundation-panel__title">{{ fundacion.nombre }}</h2>
+  <p class="foundation-panel__role">
+    Tu rol: <strong>{{ user.rol|rol_nombre }}</strong>
+    {% if not fundacion.activa %} · <strong>Fundación suspendida: solo consulta</strong>{% endif %}
+  </p>
+
+  <div class="foundation-panel__grid">
+    {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
+    <article class="foundation-panel__card">
+      <h3 class="foundation-panel__card-title">Animales</h3>
+      <p>Registra y actualiza los animales de tu fundación.</p>
+      <a href="/animales" role="button">Gestionar animales</a>
+    </article>
+    {% endif %}
+
+    {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
+    <article class="foundation-panel__card">
+      <h3 class="foundation-panel__card-title">Solicitudes</h3>
+      <p>Revisión y seguimiento de las solicitudes de preadopción.</p>
+      <span class="foundation-panel__soon">Próximamente</span>
+    </article>
+    {% endif %}
+
+    {% if user.rol in ['admin_fundacion', 'encargado_eventos'] %}
+    <article class="foundation-panel__card">
+      <h3 class="foundation-panel__card-title">Eventos</h3>
+      <p>Campañas, jornadas y actividades de tu fundación.</p>
+      <span class="foundation-panel__soon">Próximamente</span>
+    </article>
+    {% endif %}
+
+    {% if user.rol == 'admin_fundacion' %}
+    <article class="foundation-panel__card">
+      <h3 class="foundation-panel__card-title">Equipo</h3>
+      <p>Asigna roles a los miembros de tu fundación.</p>
+      <a href="/fundacion/equipo" role="button">Gestionar equipo</a>
+    </article>
+
+    <article class="foundation-panel__card">
+      <h3 class="foundation-panel__card-title">Perfil</h3>
+      <p>Descripción, dirección y datos de contacto.</p>
+      <a href="/fundacion/perfil" role="button">Editar perfil</a>
+    </article>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

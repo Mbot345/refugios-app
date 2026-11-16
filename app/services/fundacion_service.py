@@ -87,3 +87,53 @@ def actualizar(db: Session, f: Fundacion, datos: dict) -> Fundacion:
 
 def cambiar_activa(db: Session, f: Fundacion) -> None:
     f.activa = not f.activa; db.commit()
+
+def a_datos_perfil(fundacion: Fundacion) -> dict:
+    return {
+        "descripcion": fundacion.descripcion or "",
+        "direccion": fundacion.direccion,
+        "telefono": fundacion.telefono or "",
+        "email_contacto": fundacion.email_contacto,
+    }
+
+
+def limpiar_perfil(
+    descripcion: str, direccion: str, telefono: str, email_contacto: str
+) -> dict:
+    return {
+        "descripcion": descripcion.strip() or None,
+        "direccion": direccion.strip(),
+        "telefono": re.sub(r"[\s\-]", "", telefono) or None,
+        "email_contacto": email_contacto.strip().lower(),
+    }
+
+
+def validar_perfil(datos: dict) -> list[str]:
+    """Validación en el servidor del perfil de la fundación."""
+    errores = []
+
+    if not 5 <= len(datos["direccion"]) <= 200:
+        errores.append("La dirección debe tener entre 5 y 200 caracteres.")
+    if datos["descripcion"] and len(datos["descripcion"]) > 1000:
+        errores.append("La descripción no puede superar los 1000 caracteres.")
+
+    try:
+        validate_email(datos["email_contacto"], check_deliverability=False)
+    except EmailNotValidError:
+        errores.append("El correo de contacto no es válido.")
+
+    if datos["telefono"] and not TELEFONO_EC.match(datos["telefono"]):
+        errores.append(
+            "El teléfono no es válido: usa un celular (09XXXXXXXX) "
+            "o un convencional (0 + código de área + 7 dígitos)."
+        )
+
+    return errores
+
+
+def actualizar_perfil(db: Session, fundacion: Fundacion, datos: dict) -> None:
+    fundacion.descripcion = datos["descripcion"]
+    fundacion.direccion = datos["direccion"]
+    fundacion.telefono = datos["telefono"]
+    fundacion.email_contacto = datos["email_contacto"]
+    db.commit()

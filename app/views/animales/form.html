@@ -5,7 +5,7 @@
   <h2 class="animal-form__title">{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}</h2>
 
   <form class="animal-form__form" method="post"
-        action="{% if animal %}/animales/{{ animal.id }}/editar{% else %}/animales{% endif %}">
+        action="{% if animal %}/fundacion/animales/{{ animal.id }}/editar{% else %}/fundacion/animales{% endif %}">
 
     <label class="animal-form__label">Nombre
       <input class="animal-form__input" type="text" name="nombre" maxlength="80"
@@ -75,7 +75,7 @@
 
     <div class="animal-form__actions">
       <button class="animal-form__button" type="submit">Guardar</button>
-      <a class="animal-form__button animal-form__button--cancel secondary" href="/animales" role="button">Cancelar</a>
+      <a class="animal-form__button animal-form__button--cancel secondary" href="/fundacion/animales" role="button">Cancelar</a>
     </div>
   </form>
 </article>

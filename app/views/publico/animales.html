@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Animales disponibles{% endblock %}
+{% block content %}
+<section class="catalog">
+  <h2 class="catalog__title">Animales disponibles para adopción</h2>
+
+  {% if animales %}
+  <div class="catalog__grid">
+    {% for a in animales %}
+    <article class="catalog__card">
+      <div class="catalog__photo" aria-hidden="true">🐾</div>
+      <h3 class="catalog__name">{{ a.nombre }}</h3>
+      <p class="catalog__meta">
+        {{ a.especie }} · {{ a.sexo }} · {{ a.tamano|capitalize }}<br>
+        {{ a.edad_meses|edad }}
+      </p>
+      <p class="catalog__foundation">{{ a.fundacion.nombre }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="catalog__empty">
+    Por ahora no hay animales disponibles. ¡Vuelve pronto!
+  </p>
+  {% endif %}
+</section>
+{% endblock %}

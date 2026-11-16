@@ -1,20 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
-<article class="home-section">
-  <h1 class="home-section__title">Adopta, no compres</h1>
-  <p class="home-section__description">Plataforma que conecta fundaciones, adoptantes y animales rescatados.</p>
-  {% if user %}
-  {% if user.rol in ROLES_GLOBALES %}
-  <a class="home-section__button" href="/admin" role="button">Ir al panel</a>
-  {% elif user.rol in ROLES_FUNDACION %}
-  <a class="home-section__button" href="/fundacion" role="button">Ir a mi fundación</a>
-  {% else %}
-  <p class="home-section__note">El catálogo público estará disponible próximamente.</p>
-  {% endif %}
-  {% else %}
-  <a class="home-section__button" href="/login" role="button">Iniciar sesión</a>
-  <a class="home-section__button home-section__button--secondary secondary" href="/registro" role="button">Crear
-    cuenta</a>
-  {% endif %}
-</article>
+<section class="hero">
+  <h1 class="hero__title">Adopta, no compres</h1>
+  <p class="hero__text">
+    Plataforma que conecta fundaciones, adoptantes y animales rescatados de Ecuador.
+  </p>
+  <div class="hero__actions">
+    <a class="hero__button" href="/animales" role="button">Ver animales disponibles</a>
+    {% if not user %}
+      <a class="hero__button secondary" href="/registro" role="button">Crear cuenta</a>
+    {% elif user.rol in ROLES_GLOBALES %}
+      <a class="hero__button secondary" href="/admin" role="button">Ir al panel</a>
+    {% elif user.rol in ROLES_FUNDACION %}
+      <a class="hero__button secondary" href="/fundacion" role="button">Ir a mi fundación</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="home-sections">
+  <div class="grid">
+    <article class="home-sections__card">
+      <h2 class="home-sections__title">🐶 Animales</h2>
+      <p class="home-sections__text">
+        Conoce a los animales rescatados que buscan un hogar y sus características.
+      </p>
+      <a class="home-sections__button" href="/animales" role="button">Ver animales</a>
+    </article>
+
+    <article class="home-sections__card">
+      <h2 class="home-sections__title">🏠 Fundaciones</h2>
+      <p class="home-sections__text">
+        Descubre las fundaciones y refugios que cuidan de ellos y cómo contactarlos.
+      </p>
+      <a class="home-sections__button" href="/fundaciones" role="button">Ver fundaciones</a>
+    </article>
+
+    <article class="home-sections__card">
+      <h2 class="home-sections__title">📅 Campañas</h2>
+      <p class="home-sections__text">
+        Jornadas, campañas y actividades organizadas por las fundaciones.
+      </p>
+      <a class="home-sections__button" href="/eventos" role="button">Ver campañas</a>
+    </article>
+  </div>
+</section>
 {% endblock %}

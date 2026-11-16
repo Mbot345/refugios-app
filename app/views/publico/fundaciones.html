@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Fundaciones{% endblock %}
+{% block content %}
+<section class="foundations">
+  <h2 class="foundations__title">Fundaciones y refugios</h2>
+
+  {% if fundaciones %}
+  <div class="foundations__grid">
+    {% for f in fundaciones %}
+    <article class="foundations__card">
+      <h3 class="foundations__name">{{ f.nombre }}</h3>
+      <p class="foundations__location">📍 {{ f.ciudad.nombre }}, {{ f.ciudad.provincia.nombre }}</p>
+      {% if f.descripcion %}<p class="foundations__description">{{ f.descripcion }}</p>{% endif %}
+      <p class="foundations__contact">
+        ✉️ {{ f.email_contacto }}
+        {% if f.telefono %}<br>📞 {{ f.telefono }}{% endif %}
+      </p>
+      <p class="foundations__count">
+        Animales disponibles: <strong>{{ disponibles.get(f.id, 0) }}</strong>
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="foundations__empty">Aún no hay fundaciones registradas.</p>
+  {% endif %}
+</section>
+{% endblock %}

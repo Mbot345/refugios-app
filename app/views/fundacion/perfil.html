@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Perfil de la fundación{% endblock %}
+{% block content %}
+<article class="foundation-profile">
+  <h2 class="foundation-profile__title">Perfil de {{ fundacion.nombre }}</h2>
+  <p class="foundation-profile__info">
+    El nombre y la ubicación los gestiona un administrador general de la plataforma.
+  </p>
+
+  <form class="foundation-profile__form" method="post" action="/fundacion/perfil">
+    <label class="foundation-profile__label">Descripción (opcional)
+      <textarea class="foundation-profile__textarea" name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
+    </label>
+
+    <label class="foundation-profile__label">Dirección
+      <input class="foundation-profile__input" type="text" name="direccion" maxlength="200"
+             value="{{ datos.direccion or '' }}" required>
+    </label>
+
+    <div class="grid">
+      <label class="foundation-profile__label">Teléfono (opcional)
+        <input class="foundation-profile__input" type="text" name="telefono" maxlength="20"
+               placeholder="0991234567" value="{{ datos.telefono or '' }}">
+      </label>
+
+      <label class="foundation-profile__label">Correo de contacto
+        <input class="foundation-profile__input" type="email" name="email_contacto" maxlength="120"
+               value="{{ datos.email_contacto or '' }}" required>
+      </label>
+    </div>
+
+    <div class="foundation-profile__actions">
+      <button class="foundation-profile__button" type="submit">Guardar</button>
+      <a class="foundation-profile__button secondary" href="/fundacion" role="button">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

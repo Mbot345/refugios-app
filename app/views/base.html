@@ -49,6 +49,9 @@
           {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
             <li class="header__item"><a class="header__link" href="/fundacion/animales">Animales</a></li>
           {% endif %}
+          {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
+            <li class="header__item"><a class="header__link" href="/fundacion/solicitudes">Solicitudes</a></li>
+          {% endif %}
           {% if user.rol == 'admin_fundacion' %}
             <li class="header__item"><a class="header__link" href="/fundacion/equipo">Equipo</a></li>
             <li class="header__item"><a class="header__link" href="/fundacion/perfil">Perfil</a></li>

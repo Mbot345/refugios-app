@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Solicitud #{{ s.id }}{% endblock %}
+{% block content %}
+<article class="review-detail">
+  <header class="review-detail__header">
+    <h2 class="review-detail__title">
+      Solicitud #{{ s.id }}
+      <span class="review__badge review__badge--{{ s.estado }}">{{ s.estado|capitalize }}</span>
+    </h2>
+    <a class="review-detail__back secondary" href="/fundacion/solicitudes" role="button">Volver a la lista</a>
+  </header>
+
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Animal</h3>
+    <p>
+      <a href="/animales/{{ s.animal.id }}">{{ s.animal.nombre }}</a>
+      · {{ s.animal.especie }} · Estado actual:
+      <strong>{{ s.animal.estado|replace('_', ' ')|capitalize }}</strong>
+    </p>
+  </section>
+
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Datos del solicitante</h3>
+    <dl class="review-detail__data">
+      <dt>Nombres</dt><dd>{{ s.nombres_completos }}</dd>
+      <dt>Cédula</dt><dd>{{ s.cedula }}</dd>
+      <dt>Fecha de nacimiento</dt><dd>{{ s.fecha_nacimiento.strftime('%d/%m/%Y') }}</dd>
+      <dt>Correo</dt><dd>{{ s.solicitante.email }}</dd>
+      <dt>Teléfono móvil</dt><dd>{{ s.telefono_movil }}</dd>
+      <dt>Teléfono convencional</dt><dd>{{ s.telefono_convencional or '—' }}</dd>
+      <dt>Dirección</dt><dd>{{ s.direccion_vivienda }}</dd>
+      <dt>Ocupación</dt><dd>{{ s.ocupacion }}</dd>
+    </dl>
+  </section>
+
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Vivienda</h3>
+    <dl class="review-detail__data">
+      <dt>Tipo</dt><dd>{{ s.tipo_vivienda|replace('_', ' ')|capitalize }}</dd>
+      <dt>Tenencia</dt><dd>{{ s.tenencia_vivienda|capitalize }}</dd>
+      <dt>Metros de vivienda</dt><dd>{{ s.metros_vivienda }} m²</dd>
+      <dt>Área verde</dt><dd>{{ s.metros_area_verde }} m²</dd>
+      <dt>Área comunal</dt><dd>{{ s.dimension_area_comunal or '—' }}</dd>
+    </dl>
+  </section>
+
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Motivos</h3>
+    <p>{{ s.motivo_adopcion }}</p>
+    <p><strong>Experiencia previa:</strong> {{ s.experiencia_previa or '—' }}</p>
+    <p>
+      <strong>Acepta visitas de seguimiento:</strong>
+      {% if s.acepta_visitas %}Sí{% else %}<span class="review-detail__warning">No</span>{% endif %}
+    </p>
+  </section>
+
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Historial</h3>
+    <ul class="review-detail__history">
+      {% for h in s.historial %}
+      <li>
+        {{ h.fecha.strftime('%d/%m/%Y %H:%M') }} ·
+        {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} →
+        <strong>{{ h.estado_nuevo|capitalize }}</strong>
+        {% if h.observacion %} · {{ h.observacion }}{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if not fundacion.activa %}
+    <p class="review-detail__warning">Tu fundación está suspendida: solo puedes consultar.</p>
+
+  {% elif s.estado == 'pendiente' %}
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Decisión</h3>
+    <div class="grid">
+      <form method="post" action="/fundacion/solicitudes/{{ s.id }}/aprobar">
+        <label>Observación (opcional)
+          <textarea name="observacion" rows="2" maxlength="500"></textarea>
+        </label>
+        <button type="submit">Aprobar</button>
+      </form>
+      <form method="post" action="/fundacion/solicitudes/{{ s.id }}/rechazar">
+        <label>Motivo del rechazo *
+          <textarea name="observacion" rows="2" maxlength="500" required minlength="5"></textarea>
+        </label>
+        <button class="secondary" type="submit">Rechazar</button>
+      </form>
+    </div>
+    <p class="review-detail__note">
+      Al aprobar, el animal pasa a «en proceso» y las demás solicitudes pendientes de este animal se rechazan automáticamente.
+    </p>
+  </section>
+
+  {% elif s.estado == 'aprobada' %}
+  <section class="review-detail__section">
+    <h3 class="review-detail__subtitle">Seguimiento</h3>
+    <div class="grid">
+      <form method="post" action="/fundacion/solicitudes/{{ s.id }}/finalizar">
+        <label>Observación (opcional)
+          <textarea name="observacion" rows="2" maxlength="500"></textarea>
+        </label>
+        <button type="submit">Confirmar adopción</button>
+      </form>
+      <form method="post" action="/fundacion/solicitudes/{{ s.id }}/revocar">
+        <label>Motivo de la revocación *
+          <textarea name="observacion" rows="2" maxlength="500" required minlength="5"></textarea>
+        </label>
+        <button class="secondary" type="submit">Revocar aprobación</button>
+      </form>
+    </div>
+    <p class="review-detail__note">
+      Confirmar la adopción deja al animal como «adoptado». Revocar lo devuelve a «disponible».
+    </p>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}

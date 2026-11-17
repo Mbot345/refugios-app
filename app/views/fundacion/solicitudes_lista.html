@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Solicitudes{% endblock %}
+{% block content %}
+<article class="review-list">
+  <header class="review-list__header">
+    <h2 class="review-list__title">Solicitudes de preadopción</h2>
+    <a class="review-list__back secondary" href="/fundacion" role="button">Volver al panel</a>
+  </header>
+
+  <form class="review-list__filter" method="get" action="/fundacion/solicitudes">
+    <select name="estado" aria-label="Estado" onchange="this.form.submit()">
+      <option value="">Todos los estados</option>
+      {% for e in estados %}
+      <option value="{{ e }}" {% if estado == e %}selected{% endif %}>{{ e|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if solicitudes %}
+  <div class="overflow-auto">
+    <table class="review-list__table">
+      <thead>
+        <tr><th>Fecha</th><th>Animal</th><th>Solicitante</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for s in solicitudes %}
+        <tr>
+          <td>{{ s.fecha_solicitud.strftime('%d/%m/%Y') }}</td>
+          <td>{{ s.animal.nombre }}</td>
+          <td>{{ s.nombres_completos }}</td>
+          <td><span class="review__badge review__badge--{{ s.estado }}">{{ s.estado|capitalize }}</span></td>
+          <td><a href="/fundacion/solicitudes/{{ s.id }}">Revisar</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="review-list__empty">No hay solicitudes con ese filtro.</p>
+  {% endif %}
+</article>
+{% endblock %}

@@ -8,7 +8,7 @@
   <div class="overflow-auto">
     <table class="my-requests__table">
       <thead>
-        <tr><th>Animal</th><th>Fundación</th><th>Fecha</th><th>Estado</th><th>Observación</th></tr>
+        <tr><th>Animal</th><th>Fundación</th><th>Fecha</th><th>Estado</th><th>Observación</th><th></th></tr>
       </thead>
       <tbody>
         {% for s in solicitudes %}
@@ -22,6 +22,14 @@
             </span>
           </td>
           <td>{{ s.observacion_revision or '—' }}</td>
+          <td>
+            {% if s.estado in ['pendiente', 'aprobada'] %}
+            <form method="post" action="/solicitudes/{{ s.id }}/cancelar"
+                  onsubmit="return confirm('¿Seguro que quieres cancelar esta solicitud?');">
+              <button class="secondary my-requests__cancel" type="submit">Cancelar</button>
+            </form>
+            {% endif %}
+          </td>
         </tr>
         {% endfor %}
       </tbody>

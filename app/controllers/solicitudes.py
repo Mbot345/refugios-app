@@ -10,6 +10,7 @@ from app.core.templates import templates
 from app.models.animal import Animal
 from app.models.user import User
 from app.services import solicitud_service as service
+from app.services.revision_service import ReglaNegocio, cancelar_propia
 
 # Solo el rol adoptante. Sin sesión redirige a /login; con otro rol, muestra el aviso de permiso.
 router = APIRouter(dependencies=[Depends(get_adoptante)])
@@ -124,3 +125,18 @@ def mis_solicitudes(
         "solicitudes/mis_solicitudes.html",
         {"user": user, "solicitudes": service.listar_de_usuario(db, user)},
     )
+
+@router.post("/solicitudes/{solicitud_id}/cancelar")
+def cancelar(
+    solicitud_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_adoptante),
+):
+    try:
+        cancelar_propia(db, user, solicitud_id)
+    except ReglaNegocio as error:
+        flash(request, str(error), "error")
+    else:
+        flash(request, "Solicitud cancelada.", "success")
+    return RedirectResponse("/mis-solicitudes", status_code=303)

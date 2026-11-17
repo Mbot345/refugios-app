@@ -165,3 +165,28 @@
 @media (max-width: 768px) {
   .animal-sheet { grid-template-columns: 1fr; }
 }
+
+/* ---------- Revisión de solicitudes ---------- */
+.review-list__header, .review-detail__header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.review-list__filter select { max-width: 260px; }
+.review-list__empty { text-align: center; color: #6b7280; }
+.review-detail__section { margin-bottom: 1.5rem; }
+.review-detail__subtitle { margin-bottom: 0.5rem; font-size: 1.1rem; }
+.review-detail__data { display: grid; grid-template-columns: 220px 1fr; gap: 0.25rem 1rem; margin: 0; }
+.review-detail__data dt { font-weight: 600; color: #6b7280; }
+.review-detail__data dd { margin: 0; }
+.review-detail__history { padding-left: 1.2rem; }
+.review-detail__warning { color: #d33c3c; font-weight: 600; }
+.review-detail__note { color: #6b7280; font-size: 0.9rem; }
+.my-requests__cancel { margin: 0; padding: 0.25rem 0.75rem; font-size: 0.85rem; }
+
+.review__badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: #fff; background: #6b7280; }
+.review__badge--pendiente { background: #d89614; }
+.review__badge--aprobada { background: #2e9e5b; }
+.review__badge--rechazada { background: #d33c3c; }
+.review__badge--cancelada { background: #6b7280; }
+.review__badge--finalizada { background: #3b82f6; }
+
+@media (max-width: 768px) {
+  .review-detail__data { grid-template-columns: 1fr; }
+}

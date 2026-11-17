@@ -29,6 +29,9 @@
           <li class="header__item"><a class="header__link" href="/fundaciones">Fundaciones</a></li>
           <li class="header__item"><a class="header__link" href="/eventos">Campañas</a></li>
           <li class="header__item"><a class="header__link" href="/quienes-somos">Quiénes somos</a></li>
+          {% if user %}
+            <li class="header__item"><a class="header__link" href="/mis-solicitudes">Mis solicitudes</a></li>
+          {% endif %}
 
         {% elif user.rol == 'admin' %}
           <li class="header__item"><a class="header__link" href="/admin">Panel</a></li>

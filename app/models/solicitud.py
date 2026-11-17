@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, Index, String, Text, func, text
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Index, String, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -28,10 +28,29 @@ class SolicitudPreadopcion(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     estado: Mapped[str] = mapped_column(String(20), default="pendiente")
-    telefono: Mapped[str] = mapped_column(String(20))
-    domicilio: Mapped[str] = mapped_column(String(200))
-    experiencia_previa: Mapped[str] = mapped_column(Text)
-    condiciones_cuidado: Mapped[str] = mapped_column(Text)
+
+    # Datos personales
+    nombres_completos: Mapped[str] = mapped_column(String(120))
+    cedula: Mapped[str] = mapped_column(String(10))
+    fecha_nacimiento: Mapped[date] = mapped_column(Date)
+    telefono_convencional: Mapped[Optional[str]] = mapped_column(String(20))
+    telefono_movil: Mapped[str] = mapped_column(String(20))
+    direccion_vivienda: Mapped[str] = mapped_column(String(200))
+    ocupacion: Mapped[str] = mapped_column(String(100))
+
+    # Domicilio
+    tipo_vivienda: Mapped[str] = mapped_column(String(20))
+    metros_vivienda: Mapped[int] = mapped_column()
+    metros_area_verde: Mapped[int] = mapped_column()
+    dimension_area_comunal: Mapped[Optional[str]] = mapped_column(String(100))
+    tenencia_vivienda: Mapped[str] = mapped_column(String(20))
+
+    # Motivos para adoptar
+    motivo_adopcion: Mapped[str] = mapped_column(Text)
+    acepta_visitas: Mapped[bool] = mapped_column(Boolean)
+    experiencia_previa: Mapped[Optional[str]] = mapped_column(Text)
+
+    # Revisión
     observacion_revision: Mapped[Optional[str]] = mapped_column(Text)
     fecha_solicitud: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Mis solicitudes{% endblock %}
+{% block content %}
+<article class="my-requests">
+  <h2 class="my-requests__title">Mis solicitudes de preadopción</h2>
+
+  {% if solicitudes %}
+  <div class="overflow-auto">
+    <table class="my-requests__table">
+      <thead>
+        <tr><th>Animal</th><th>Fundación</th><th>Fecha</th><th>Estado</th><th>Observación</th></tr>
+      </thead>
+      <tbody>
+        {% for s in solicitudes %}
+        <tr>
+          <td>{{ s.animal.nombre }}</td>
+          <td>{{ s.animal.fundacion.nombre }}</td>
+          <td>{{ s.fecha_solicitud.strftime('%d/%m/%Y') }}</td>
+          <td>
+            <span class="my-requests__badge my-requests__badge--{{ s.estado }}">
+              {{ s.estado|capitalize }}
+            </span>
+          </td>
+          <td>{{ s.observacion_revision or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="my-requests__empty">
+    Aún no has enviado solicitudes. <a href="/animales">Explora los animales disponibles</a>.
+  </p>
+  {% endif %}
+</article>
+{% endblock %}

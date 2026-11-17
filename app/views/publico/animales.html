@@ -15,6 +15,9 @@
         {{ a.edad_meses|edad }}
       </p>
       <p class="catalog__foundation">{{ a.fundacion.nombre }}</p>
+      {% if not user or user.rol == 'adoptante' %}
+      <a class="catalog__button" href="/animales/{{ a.id }}/solicitar" role="button">Solicitar preadopción</a>
+      {% endif %}
     </article>
     {% endfor %}
   </div>

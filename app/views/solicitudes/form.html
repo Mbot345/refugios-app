@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Solicitud de preadopción{% endblock %}
+{% block content %}
+<article class="adoption-form">
+  <h2 class="adoption-form__title">Solicitud de preadopción</h2>
+
+  <div class="adoption-form__animal">
+    <strong>{{ animal.nombre }}</strong><br>
+    <span>{{ animal.especie }} · {{ animal.sexo }} · {{ animal.tamano|capitalize }} · {{ animal.fundacion.nombre }}</span>
+  </div>
+
+  <p class="adoption-form__note">
+    Los campos marcados con * son obligatorios. Tus datos personales se usan únicamente para evaluar
+    esta solicitud y solo los ve el personal de la fundación que la revisa.
+  </p>
+
+  <form class="adoption-form__form" method="post" action="/animales/{{ animal.id }}/solicitar">
+
+    <h3 class="adoption-form__section">Datos personales</h3>
+
+    <label class="adoption-form__label">Nombres y apellidos completos *
+      <input class="adoption-form__input" type="text" name="nombres_completos" maxlength="120"
+             value="{{ datos.nombres_completos or '' }}" required autofocus>
+    </label>
+
+    <div class="grid">
+      <label class="adoption-form__label">Número de cédula de ciudadanía *
+        <input class="adoption-form__input" type="text" name="cedula" maxlength="10"
+               inputmode="numeric" pattern="[0-9]{10}" value="{{ datos.cedula or '' }}" required>
+      </label>
+
+      <label class="adoption-form__label">Fecha de nacimiento * (dd/mm/aaaa)
+        <input class="adoption-form__input" type="date" name="fecha_nacimiento"
+               value="{{ datos.fecha_nacimiento or '' }}" required>
+      </label>
+    </div>
+
+    <label class="adoption-form__label">Correo electrónico (tomado de tu cuenta)
+      <input class="adoption-form__input" type="email" value="{{ user.email }}" disabled>
+    </label>
+
+    <div class="grid">
+      <label class="adoption-form__label">Teléfono convencional (opcional)
+        <input class="adoption-form__input" type="text" name="telefono_convencional" maxlength="20"
+               placeholder="022345678" value="{{ datos.telefono_convencional or '' }}">
+      </label>
+
+      <label class="adoption-form__label">Teléfono móvil *
+        <input class="adoption-form__input" type="text" name="telefono_movil" maxlength="20"
+               placeholder="0991234567" value="{{ datos.telefono_movil or '' }}" required>
+      </label>
+    </div>
+
+    <label class="adoption-form__label">Dirección exacta de la vivienda donde permanecerá el animal *
+      (calle principal, nomenclatura e intersección)
+      <input class="adoption-form__input" type="text" name="direccion_vivienda" maxlength="200"
+             value="{{ datos.direccion_vivienda or '' }}" required>
+    </label>
+
+    <label class="adoption-form__label">Ocupación / Profesión *
+      <input class="adoption-form__input" type="text" name="ocupacion" maxlength="100"
+             value="{{ datos.ocupacion or '' }}" required>
+    </label>
+
+    <h3 class="adoption-form__section">Domicilio</h3>
+
+    <fieldset class="adoption-form__fieldset">
+      <legend>Tipo de vivienda *</legend>
+      <div class="adoption-form__options">
+        {% for clave, etiqueta in tipos_vivienda.items() %}
+        <label class="adoption-form__option">
+          <input type="radio" name="tipo_vivienda" value="{{ clave }}"
+                 {% if datos.tipo_vivienda == clave %}checked{% endif %} required>
+          {{ etiqueta }}
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="grid">
+      <label class="adoption-form__label">Metros cuadrados de la vivienda *
+        <input class="adoption-form__input" type="number" name="metros_vivienda" min="1"
+               value="{{ datos.metros_vivienda or '' }}" required>
+      </label>
+
+      <label class="adoption-form__label">Metros cuadrados de área verde * (0 si no tiene)
+        <input class="adoption-form__input" type="number" name="metros_area_verde" min="0"
+               value="{{ datos.metros_area_verde or '' }}" required>
+      </label>
+    </div>
+
+    <label class="adoption-form__label">Dimensión del área comunal (opcional)
+      <input class="adoption-form__input" type="text" name="dimension_area_comunal" maxlength="100"
+             value="{{ datos.dimension_area_comunal or '' }}">
+    </label>
+
+    <fieldset class="adoption-form__fieldset">
+      <legend>La vivienda es *</legend>
+      <div class="adoption-form__options">
+        {% for clave, etiqueta in tenencias.items() %}
+        <label class="adoption-form__option">
+          <input type="radio" name="tenencia_vivienda" value="{{ clave }}"
+                 {% if datos.tenencia_vivienda == clave %}checked{% endif %} required>
+          {{ etiqueta }}
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <h3 class="adoption-form__section">Motivos para adoptar</h3>
+
+    <label class="adoption-form__label">¿Por qué desea adoptar un animal de familia? Explique *
+      <textarea class="adoption-form__textarea" name="motivo_adopcion" rows="4" required>{{ datos.motivo_adopcion or '' }}</textarea>
+    </label>
+
+    <label class="adoption-form__label">Experiencia previa con animales (opcional)
+      <textarea class="adoption-form__textarea" name="experiencia_previa" rows="3">{{ datos.experiencia_previa or '' }}</textarea>
+    </label>
+
+    <fieldset class="adoption-form__fieldset">
+      <legend>¿Está de acuerdo en que, previa coordinación, la fundación realice visitas periódicas al animal que está adoptando? *</legend>
+      <div class="adoption-form__options">
+        <label class="adoption-form__option">
+          <input type="radio" name="acepta_visitas" value="si"
+                 {% if datos.acepta_visitas == 'si' %}checked{% endif %} required> Sí
+        </label>
+        <label class="adoption-form__option">
+          <input type="radio" name="acepta_visitas" value="no"
+                 {% if datos.acepta_visitas == 'no' %}checked{% endif %} required> No
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="adoption-form__actions">
+      <button class="adoption-form__button" type="submit">Enviar solicitud</button>
+      <a class="adoption-form__button secondary" href="/animales" role="button">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

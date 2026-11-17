@@ -4,26 +4,64 @@
 <section class="catalog">
   <h2 class="catalog__title">Animales disponibles para adopción</h2>
 
+  <form class="catalog__filters" method="get" action="/animales">
+    <div class="grid">
+      <select class="catalog__select" name="especie" aria-label="Especie">
+        <option value="">Todas las especies</option>
+        {% for v in opciones.especie %}
+        <option value="{{ v }}" {% if filtros.especie == v %}selected{% endif %}>{{ v|capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <select class="catalog__select" name="tamano" aria-label="Tamaño">
+        <option value="">Todos los tamaños</option>
+        {% for v in opciones.tamano %}
+        <option value="{{ v }}" {% if filtros.tamano == v %}selected{% endif %}>{{ v|capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <select class="catalog__select" name="sexo" aria-label="Sexo">
+        <option value="">Cualquier sexo</option>
+        {% for v in opciones.sexo %}
+        <option value="{{ v }}" {% if filtros.sexo == v %}selected{% endif %}>{{ v|capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <select class="catalog__select" name="edad" aria-label="Edad">
+        <option value="">Cualquier edad</option>
+        {% for clave, rango in rangos_edad.items() %}
+        <option value="{{ clave }}" {% if filtros.edad == clave %}selected{% endif %}>{{ rango[0] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="catalog__filter-row">
+      <input class="catalog__input" type="search" name="raza" maxlength="80"
+             placeholder="Buscar por raza" value="{{ filtros.raza }}">
+      <button class="catalog__button" type="submit">Filtrar</button>
+      <a class="catalog__button secondary" href="/animales" role="button">Limpiar</a>
+    </div>
+  </form>
+
   {% if animales %}
   <div class="catalog__grid">
     {% for a in animales %}
-    <article class="catalog__card">
-      <div class="catalog__photo" aria-hidden="true">🐾</div>
-      <h3 class="catalog__name">{{ a.nombre }}</h3>
-      <p class="catalog__meta">
-        {{ a.especie }} · {{ a.sexo }} · {{ a.tamano|capitalize }}<br>
-        {{ a.edad_meses|edad }}
-      </p>
-      <p class="catalog__foundation">{{ a.fundacion.nombre }}</p>
-      {% if not user or user.rol == 'adoptante' %}
-      <a class="catalog__button" href="/animales/{{ a.id }}/solicitar" role="button">Solicitar preadopción</a>
-      {% endif %}
-    </article>
+    <a class="catalog__link" href="/animales/{{ a.id }}">
+      <article class="catalog__card">
+        <div class="catalog__photo" aria-hidden="true">🐾</div>
+        <h3 class="catalog__name">{{ a.nombre }}</h3>
+        <p class="catalog__meta">
+          {{ a.especie }} · {{ a.sexo }} · {{ a.tamano|capitalize }}<br>
+          {{ a.edad_meses|edad }}
+        </p>
+        <p class="catalog__foundation">{{ a.fundacion.nombre }}</p>
+      </article>
+    </a>
     {% endfor %}
   </div>
   {% else %}
   <p class="catalog__empty">
-    Por ahora no hay animales disponibles. ¡Vuelve pronto!
+    No hay animales que coincidan con tu búsqueda. Prueba quitando algún filtro.
   </p>
   {% endif %}
 </section>

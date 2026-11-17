@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ animal.nombre }}{% endblock %}
+{% block content %}
+<nav class="animal-sheet__breadcrumb" aria-label="Ruta">
+  <a href="/animales">Catálogo</a> / {{ animal.nombre }}
+</nav>
+
+<section class="animal-sheet">
+  <div class="animal-sheet__gallery">
+    {% set principal = animal.fotos | selectattr('es_principal') | first %}
+    <div class="animal-sheet__photo">
+      {% if principal %}
+        <img class="animal-sheet__image" src="{{ principal.ruta }}" alt="Foto de {{ animal.nombre }}">
+      {% elif animal.fotos %}
+        <img class="animal-sheet__image" src="{{ animal.fotos[0].ruta }}" alt="Foto de {{ animal.nombre }}">
+      {% else %}
+        <span aria-hidden="true">🐾</span>
+      {% endif %}
+    </div>
+    <div class="animal-sheet__thumbs">
+      {% for foto in animal.fotos[:3] %}
+        <img class="animal-sheet__thumb" src="{{ foto.ruta }}" alt="Foto de {{ animal.nombre }}">
+      {% else %}
+        <span class="animal-sheet__thumb-empty">Sin fotos</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="animal-sheet__info">
+    <div class="animal-sheet__header">
+      <h2 class="animal-sheet__name">{{ animal.nombre }}</h2>
+      <span class="animal-sheet__status animal-sheet__status--{{ animal.estado }}">
+        {{ animal.estado|replace('_', ' ')|capitalize }}
+      </span>
+    </div>
+
+    <p class="animal-sheet__data">
+      {{ animal.especie|capitalize }}
+      {% if animal.raza %} · {{ animal.raza }}{% endif %}
+      · {{ animal.sexo|capitalize }}
+      · {{ animal.tamano|capitalize }}
+      · {{ animal.edad_meses|edad }}
+      · {{ animal.fundacion.nombre }}
+    </p>
+
+    {% if animal.descripcion %}
+    <p class="animal-sheet__description">{{ animal.descripcion }}</p>
+    {% endif %}
+
+    <div class="animal-sheet__health">
+      <strong>Información sanitaria</strong>
+      <p>Estado de salud: {{ animal.estado_salud }}</p>
+      {% if animal.registros_sanitarios %}
+      <ul>
+        {% for r in animal.registros_sanitarios|sort(attribute='fecha', reverse=true) %}
+        <li>
+          {{ r.fecha.strftime('%d/%m/%Y') }} ·
+          {{ r.tipo|replace('_', ' ')|capitalize }}: {{ r.descripcion }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="animal-sheet__muted">Aún no hay registros sanitarios.</p>
+      {% endif %}
+    </div>
+
+    {% if animal.estado == 'disponible' %}
+      {% if not user or user.rol == 'adoptante' %}
+        <a class="animal-sheet__button" href="/animales/{{ animal.id }}/solicitar" role="button">
+          Solicitar preadopción
+        </a>
+        {% if not user %}
+        <p class="animal-sheet__muted">
+          Para solicitarla necesitas iniciar sesión o crear una cuenta.
+        </p>
+        {% endif %}
+      {% else %}
+        <p class="animal-sheet__muted">
+          Solo los usuarios con rol adoptante pueden enviar solicitudes.
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="animal-sheet__muted">
+        Este animal no está disponible para solicitudes en este momento.
+      </p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

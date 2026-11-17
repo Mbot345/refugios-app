@@ -69,3 +69,4 @@ get_panel = require_roles("admin", "moderador")
 get_gestor = require_fundacion("admin_fundacion", "encargado_animales")  # CRUD de animales
 get_miembro_fundacion = require_fundacion(*ROLES_FUNDACION)
 get_admin_fundacion = require_fundacion("admin_fundacion")
+get_adoptante = require_roles("adoptante")

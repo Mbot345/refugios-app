@@ -26,3 +26,17 @@ SEXOS = ("Macho", "Hembra")
 ESTADOS_ANIMAL = ("disponible", "en_proceso", "adoptado")
 ESTADOS_SOLICITUD = ("pendiente", "aprobada", "rechazada", "cancelada", "finalizada")
 TIPOS_REGISTRO_SANITARIO = ("vacuna", "desparasitación", "antecedente", "otro")
+
+TIPOS_VIVIENDA = {
+    "casa_urbana": "Casa urbana",
+    "departamento": "Departamento",
+    "casa_campo": "Casa de campo",
+    "quinta": "Quinta",
+    "hacienda": "Hacienda",
+    "otro": "Otro",
+}
+TENENCIAS_VIVIENDA = {
+    "propia": "Propia",
+    "arrendada": "Arrendada",
+    "prestada": "Prestada",
+}

@@ -133,3 +133,35 @@
 .my-requests__badge--rechazada { background: #d33c3c; }
 .my-requests__badge--cancelada { background: #6b7280; }
 .my-requests__badge--finalizada { background: #3b82f6; }
+
+/* ---------- Filtros del catálogo ---------- */
+.catalog__filters { margin-bottom: 1.5rem; }
+.catalog__filter-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.catalog__filter-row .catalog__input { flex: 1 1 200px; margin: 0; }
+.catalog__filter-row .catalog__button { margin: 0; width: auto; }
+.catalog__link { text-decoration: none; color: inherit; }
+.catalog__link:hover .catalog__card { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); }
+.catalog__card { transition: transform 0.15s, box-shadow 0.15s; }
+
+/* ---------- Ficha del animal ---------- */
+.animal-sheet__breadcrumb { margin-bottom: 1rem; color: #6b7280; font-size: 0.9rem; }
+.animal-sheet { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.animal-sheet__photo { display: flex; align-items: center; justify-content: center; min-height: 280px; font-size: 5rem; background: rgba(128, 128, 128, 0.15); border-radius: 8px; overflow: hidden; }
+.animal-sheet__image { width: 100%; height: 100%; object-fit: cover; }
+.animal-sheet__thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0.75rem; }
+.animal-sheet__thumb { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; }
+.animal-sheet__thumb-empty { grid-column: 1 / -1; color: #6b7280; font-size: 0.85rem; }
+.animal-sheet__header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.animal-sheet__name { margin: 0; }
+.animal-sheet__status { padding: 0.15rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: #fff; background: #6b7280; }
+.animal-sheet__status--disponible { background: #2e9e5b; }
+.animal-sheet__status--en_proceso { background: #d89614; }
+.animal-sheet__status--adoptado { background: #3b82f6; }
+.animal-sheet__data { color: #6b7280; }
+.animal-sheet__health { padding: 0.75rem 1rem; margin-bottom: 1rem; border: 1px solid rgba(128, 128, 128, 0.35); border-radius: 8px; }
+.animal-sheet__health p, .animal-sheet__health ul { margin: 0.25rem 0 0; }
+.animal-sheet__muted { color: #6b7280; font-size: 0.9rem; }
+
+@media (max-width: 768px) {
+  .animal-sheet { grid-template-columns: 1fr; }
+}

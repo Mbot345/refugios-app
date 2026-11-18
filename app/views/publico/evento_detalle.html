@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ evento.titulo }}{% endblock %}
+{% block content %}
+<nav class="events__breadcrumb" aria-label="Ruta">
+  <a href="/eventos">Eventos</a> / {{ evento.titulo }}
+</nav>
+
+<article class="event-detail">
+  <header class="event-detail__header">
+    <h2 class="event-detail__title">{{ evento.titulo }}</h2>
+    <span class="event-badge event-badge--{{ evento.estado_visible }}">
+      {{ evento.estado_visible|capitalize }}
+    </span>
+  </header>
+
+  <p class="event-detail__data">
+    📅 {{ evento.fecha.strftime('%d/%m/%Y') }}{% if evento.hora %} · {{ evento.hora.strftime('%H:%M') }}{% endif %}<br>
+    📍 {{ evento.lugar }}<br>
+    🏠 Organiza: <strong>{{ evento.fundacion.nombre }}</strong>
+  </p>
+
+  {% if evento.estado == 'cancelado' %}
+  <p class="event-detail__cancelled">Evento cancelado. Motivo: {{ evento.motivo_cancelacion }}</p>
+  {% endif %}
+
+  <p class="event-detail__description">{{ evento.descripcion }}</p>
+
+  <p class="event-detail__contact">
+    Contacto de la fundación: {{ evento.fundacion.email_contacto }}
+    {% if evento.fundacion.telefono %} · {{ evento.fundacion.telefono }}{% endif %}
+  </p>
+</article>
+{% endblock %}

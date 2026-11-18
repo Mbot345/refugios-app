@@ -1,0 +1,38 @@
+{% extends "correos/base_correo.html" %}
+{% block cuerpo %}
+<p>Hola {{ s.nombres_completos }},</p>
+<p>
+  ¡Buenas noticias! La fundación <strong>{{ f.nombre }}</strong> aprobó tu solicitud de preadopción
+  de <strong>{{ s.animal.nombre }}</strong>.
+</p>
+
+<p><strong>Siguiente paso:</strong> imprime esta hoja de aprobación y presentala en la fundación junto con:</p>
+<ul>
+  <li>Una copia de tu cédula de ciudadanía.</li>
+  <li>Una copia de la planilla de un servicio básico (agua, luz o teléfono) reciente.</li>
+</ul>
+
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;" border="1" cellpadding="8">
+  <tr><td colspan="2" style="background: #f0f0f0; text-align: center;"><strong>HOJA DE APROBACIÓN DE PREADOPCIÓN</strong></td></tr>
+  <tr><td><strong>Solicitud N.º</strong></td><td>{{ s.id }}</td></tr>
+  <tr><td><strong>Fecha de aprobación</strong></td><td>{{ s.fecha_revision.strftime('%d/%m/%Y') if s.fecha_revision else '' }}</td></tr>
+  <tr><td><strong>Fundación</strong></td><td>{{ f.nombre }}</td></tr>
+  <tr><td><strong>Animal</strong></td><td>{{ s.animal.nombre }}</td></tr>
+  <tr><td><strong>Especie / raza</strong></td><td>{{ s.animal.especie|capitalize }}{% if s.animal.raza %} · {{ s.animal.raza }}{% endif %}</td></tr>
+  <tr><td><strong>Sexo / tamaño</strong></td><td>{{ s.animal.sexo|capitalize }} · {{ s.animal.tamano|capitalize }}</td></tr>
+  <tr><td><strong>Edad aproximada</strong></td><td>{{ s.animal.edad_meses|edad }}</td></tr>
+  <tr><td><strong>Adoptante</strong></td><td>{{ s.nombres_completos }}</td></tr>
+  <tr><td><strong>Cédula</strong></td><td>{{ s.cedula }}</td></tr>
+  {% if s.observacion_revision %}
+  <tr><td><strong>Observación</strong></td><td>{{ s.observacion_revision }}</td></tr>
+  {% endif %}
+</table>
+
+<p>
+  <strong>Contacto de la fundación:</strong><br>
+  {% if f.direccion %}{{ f.direccion }}<br>{% endif %}
+  {% if f.telefono %}Teléfono: {{ f.telefono }}<br>{% endif %}
+  Correo: {{ f.email_contacto }}
+</p>
+<p>La adopción se concreta cuando presentes estos documentos en la fundación y esta la confirme.</p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "correos/base_correo.html" %}
+{% block cuerpo %}
+<p>Hola {{ s.nombres_completos }},</p>
+<p>
+  Lamentamos informarte que tu solicitud de preadopción de <strong>{{ s.animal.nombre }}</strong>
+  para la fundación <strong>{{ f.nombre }}</strong> no fue aceptada.
+</p>
+<p><strong>Motivo:</strong> {{ s.observacion_revision }}</p>
+<p>
+  Esto no te impide adoptar: hay otros animales esperando un hogar.
+  <a href="{{ app_url }}/animales">Ver animales disponibles</a>.
+</p>
+{% endblock %}

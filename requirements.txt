@@ -11,3 +11,4 @@ bcrypt
 email-validator
 pytest
 httpx
+segno==1.6.6

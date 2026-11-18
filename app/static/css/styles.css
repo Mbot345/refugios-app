@@ -192,3 +192,18 @@
 }
 
 .flash--warning { background: #fdf3dc; border-color: #d89614; color: #7a5200; }
+
+/* ---------- Formulario del animal: secciones ---------- */
+.animal-form__section { margin: 1.5rem 0; padding: 1rem; border: 1px dashed rgba(128, 128, 128, 0.5); border-radius: 8px; }
+.animal-form__subtitle { margin-bottom: 0.75rem; font-size: 1.1rem; }
+.animal-form__muted { color: #6b7280; font-size: 0.9rem; }
+.animal-form__table form { margin: 0; }
+.animal-form__delete { margin: 0; padding: 0.2rem 0.6rem; font-size: 0.8rem; background: transparent; border: 1px solid #d33c3c; color: #d33c3c; }
+.animal-form__sanitary { margin-top: 1rem; }
+.animal-form__qr { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+.animal-form__qr-image { background: #fff; padding: 0.5rem; border-radius: 6px; }
+
+/* ---------- Ficha: botón QR ---------- */
+.animal-sheet__qr { margin-bottom: 1rem; }
+.animal-sheet__qr summary { display: inline-block; width: auto; padding: 0.4rem 1.5rem; }
+.animal-sheet__qr-image { display: block; margin: 0.75rem 0; background: #fff; padding: 0.5rem; border-radius: 6px; }

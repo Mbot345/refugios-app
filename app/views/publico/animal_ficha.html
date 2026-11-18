@@ -63,7 +63,12 @@
       <p class="animal-sheet__muted">Aún no hay registros sanitarios.</p>
       {% endif %}
     </div>
-
+    <details class="animal-sheet__qr">
+      <summary class="secondary" role="button">QR</summary>
+      <img class="animal-sheet__qr-image" src="/animales/{{ animal.id }}/qr.png"
+           alt="Código QR de {{ animal.nombre }}" width="160" height="160">
+      <a href="/animales/{{ animal.id }}/qr.png?descargar=1">Descargar QR</a>
+    </details>
     {% if animal.estado == 'disponible' %}
       {% if not user or user.rol == 'adoptante' %}
         <a class="animal-sheet__button" href="/animales/{{ animal.id }}/solicitar" role="button">

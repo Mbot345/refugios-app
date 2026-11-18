@@ -48,7 +48,14 @@
     {% for a in animales %}
     <a class="catalog__link" href="/animales/{{ a.id }}">
       <article class="catalog__card">
-        <div class="catalog__photo" aria-hidden="true">🐾</div>
+        {% set foto = (a.fotos|selectattr('es_principal')|first) or (a.fotos|first) %}
+        <div class="catalog__photo">
+          {% if foto %}
+            <img class="catalog__image" src="/fotos/{{ foto.id }}" alt="Foto de {{ a.nombre }}" loading="lazy">
+          {% else %}
+            <span aria-hidden="true">🐾</span>
+          {% endif %}
+        </div>
         <h3 class="catalog__name">{{ a.nombre }}</h3>
         <p class="catalog__meta">
           {{ a.especie }} · {{ a.sexo }} · {{ a.tamano|capitalize }}<br>

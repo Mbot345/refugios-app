@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-
+from app.services import foto_service
 from app.core.constants import ESPECIES, SEXOS, TAMANOS, TIPOS_REGISTRO_SANITARIO
 from app.core.database import get_db
 from app.core.deps import get_gestor
@@ -136,6 +136,74 @@ def editar(
     service.actualizar(db, user, animal, datos)
     flash(request, f"Animal «{animal.nombre}» actualizado.", "success")
     return RedirectResponse("/fundacion/animales", status_code=303)
+
+# ---------- Fotografías ----------
+def _volver_a_editar(animal: Animal):
+    return RedirectResponse(f"/fundacion/animales/{animal.id}/editar", status_code=303)
+
+
+@router.post("/{animal_id}/fotos")
+def foto_subir(
+    animal_id: int,
+    request: Request,
+    archivo: UploadFile | None = File(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_gestor),
+):
+    animal = service.obtener(db, animal_id, user)
+    if animal is None:
+        return _no_existe(request)
+
+    try:
+        if archivo is None or not archivo.filename:
+            raise ValueError("Selecciona una foto para subir.")
+        # Se lee un byte de más para detectar archivos que superan el límite
+        foto_service.agregar(db, user, animal, archivo.file.read(foto_service.MAX_BYTES + 1))
+    except ValueError as error:
+        flash(request, str(error), "error")
+    else:
+        flash(request, "Foto agregada.", "success")
+    return _volver_a_editar(animal)
+
+
+@router.post("/{animal_id}/fotos/{foto_id}/principal")
+def foto_principal(
+    animal_id: int,
+    foto_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_gestor),
+):
+    animal = service.obtener(db, animal_id, user)
+    if animal is None:
+        return _no_existe(request)
+    try:
+        foto_service.marcar_principal(db, user, animal, foto_id)
+    except ValueError as error:
+        flash(request, str(error), "error")
+    else:
+        flash(request, "Foto principal actualizada.", "success")
+    return _volver_a_editar(animal)
+
+
+@router.post("/{animal_id}/fotos/{foto_id}/eliminar")
+def foto_eliminar(
+    animal_id: int,
+    foto_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_gestor),
+):
+    animal = service.obtener(db, animal_id, user)
+    if animal is None:
+        return _no_existe(request)
+    try:
+        foto_service.eliminar(db, user, animal, foto_id)
+    except ValueError as error:
+        flash(request, str(error), "error")
+    else:
+        flash(request, "Foto eliminada.", "success")
+    return _volver_a_editar(animal)
 
 # ---------- Información sanitaria ----------
 @router.post("/{animal_id}/sanitario")

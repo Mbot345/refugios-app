@@ -207,3 +207,20 @@
 .animal-sheet__qr { margin-bottom: 1rem; }
 .animal-sheet__qr summary { display: inline-block; width: auto; padding: 0.4rem 1.5rem; }
 .animal-sheet__qr-image { display: block; margin: 0.75rem 0; background: #fff; padding: 0.5rem; border-radius: 6px; }
+
+/* ---------- Fotos ---------- */
+.catalog__photo { overflow: hidden; }
+.catalog__image { width: 100%; height: 100%; object-fit: cover; }
+
+.animal-sheet__thumbs { grid-template-columns: repeat(4, 1fr); }
+.animal-sheet__thumb { cursor: pointer; }
+
+.animal-form__photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.animal-form__photo { margin: 0; }
+.animal-form__photo-image { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; }
+.animal-form__photo-actions { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.4rem; font-size: 0.85rem; }
+.animal-form__photo-actions form { margin: 0; }
+.animal-form__mini { margin: 0; padding: 0.2rem 0.6rem; font-size: 0.8rem; }
+.animal-form__upload { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.animal-form__upload input[type="file"] { margin: 0; flex: 1 1 220px; }
+.animal-form__upload button { margin: 0; width: auto; }

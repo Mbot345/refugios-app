@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-
+from app.services import foto_service
 from app.core.flash import flash
 from app.core.database import get_db
 from app.core.deps import get_optional_user
@@ -111,3 +111,14 @@ def qr_destino(
         flash(request, "Ese código QR no corresponde a ningún animal publicado.", "error")
         return RedirectResponse("/animales", status_code=303)
     return RedirectResponse(f"/animales/{animal.id}", status_code=303)
+
+@router.get("/fotos/{foto_id}")
+def foto_imagen(foto_id: int, db: Session = Depends(get_db)):
+    foto = foto_service.obtener_publica(db, foto_id)
+    if foto is None:
+        raise HTTPException(status_code=404)
+    return Response(
+        foto.datos,
+        media_type="image/jpeg",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )

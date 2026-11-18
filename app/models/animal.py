@@ -2,7 +2,7 @@ import uuid
 from datetime import date, datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, LargeBinary, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -31,7 +31,7 @@ class Animal(Base):
 
     fundacion: Mapped["Fundacion"] = relationship(back_populates="animales")
     fotos: Mapped[list["FotoAnimal"]] = relationship(
-        back_populates="animal", cascade="all, delete-orphan"
+        back_populates="animal", cascade="all, delete-orphan", order_by="FotoAnimal.id"
     )
     registros_sanitarios: Mapped[list["RegistroSanitario"]] = relationship(
         back_populates="animal", cascade="all, delete-orphan"
@@ -45,7 +45,8 @@ class FotoAnimal(Base):
     __tablename__ = "fotos_animal"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    ruta: Mapped[str] = mapped_column(String(255))
+    # Imagen ya reducida (JPEG). "deferred": no se descarga al listar fotos, solo al pedirla.
+    datos: Mapped[bytes] = mapped_column(LargeBinary, deferred=True)
     es_principal: Mapped[bool] = mapped_column(Boolean, default=False)
     animal_id: Mapped[int] = mapped_column(ForeignKey("animales.id", ondelete="CASCADE"))
 

@@ -76,6 +76,44 @@
 
   {% if animal %}
   <section class="animal-form__section">
+    <h3 class="animal-form__subtitle">Fotografías ({{ animal.fotos|length }}/4)</h3>
+
+    {% if animal.fotos %}
+    <div class="animal-form__photos">
+      {% for foto in animal.fotos %}
+      <figure class="animal-form__photo">
+        <img class="animal-form__photo-image" src="/fotos/{{ foto.id }}" alt="Foto de {{ animal.nombre }}">
+        <figcaption class="animal-form__photo-actions">
+          {% if foto.es_principal %}
+            <strong>Principal</strong>
+          {% else %}
+            <form method="post" action="/fundacion/animales/{{ animal.id }}/fotos/{{ foto.id }}/principal">
+              <button class="secondary animal-form__mini" type="submit">Hacer principal</button>
+            </form>
+          {% endif %}
+          <form method="post" action="/fundacion/animales/{{ animal.id }}/fotos/{{ foto.id }}/eliminar"
+                onsubmit="return confirm('¿Eliminar esta foto?')">
+            <button class="animal-form__delete" type="submit">Eliminar</button>
+          </form>
+        </figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="animal-form__muted">Aún no hay fotos.</p>
+    {% endif %}
+
+    {% if animal.fotos|length < 4 %}
+    <form class="animal-form__upload" method="post" enctype="multipart/form-data"
+          action="/fundacion/animales/{{ animal.id }}/fotos">
+      <input type="file" name="archivo" accept="image/jpeg,image/png,image/webp" required>
+      <button class="secondary" type="submit">Subir foto</button>
+      <small>JPG, PNG o WEBP, máximo 3 MB. La primera foto queda como principal.</small>
+    </form>
+    {% endif %}
+  </section>
+  
+  <section class="animal-form__section">
     <h3 class="animal-form__subtitle">Información sanitaria</h3>
 
     {% if animal.registros_sanitarios %}
@@ -135,7 +173,7 @@
   </section>
   {% else %}
   <p class="animal-form__muted">
-    Después de guardar podrás agregar la información sanitaria y descargar el código QR del animal.
+    Después de guardar podrás agregar fotos, información sanitaria y descargar el código QR del animal.
   </p>
   {% endif %}
 

@@ -20,7 +20,7 @@ def listar_disponibles(db: Session, filtros: dict | None = None) -> list[Animal]
     consulta = (
         select(Animal)
         .join(Animal.fundacion)
-        .options(contains_eager(Animal.fundacion))
+        .options(contains_eager(Animal.fundacion), selectinload(Animal.fotos))
         .where(Animal.estado == "disponible", Fundacion.activa.is_(True))
         .order_by(Animal.id.desc())
     )

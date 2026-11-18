@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
 
@@ -8,6 +8,8 @@ from app.core.deps import get_optional_user
 from app.core.templates import templates
 from app.models.user import User
 from app.services import catalogo_service
+from app.core.config import settings
+from app.services import qr_service
 
 # Páginas públicas: no exigen sesión, pero si la hay, el menú muestra al usuario
 router = APIRouter()
@@ -84,3 +86,28 @@ def eventos(request: Request, user: User | None = Depends(get_optional_user)):
 @router.get("/quienes-somos")
 def quienes_somos(request: Request, user: User | None = Depends(get_optional_user)):
     return templates.TemplateResponse(request, "publico/quienes_somos.html", {"user": user})
+
+@router.get("/animales/{animal_id}/qr.png")
+def qr_imagen(animal_id: int, descargar: bool = False, db: Session = Depends(get_db)):
+    animal = catalogo_service.obtener_ficha(db, animal_id)
+    if animal is None:
+        raise HTTPException(status_code=404)
+
+    # El QR contiene la dirección pública de la app + el token del animal
+    enlace = f"{settings.APP_URL.rstrip('/')}/qr/{animal.qr_token}"
+    cabeceras = {"Cache-Control": "public, max-age=3600"}
+    if descargar:
+        cabeceras["Content-Disposition"] = f'attachment; filename="qr-{animal.nombre.lower()}-{animal.id}.png"'
+    return Response(qr_service.generar_png(enlace), media_type="image/png", headers=cabeceras)
+
+
+@router.get("/qr/{token}")
+def qr_destino(
+    token: str, request: Request, db: Session = Depends(get_db)
+):
+    """Destino del QR: lleva a la ficha pública del animal."""
+    animal = catalogo_service.obtener_por_token(db, token)
+    if animal is None:
+        flash(request, "Ese código QR no corresponde a ningún animal publicado.", "error")
+        return RedirectResponse("/animales", status_code=303)
+    return RedirectResponse(f"/animales/{animal.id}", status_code=303)

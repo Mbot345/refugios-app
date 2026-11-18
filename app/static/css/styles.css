@@ -190,3 +190,5 @@
 @media (max-width: 768px) {
   .review-detail__data { grid-template-columns: 1fr; }
 }
+
+.flash--warning { background: #fdf3dc; border-color: #d89614; color: #7a5200; }

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-
+from app.services import correo_service
 from app.core.constants import ESTADOS_SOLICITUD, TENENCIAS_VIVIENDA, TIPOS_VIVIENDA
 from app.core.database import get_db
 from app.core.deps import get_adoptante
@@ -111,6 +111,12 @@ def solicitar(
         f"Solicitud enviada para «{animal.nombre}». La fundación la revisará pronto.",
         "success",
     )
+    if correo_service.notificar("recibida", solicitud):
+        flash(
+            request,
+            "Tu solicitud quedó registrada, pero no pudimos enviarte el correo de confirmación.",
+            "warning",
+        )
     return RedirectResponse("/mis-solicitudes", status_code=303)
 
 

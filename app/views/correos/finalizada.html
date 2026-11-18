@@ -1,0 +1,11 @@
+{% extends "correos/base_correo.html" %}
+{% block cuerpo %}
+<p>Hola {{ s.nombres_completos }},</p>
+<p>
+  ¡Felicitaciones! La fundación <strong>{{ f.nombre }}</strong> confirmó la adopción de
+  <strong>{{ s.animal.nombre }}</strong>. Gracias por darle un hogar.
+</p>
+{% if s.acepta_visitas %}
+<p>Recuerda que aceptaste las visitas de seguimiento: la fundación se pondrá en contacto contigo para coordinarlas.</p>
+{% endif %}
+{% endblock %}

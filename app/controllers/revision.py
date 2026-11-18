@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-
+from app.services import correo_service
 from app.core.constants import ESTADOS_SOLICITUD
 from app.core.database import get_db
 from app.core.deps import get_adopciones
@@ -52,14 +52,20 @@ def detalle(
     )
 
 
-def _ejecutar(request, db, user, solicitud_id, accion, observacion, mensaje):
-    """Corre una acción del servicio y vuelve al detalle con el resultado."""
+def _ejecutar(request, db, user, solicitud_id, accion, observacion, mensaje, tipo_correo):
+    """Corre una acción del servicio, avisa por correo y vuelve al detalle."""
     try:
-        accion(db, user, solicitud_id, observacion)
+        resultado = accion(db, user, solicitud_id, observacion)
     except ReglaNegocio as error:
         flash(request, str(error), "error")
     else:
         flash(request, mensaje, "success")
+        if correo_service.notificar(tipo_correo, resultado):
+            flash(
+                request,
+                "La acción se guardó, pero no se pudo enviar el correo de aviso al solicitante.",
+                "warning",
+            )
     return RedirectResponse(f"/fundacion/solicitudes/{solicitud_id}", status_code=303)
 
 
@@ -74,6 +80,7 @@ def aprobar(
     return _ejecutar(
         request, db, user, solicitud_id, service.aprobar, observacion,
         "Solicitud aprobada. El animal pasó a «en proceso» y las demás solicitudes pendientes se rechazaron.",
+        "aprobada",
     )
 
 
@@ -86,7 +93,8 @@ def rechazar(
     user: User = Depends(get_adopciones),
 ):
     return _ejecutar(
-        request, db, user, solicitud_id, service.rechazar, observacion, "Solicitud rechazada."
+        request, db, user, solicitud_id, service.rechazar, observacion,
+        "Solicitud rechazada.", "rechazada",
     )
 
 
@@ -100,7 +108,7 @@ def revocar(
 ):
     return _ejecutar(
         request, db, user, solicitud_id, service.revocar, observacion,
-        "Aprobación revocada. El animal volvió a estar disponible.",
+        "Aprobación revocada. El animal volvió a estar disponible.", "revocada",
     )
 
 
@@ -114,5 +122,5 @@ def finalizar(
 ):
     return _ejecutar(
         request, db, user, solicitud_id, service.finalizar, observacion,
-        "Adopción confirmada. El animal ahora figura como adoptado.",
+        "Adopción confirmada. El animal ahora figura como adoptado.", "finalizada",
     )

@@ -1,0 +1,9 @@
+{% extends "correos/base_correo.html" %}
+{% block cuerpo %}
+<p>Hola {{ s.nombres_completos }},</p>
+<p>
+  Recibimos tu solicitud de preadopción de <strong>{{ s.animal.nombre }}</strong>
+  para la fundación <strong>{{ f.nombre }}</strong>. Su equipo la revisará y te avisaremos por este medio el resultado.
+</p>
+<p>Puedes ver el estado en cualquier momento en <a href="{{ app_url }}/mis-solicitudes">Mis solicitudes</a>.</p>
+{% endblock %}

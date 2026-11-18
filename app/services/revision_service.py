@@ -115,8 +115,8 @@ def _cargar(db: Session, user: User, solicitud_id: int) -> SolicitudPreadopcion:
 
 
 # ---------- Acciones del personal ----------
-def aprobar(db: Session, user: User, solicitud_id: int, observacion: str) -> SolicitudPreadopcion:
-    _exigir_fundacion_activa(user)
+def aprobar(db: Session, user: User, solicitud_id: int, observacion: str
+            ) -> tuple[SolicitudPreadopcion, list[SolicitudPreadopcion]]:
     observacion = _limpiar_observacion(observacion, obligatoria=False)
     solicitud = _cargar(db, user, solicitud_id)
     animal = _bloquear(db, solicitud)
@@ -141,7 +141,7 @@ def aprobar(db: Session, user: User, solicitud_id: int, observacion: str) -> Sol
         _resolver(otra, "rechazada", user, MOTIVO_AUTOMATICO)
 
     _guardar(db)
-    return solicitud
+    return solicitud, list(otras)
 
 
 def rechazar(db: Session, user: User, solicitud_id: int, observacion: str) -> SolicitudPreadopcion:

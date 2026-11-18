@@ -1,0 +1,13 @@
+{% extends "correos/base_correo.html" %}
+{% block cuerpo %}
+<p>Hola {{ s.nombres_completos }},</p>
+<p>
+  La fundación <strong>{{ f.nombre }}</strong> dejó sin efecto la aprobación de tu solicitud
+  de preadopción de <strong>{{ s.animal.nombre }}</strong>.
+</p>
+<p><strong>Motivo:</strong> {{ s.observacion_revision }}</p>
+<p>
+  Si tienes dudas, puedes comunicarte con la fundación en {{ f.email_contacto }}.
+  También puedes <a href="{{ app_url }}/animales">ver otros animales disponibles</a>.
+</p>
+{% endblock %}

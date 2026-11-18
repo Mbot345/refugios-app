@@ -4,7 +4,7 @@
 <article class="animal-form">
   <h2 class="animal-form__title">{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}</h2>
 
-  <form class="animal-form__form" method="post"
+  <form id="animal-form" class="animal-form__form" method="post"
         action="{% if animal %}/fundacion/animales/{{ animal.id }}/editar{% else %}/fundacion/animales{% endif %}">
 
     <label class="animal-form__label">Nombre
@@ -72,11 +72,76 @@
     <label class="animal-form__label">Descripción (opcional)
       <textarea class="animal-form__textarea" name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
     </label>
-
-    <div class="animal-form__actions">
-      <button class="animal-form__button" type="submit">Guardar</button>
-      <a class="animal-form__button animal-form__button--cancel secondary" href="/fundacion/animales" role="button">Cancelar</a>
-    </div>
   </form>
+
+  {% if animal %}
+  <section class="animal-form__section">
+    <h3 class="animal-form__subtitle">Información sanitaria</h3>
+
+    {% if animal.registros_sanitarios %}
+    <div class="overflow-auto">
+      <table class="animal-form__table">
+        <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th></th></tr></thead>
+        <tbody>
+          {% for r in animal.registros_sanitarios|sort(attribute='fecha', reverse=true) %}
+          <tr>
+            <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
+            <td>{{ r.tipo|capitalize }}</td>
+            <td>{{ r.descripcion }}</td>
+            <td>
+              <form method="post"
+                    action="/fundacion/animales/{{ animal.id }}/sanitario/{{ r.id }}/eliminar"
+                    onsubmit="return confirm('¿Eliminar este registro sanitario?')">
+                <button class="animal-form__delete" type="submit">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="animal-form__muted">Aún no hay registros sanitarios.</p>
+    {% endif %}
+
+    <form class="animal-form__sanitary" method="post"
+          action="/fundacion/animales/{{ animal.id }}/sanitario">
+      <div class="grid">
+        <select name="tipo" aria-label="Tipo de registro" required>
+          <option value="" disabled selected>Tipo...</option>
+          {% for t in tipos_sanitarios %}
+            <option value="{{ t }}">{{ t|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="descripcion" maxlength="300" placeholder="Descripción" required>
+        <input type="date" name="fecha" aria-label="Fecha" required>
+      </div>
+      <button class="secondary" type="submit">+ Agregar</button>
+    </form>
+  </section>
+
+  <section class="animal-form__section">
+    <h3 class="animal-form__subtitle">Código QR</h3>
+    <div class="animal-form__qr">
+      <img class="animal-form__qr-image" src="/animales/{{ animal.id }}/qr.png"
+           alt="Código QR de {{ animal.nombre }}" width="160" height="160">
+      <div>
+        <p class="animal-form__muted">
+          Al escanearlo se abre la ficha pública del animal. Puedes imprimirlo para el refugio o el collar.
+        </p>
+        <a class="secondary" href="/animales/{{ animal.id }}/qr.png?descargar=1" role="button">Descargar QR</a>
+      </div>
+    </div>
+  </section>
+  {% else %}
+  <p class="animal-form__muted">
+    Después de guardar podrás agregar la información sanitaria y descargar el código QR del animal.
+  </p>
+  {% endif %}
+
+  <div class="animal-form__actions">
+    <button class="animal-form__button" type="submit" form="animal-form">Guardar</button>
+    <a class="animal-form__button animal-form__button--cancel secondary" href="/fundacion/animales" role="button">Cancelar</a>
+  </div>
 </article>
 {% endblock %}

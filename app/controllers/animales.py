@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-from app.core.constants import ESPECIES, SEXOS, TAMANOS
+from app.core.constants import ESPECIES, SEXOS, TAMANOS, TIPOS_REGISTRO_SANITARIO
 from app.core.database import get_db
 from app.core.deps import get_gestor
 from app.core.flash import flash
@@ -10,6 +10,7 @@ from app.core.templates import templates
 from app.models.animal import Animal
 from app.models.user import User
 from app.services import animal_service as service
+from app.services import sanitario_service
 
 # Solo administrador de fundación y encargado de animales (con fundación)
 router = APIRouter(prefix="/fundacion/animales", dependencies=[Depends(get_gestor)])
@@ -47,6 +48,7 @@ def _render_form(
             "especies": ESPECIES,
             "sexos": SEXOS,
             "tamanos": TAMANOS,
+            "tipos_sanitarios": TIPOS_REGISTRO_SANITARIO,
         },
         status_code=status_code,
     )
@@ -91,8 +93,12 @@ def crear(
         return _render_form(request, user, datos=datos, status_code=400)
 
     animal = service.crear(db, user, datos)
-    flash(request, f"Animal «{animal.nombre}» registrado.", "success")
-    return RedirectResponse("/fundacion/animales", status_code=303)
+    flash(
+        request,
+        f"Animal «{animal.nombre}» registrado. Ahora puedes completar su información sanitaria y descargar su QR.",
+        "success",
+    )
+    return RedirectResponse(f"/fundacion/animales/{animal.id}/editar", status_code=303)
 
 
 # ---------- UPDATE ----------
@@ -131,6 +137,51 @@ def editar(
     flash(request, f"Animal «{animal.nombre}» actualizado.", "success")
     return RedirectResponse("/fundacion/animales", status_code=303)
 
+# ---------- Información sanitaria ----------
+@router.post("/{animal_id}/sanitario")
+def sanitario_agregar(
+    animal_id: int,
+    request: Request,
+    tipo: str = Form(""),
+    descripcion: str = Form(""),
+    fecha: str = Form(""),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_gestor),
+):
+    animal = service.obtener(db, animal_id, user)
+    if animal is None:
+        return _no_existe(request)
+
+    datos = sanitario_service.limpiar(tipo, descripcion, fecha)
+    errores = sanitario_service.validar(user, datos)
+    if errores:
+        for error in errores:
+            flash(request, error, "error")
+    else:
+        sanitario_service.agregar(db, animal, datos)
+        flash(request, "Registro sanitario agregado.", "success")
+    return RedirectResponse(f"/fundacion/animales/{animal.id}/editar", status_code=303)
+
+
+@router.post("/{animal_id}/sanitario/{registro_id}/eliminar")
+def sanitario_eliminar(
+    animal_id: int,
+    registro_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_gestor),
+):
+    animal = service.obtener(db, animal_id, user)
+    if animal is None:
+        return _no_existe(request)
+
+    if not user.fundacion.activa:
+        flash(request, "Tu fundación está suspendida: solo puedes consultar la información.", "error")
+    elif sanitario_service.eliminar(db, animal, registro_id):
+        flash(request, "Registro sanitario eliminado.", "success")
+    else:
+        flash(request, "El registro no existe.", "error")
+    return RedirectResponse(f"/fundacion/animales/{animal.id}/editar", status_code=303)
 
 # ---------- DELETE ----------
 @router.post("/{animal_id}/eliminar")

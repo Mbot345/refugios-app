@@ -96,3 +96,12 @@ def conteo_disponibles(db: Session) -> dict[int, int]:
         .group_by(Animal.fundacion_id)
     ).all()
     return {fundacion_id: total for fundacion_id, total in filas}
+
+def obtener_por_token(db: Session, token: str) -> Animal | None:
+    """Animal de una fundación activa a partir del token de su código QR."""
+    consulta = (
+        select(Animal)
+        .join(Animal.fundacion)
+        .where(Animal.qr_token == token, Fundacion.activa.is_(True))
+    )
+    return db.scalar(consulta)

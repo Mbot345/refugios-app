@@ -10,7 +10,7 @@ from app.models.user import User
 from app.services import catalogo_service
 from app.core.config import settings
 from app.services import qr_service
-
+from app.services import evento_service
 # Páginas públicas: no exigen sesión, pero si la hay, el menú muestra al usuario
 router = APIRouter()
 
@@ -79,8 +79,37 @@ def fundaciones(
 
 
 @router.get("/eventos")
-def eventos(request: Request, user: User | None = Depends(get_optional_user)):
-    return templates.TemplateResponse(request, "publico/eventos.html", {"user": user})
+def eventos(
+    request: Request,
+    pasados: bool = False,
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    return templates.TemplateResponse(
+        request,
+        "publico/eventos.html",
+        {
+            "user": user,
+            "eventos": evento_service.listar_publicos(db, pasados),
+            "pasados": pasados,
+        },
+    )
+
+
+@router.get("/eventos/{evento_id}")
+def evento_detalle(
+    evento_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    evento = evento_service.obtener_publico(db, evento_id)
+    if evento is None:
+        flash(request, "Ese evento no existe o ya no está publicado.", "error")
+        return RedirectResponse("/eventos", status_code=303)
+    return templates.TemplateResponse(
+        request, "publico/evento_detalle.html", {"user": user, "evento": evento}
+    )
 
 
 @router.get("/quienes-somos")

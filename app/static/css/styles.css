@@ -224,3 +224,35 @@
 .animal-form__upload { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
 .animal-form__upload input[type="file"] { margin: 0; flex: 1 1 220px; }
 .animal-form__upload button { margin: 0; width: auto; }
+
+/* ---------- Eventos ---------- */
+.event-admin__header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.event-admin__empty, .events__empty { text-align: center; color: #6b7280; }
+.event-admin__cancel { margin: 0.25rem 0 0; }
+.event-admin__cancel form { margin: 0.5rem 0 0; }
+.event-admin__cancel input { margin-bottom: 0.5rem; }
+.event-form__actions { display: flex; gap: 1rem; }
+
+.event-badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: #fff; background: #6b7280; }
+.event-badge--programado { background: #2e9e5b; }
+.event-badge--cancelado { background: #d33c3c; }
+.event-badge--finalizado { background: #6b7280; }
+
+.events__tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+.events__tab { padding: 0.25rem 0.9rem; border-radius: 999px; text-decoration: none; border: 1px solid rgba(128, 128, 128, 0.5); }
+.events__tab--active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.events__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.events__link { text-decoration: none; color: inherit; }
+.events__card { margin: 0; height: 100%; transition: transform 0.15s, box-shadow 0.15s; }
+.events__link:hover .events__card { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); }
+.events__date { margin-bottom: 0.25rem; font-weight: 600; color: #3b82f6; }
+.events__name { margin-bottom: 0.25rem; }
+.events__meta { margin-bottom: 0.25rem; color: #6b7280; font-size: 0.9rem; }
+.events__foundation { margin-bottom: 0.5rem; font-weight: 600; }
+.events__breadcrumb { margin-bottom: 1rem; color: #6b7280; font-size: 0.9rem; }
+
+.event-detail__header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.event-detail__data { line-height: 1.8; }
+.event-detail__cancelled { color: #d33c3c; font-weight: 600; }
+.event-detail__description { white-space: pre-line; }
+.event-detail__contact { color: #6b7280; font-size: 0.9rem; }

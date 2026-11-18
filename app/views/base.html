@@ -38,11 +38,13 @@
           <li class="header__item"><a class="header__link" href="/admin/usuarios">Usuarios</a></li>
           <li class="header__item"><a class="header__link" href="/admin/fundaciones">Fundaciones</a></li>
           <li class="header__item"><a class="header__link" href="/admin/animales">Animales</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/eventos">Eventos</a></li>
 
         {% elif user.rol == 'moderador' %}
           <li class="header__item"><a class="header__link" href="/admin">Moderación</a></li>
           <li class="header__item"><a class="header__link" href="/admin/fundaciones">Fundaciones</a></li>
           <li class="header__item"><a class="header__link" href="/admin/animales">Animales</a></li>
+          <li class="header__item"><a class="header__link" href="/admin/eventos">Eventos</a></li>
 
         {% else %}
           <li class="header__item"><a class="header__link" href="/fundacion">Mi fundación</a></li>
@@ -51,6 +53,9 @@
           {% endif %}
           {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
             <li class="header__item"><a class="header__link" href="/fundacion/solicitudes">Solicitudes</a></li>
+          {% endif %}
+          {% if user.rol in ['admin_fundacion', 'encargado_eventos'] %}
+            <li class="header__item"><a class="header__link" href="/fundacion/eventos">Eventos</a></li>
           {% endif %}
           {% if user.rol == 'admin_fundacion' %}
             <li class="header__item"><a class="header__link" href="/fundacion/equipo">Equipo</a></li>

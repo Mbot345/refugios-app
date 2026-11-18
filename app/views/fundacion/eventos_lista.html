@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Eventos{% endblock %}
+{% block content %}
+<article class="event-admin">
+  <header class="event-admin__header">
+    <h2 class="event-admin__title">Eventos de mi fundación</h2>
+    <a class="event-admin__new" href="/fundacion/eventos/nuevo" role="button">+ Nuevo evento</a>
+  </header>
+
+  {% if eventos %}
+  <div class="overflow-auto">
+    <table class="event-admin__table">
+      <thead>
+        <tr><th>Fecha</th><th>Título</th><th>Lugar</th><th>Estado</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        {% for e in eventos %}
+        <tr>
+          <td>
+            {{ e.fecha.strftime('%d/%m/%Y') }}
+            {% if e.hora %}<br><small>{{ e.hora.strftime('%H:%M') }}</small>{% endif %}
+          </td>
+          <td>{{ e.titulo }}</td>
+          <td>{{ e.lugar }}</td>
+          <td>
+            <span class="event-badge event-badge--{{ e.estado_visible }}">
+              {{ e.estado_visible|capitalize }}
+            </span>
+          </td>
+          <td>
+            {% if e.estado_visible == 'programado' %}
+              <a href="/fundacion/eventos/{{ e.id }}/editar">Editar</a>
+              <details class="event-admin__cancel">
+                <summary>Cancelar</summary>
+                <form method="post" action="/fundacion/eventos/{{ e.id }}/cancelar">
+                  <input type="text" name="motivo" maxlength="300" minlength="5"
+                         placeholder="Motivo de la cancelación" required>
+                  <button class="secondary" type="submit">Confirmar cancelación</button>
+                </form>
+              </details>
+            {% elif e.estado == 'cancelado' %}
+              <small>Motivo: {{ e.motivo_cancelacion }}</small>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="event-admin__empty">Aún no has creado eventos.</p>
+  {% endif %}
+</article>
+{% endblock %}

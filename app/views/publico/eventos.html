@@ -1,11 +1,36 @@
 {% extends "base.html" %}
-{% block title %}Campañas{% endblock %}
+{% block title %}Campañas y eventos{% endblock %}
 {% block content %}
-<article class="coming-soon">
-  <h2 class="coming-soon__title">📅 Campañas y eventos</h2>
-  <p class="coming-soon__text">
-    Muy pronto publicaremos aquí las jornadas, campañas y actividades de las fundaciones.
+<section class="events">
+  <h2 class="events__title">📅 Campañas y eventos</h2>
+
+  <nav class="events__tabs" aria-label="Tipo de eventos">
+    <a class="events__tab {% if not pasados %}events__tab--active{% endif %}" href="/eventos">Próximos</a>
+    <a class="events__tab {% if pasados %}events__tab--active{% endif %}" href="/eventos?pasados=1">Pasados</a>
+  </nav>
+
+  {% if eventos %}
+  <div class="events__grid">
+    {% for e in eventos %}
+    <a class="events__link" href="/eventos/{{ e.id }}">
+      <article class="events__card">
+        <p class="events__date">
+          {{ e.fecha.strftime('%d/%m/%Y') }}{% if e.hora %} · {{ e.hora.strftime('%H:%M') }}{% endif %}
+        </p>
+        <h3 class="events__name">{{ e.titulo }}</h3>
+        <p class="events__meta">📍 {{ e.lugar }}</p>
+        <p class="events__foundation">{{ e.fundacion.nombre }}</p>
+        {% if e.estado == 'cancelado' %}
+          <span class="event-badge event-badge--cancelado">Cancelado</span>
+        {% endif %}
+      </article>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="events__empty">
+    {% if pasados %}Aún no hay eventos pasados.{% else %}No hay eventos próximos por ahora. ¡Vuelve pronto!{% endif %}
   </p>
-  <a class="coming-soon__button secondary" href="/" role="button">Volver al inicio</a>
-</article>
+  {% endif %}
+</section>
 {% endblock %}

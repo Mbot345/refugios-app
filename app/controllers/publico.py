@@ -11,6 +11,7 @@ from app.services import catalogo_service
 from app.core.config import settings
 from app.services import qr_service
 from app.services import evento_service
+from app.services import ficha_pdf_service
 # Páginas públicas: no exigen sesión, pero si la hay, el menú muestra al usuario
 router = APIRouter()
 
@@ -134,12 +135,12 @@ def qr_imagen(animal_id: int, descargar: bool = False, db: Session = Depends(get
 def qr_destino(
     token: str, request: Request, db: Session = Depends(get_db)
 ):
-    """Destino del QR: lleva a la ficha pública del animal."""
+    """Destino del QR: abre la ficha técnica en PDF del animal."""
     animal = catalogo_service.obtener_por_token(db, token)
     if animal is None:
         flash(request, "Ese código QR no corresponde a ningún animal publicado.", "error")
         return RedirectResponse("/animales", status_code=303)
-    return RedirectResponse(f"/animales/{animal.id}", status_code=303)
+    return RedirectResponse(f"/animales/{animal.id}/ficha.pdf", status_code=303)
 
 @router.get("/fotos/{foto_id}")
 def foto_imagen(foto_id: int, db: Session = Depends(get_db)):
@@ -150,4 +151,22 @@ def foto_imagen(foto_id: int, db: Session = Depends(get_db)):
         foto.datos,
         media_type="image/jpeg",
         headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+@router.get("/animales/{animal_id}/ficha.pdf")
+def ficha_pdf(animal_id: int, descargar: bool = False, db: Session = Depends(get_db)):
+    animal = catalogo_service.obtener_ficha_completa(db, animal_id)
+    if animal is None:
+        raise HTTPException(status_code=404)
+
+    enlace_qr = f"{settings.APP_URL.rstrip('/')}/qr/{animal.qr_token}"
+    pdf = ficha_pdf_service.generar(animal, enlace_qr)
+    disposicion = "attachment" if descargar else "inline"  # inline: se abre en el navegador o visor del celular
+    return Response(
+        pdf,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'{disposicion}; filename="ficha-animal-{animal.id}.pdf"',
+            "Cache-Control": "no-cache",
+        },
     )

@@ -69,8 +69,11 @@
       <summary class="secondary" role="button">QR</summary>
       <img class="animal-sheet__qr-image" src="/animales/{{ animal.id }}/qr.png"
            alt="Código QR de {{ animal.nombre }}" width="160" height="160">
+      <p class="animal-sheet__muted">Al escanearlo se abre la ficha técnica en PDF.</p>
       <a href="/animales/{{ animal.id }}/qr.png?descargar=1">Descargar QR</a>
     </details>
+    <a class="animal-sheet__pdf secondary" href="/animales/{{ animal.id }}/ficha.pdf"
+       target="_blank" rel="noopener" role="button">Ficha técnica (PDF)</a>
     {% if animal.estado == 'disponible' %}
       {% if not user or user.rol == 'adoptante' %}
         <a class="animal-sheet__button" href="/animales/{{ animal.id }}/solicitar" role="button">

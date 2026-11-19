@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Solicitud #{{ s.id }}{% endblock %}
 {% block content %}
+{% from "componentes/linea_tiempo.html" import mostrar_linea_tiempo %}
 <article class="review-detail">
   <header class="review-detail__header">
     <h2 class="review-detail__title">
@@ -55,17 +56,22 @@
   </section>
 
   <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Historial</h3>
-    <ul class="review-detail__history">
-      {% for h in s.historial %}
-      <li>
-        {{ h.fecha.strftime('%d/%m/%Y %H:%M') }} ·
-        {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} →
-        <strong>{{ h.estado_nuevo|capitalize }}</strong>
-        {% if h.observacion %} · {{ h.observacion }}{% endif %}
-      </li>
-      {% endfor %}
-    </ul>
+    <h3 class="review-detail__subtitle">Seguimiento</h3>
+    {{ mostrar_linea_tiempo(s) }}
+
+    <details class="review-detail__log">
+      <summary>Registro detallado</summary>
+      <ul class="review-detail__history">
+        {% for h in s.historial %}
+        <li>
+          {{ (h.fecha|hora_ec).strftime('%d/%m/%Y %H:%M') }} ·
+          {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} →
+          <strong>{{ h.estado_nuevo|capitalize }}</strong>
+          {% if h.observacion %} · {{ h.observacion }}{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
   </section>
 
   {% if not fundacion.activa %}

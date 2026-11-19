@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.core.constants import ROL_ETIQUETAS, ROLES_FUNDACION, ROLES_GLOBALES
 from app.core.flash import pop_flashes
+from app.core.fechas import a_hora_local
+from app.services import linea_tiempo
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,3 +29,5 @@ templates.env.globals["ROLES_GLOBALES"] = ROLES_GLOBALES
 templates.env.globals["ROLES_FUNDACION"] = ROLES_FUNDACION
 templates.env.filters["rol_nombre"] = lambda rol: ROL_ETIQUETAS.get(rol, rol)
 templates.env.filters["edad"] = formato_edad
+templates.env.globals["linea_tiempo"] = linea_tiempo.construir
+templates.env.filters["hora_ec"] = a_hora_local

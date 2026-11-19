@@ -7,7 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.controllers import admin, animales, auth, fundacion, home, publico, revision, solicitudes, eventos
+from app.controllers import admin, animales, auth, fundacion, home, publico, revision, solicitudes, eventos, estadisticas
 from app.core.config import EN_VERCEL, settings
 from app.core.database import get_db
 from app.core.deps import Forbidden, NotAuthenticated
@@ -47,6 +47,7 @@ app.include_router(solicitudes.router)
 app.include_router(revision.router)
 app.include_router(eventos.router)
 app.include_router(eventos.supervision)
+app.include_router(estadisticas.router)
 app.include_router(auth.router)
 app.include_router(animales.router)
 app.include_router(admin.router)

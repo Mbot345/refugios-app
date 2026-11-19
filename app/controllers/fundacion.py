@@ -8,16 +8,28 @@ from app.core.deps import get_admin_fundacion, get_miembro_fundacion
 from app.core.flash import flash
 from app.core.templates import templates
 from app.models.user import User
-from app.services import equipo_service, fundacion_service
+from app.services import equipo_service, estadisticas_service, fundacion_service
 
 # Cualquier rol de fundación entra; cada ruta restringe más cuando hace falta
 router = APIRouter(prefix="/fundacion", dependencies=[Depends(get_miembro_fundacion)])
 
 
 @router.get("")
-def panel(request: Request, user: User = Depends(get_miembro_fundacion)):
+def panel(
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_miembro_fundacion),
+):
+    # Solo el administrador de fundación ve el resumen de su fundación
+    stats = (
+        estadisticas_service.de_fundacion(db, user.fundacion_id)
+        if user.rol == "admin_fundacion"
+        else None
+    )
     return templates.TemplateResponse(
-        request, "fundacion/panel.html", {"user": user, "fundacion": user.fundacion}
+        request,
+        "fundacion/panel.html",
+        {"user": user, "fundacion": user.fundacion, "stats": stats},
     )
 
 

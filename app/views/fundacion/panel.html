@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Mi fundación{% endblock %}
 {% block content %}
+{% from "componentes/estadisticas.html" import mostrar_estadisticas %}
 <section class="foundation-panel">
   <h2 class="foundation-panel__title">{{ fundacion.nombre }}</h2>
   <p class="foundation-panel__role">
@@ -47,5 +48,9 @@
     </article>
     {% endif %}
   </div>
+  {% if stats %}
+  <h3 class="foundation-panel__subtitle">Resumen de mi fundación</h3>
+  {{ mostrar_estadisticas(stats, true) }}
+  {% endif %}
 </section>
 {% endblock %}

@@ -1,7 +1,7 @@
 from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session, contains_eager, joinedload, selectinload
 
-from app.models.animal import Animal
+from app.models.animal import Animal, FotoAnimal
 from app.models.fundacion import Fundacion
 from app.models.ubicacion import Ciudad
 
@@ -103,5 +103,19 @@ def obtener_por_token(db: Session, token: str) -> Animal | None:
         select(Animal)
         .join(Animal.fundacion)
         .where(Animal.qr_token == token, Fundacion.activa.is_(True))
+    )
+    return db.scalar(consulta)
+
+def obtener_ficha_completa(db: Session, animal_id: int) -> Animal | None:
+    """Animal de una fundación activa con todo lo que lleva el PDF, incluidos los datos de las fotos."""
+    consulta = (
+        select(Animal)
+        .join(Animal.fundacion)
+        .options(
+            contains_eager(Animal.fundacion).joinedload(Fundacion.ciudad).joinedload(Ciudad.provincia),
+            selectinload(Animal.fotos).undefer(FotoAnimal.datos),
+            selectinload(Animal.registros_sanitarios),
+        )
+        .where(Animal.id == animal_id, Fundacion.activa.is_(True))
     )
     return db.scalar(consulta)

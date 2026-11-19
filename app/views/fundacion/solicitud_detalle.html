@@ -58,7 +58,12 @@
   <section class="review-detail__section">
     <h3 class="review-detail__subtitle">Seguimiento</h3>
     {{ mostrar_linea_tiempo(s) }}
-
+    {% if s.estado in ['aprobada', 'finalizada'] %}
+    <p>
+      <a class="secondary" href="/fundacion/solicitudes/{{ s.id }}/aprobacion.pdf"
+         target="_blank" rel="noopener" role="button">Hoja de aprobación (PDF)</a>
+    </p>
+    {% endif %}
     <details class="review-detail__log">
       <summary>Registro detallado</summary>
       <ul class="review-detail__history">

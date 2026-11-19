@@ -35,10 +35,16 @@
 
     {{ mostrar_linea_tiempo(s) }}
 
-    <form class="my-requests__actions" method="post" action="/solicitudes/{{ s.id }}/cancelar"
-          onsubmit="return confirm('¿Seguro que quieres cancelar esta solicitud?');">
-      <button class="secondary my-requests__cancel" type="submit">Cancelar solicitud</button>
-    </form>
+    <div class="my-requests__actions">
+      {% if s.estado == 'aprobada' %}
+      <a class="my-requests__pdf" href="/solicitudes/{{ s.id }}/aprobacion.pdf"
+         target="_blank" rel="noopener" role="button">Descargar hoja de aprobación</a>
+      {% endif %}
+      <form method="post" action="/solicitudes/{{ s.id }}/cancelar"
+            onsubmit="return confirm('¿Seguro que quieres cancelar esta solicitud?');">
+        <button class="secondary my-requests__cancel" type="submit">Cancelar solicitud</button>
+      </form>
+    </div>
   </article>
   {% endfor %}
 

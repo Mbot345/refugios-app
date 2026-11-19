@@ -303,3 +303,8 @@
 .my-requests__past-foundation { flex: 2 1 200px; color: #6b7280; }
 .my-requests__past-date { flex: 1 1 100px; color: #6b7280; }
 .my-requests__past-body { padding: 0 0 1rem; }
+
+/* ---------- Ficha técnica en PDF ---------- */
+.animal-sheet__pdf { width: auto; margin: 0 0 1rem 0.5rem; }
+.animal-form__qr-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.animal-form__qr-actions a { margin: 0; width: auto; }

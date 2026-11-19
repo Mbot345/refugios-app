@@ -165,9 +165,12 @@
            alt="Código QR de {{ animal.nombre }}" width="160" height="160">
       <div>
         <p class="animal-form__muted">
-          Al escanearlo se abre la ficha pública del animal. Puedes imprimirlo para el refugio o el collar.
+          Al escanearlo se abre la ficha técnica del animal en PDF. Puedes imprimirlo para el refugio o el collar.
         </p>
-        <a class="secondary" href="/animales/{{ animal.id }}/qr.png?descargar=1" role="button">Descargar QR</a>
+        <div class="animal-form__qr-actions">
+          <a class="secondary" href="/animales/{{ animal.id }}/qr.png?descargar=1" role="button">Descargar QR</a>
+          <a class="secondary" href="/animales/{{ animal.id }}/ficha.pdf" target="_blank" rel="noopener" role="button">Ver ficha técnica</a>
+        </div>
       </div>
     </div>
   </section>

@@ -2,7 +2,7 @@
 {% block title %}Campañas y eventos{% endblock %}
 {% block content %}
 <section class="events">
-  <h2 class="events__title">📅 Campañas y eventos</h2>
+  <h2 class="events__title">Campañas y eventos</h2>
 
   <nav class="events__tabs" aria-label="Tipo de eventos">
     <a class="events__tab {% if not pasados %}events__tab--active{% endif %}" href="/eventos">Próximos</a>
@@ -18,7 +18,7 @@
           {{ e.fecha.strftime('%d/%m/%Y') }}{% if e.hora %} · {{ e.hora.strftime('%H:%M') }}{% endif %}
         </p>
         <h3 class="events__name">{{ e.titulo }}</h3>
-        <p class="events__meta">📍 {{ e.lugar }}</p>
+        <p class="events__meta">{{ icono('ubicacion') }} {{ e.lugar }}</p>
         <p class="events__foundation">{{ e.fundacion.nombre }}</p>
         {% if e.estado == 'cancelado' %}
           <span class="event-badge event-badge--cancelado">Cancelado</span>

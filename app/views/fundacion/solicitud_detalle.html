@@ -70,7 +70,7 @@
         {% for h in s.historial %}
         <li>
           {{ (h.fecha|hora_ec).strftime('%d/%m/%Y %H:%M') }} ·
-          {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} →
+          {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} {{ icono('flecha_derecha') }}
           <strong>{{ h.estado_nuevo|capitalize }}</strong>
           {% if h.observacion %} · {{ h.observacion }}{% endif %}
         </li>

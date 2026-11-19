@@ -14,9 +14,9 @@
   </header>
 
   <p class="event-detail__data">
-    📅 {{ evento.fecha.strftime('%d/%m/%Y') }}{% if evento.hora %} · {{ evento.hora.strftime('%H:%M') }}{% endif %}<br>
-    📍 {{ evento.lugar }}<br>
-    🏠 Organiza: <strong>{{ evento.fundacion.nombre }}</strong>
+    {{ icono('calendario') }} {{ evento.fecha.strftime('%d/%m/%Y') }}{% if evento.hora %} · {{ evento.hora.strftime('%H:%M') }}{% endif %}<br>
+    {{ icono('ubicacion') }} {{ evento.lugar }}<br>
+    {{ icono('fundacion') }} Organiza: <strong>{{ evento.fundacion.nombre }}</strong>
   </p>
 
   {% if evento.estado == 'cancelado' %}

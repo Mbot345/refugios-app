@@ -2,7 +2,7 @@
 <ol class="timeline">
   {% for paso in linea_tiempo(solicitud) %}
   <li class="timeline__step timeline__step--{{ paso.situacion }}"{% if paso.situacion == 'actual' %} aria-current="step"{% endif %}>
-    <span class="timeline__marker" aria-hidden="true">{% if paso.situacion == 'hecho' %}✓{% elif paso.situacion in ['fallido', 'cancelado'] %}✕{% else %}{{ loop.index }}{% endif %}</span>
+    <span class="timeline__marker" aria-hidden="true">{% if paso.situacion == 'hecho' %}{{ icono('check') }}{% elif paso.situacion in ['fallido', 'cancelado'] %}{{ icono('cerrar') }}{% else %}{{ loop.index }}{% endif %}</span>
     <div class="timeline__body">
       <strong class="timeline__title">{{ paso.titulo }}</strong>
       {% if paso.fecha %}<span class="timeline__date">{{ paso.fecha.strftime('%d/%m/%Y %H:%M') }}</span>{% endif %}

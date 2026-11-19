@@ -53,7 +53,7 @@
           {% if foto %}
             <img class="catalog__image" src="/fotos/{{ foto.id }}" alt="Foto de {{ a.nombre }}" loading="lazy">
           {% else %}
-            <span aria-hidden="true">🐾</span>
+            {{ icono('huella', 'catalog__placeholder') }}
           {% endif %}
         </div>
         <h3 class="catalog__name">{{ a.nombre }}</h3>

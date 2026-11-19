@@ -28,6 +28,7 @@
                     <td>{{ f.email_contacto }}<br>{{ f.telefono or '' }}</td>
                     <td>{{ 'Activa' if f.activa else 'Suspendida' }}</td>
                     <td class="admin-list__actions">
+                        <a class="admin-list__action" href="/admin/fundaciones/{{ f.id }}/estadisticas">Estadísticas</a>
                         {% if user.rol == 'admin' %}
                         <a class="admin-list__action" href="/admin/fundaciones/{{ f.id }}/editar">Editar</a>
                         {% endif %}

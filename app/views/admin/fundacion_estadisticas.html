@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Estadísticas de {{ fundacion.nombre }}{% endblock %}
+{% block content %}
+{% from "componentes/estadisticas.html" import mostrar_estadisticas %}
+<article class="admin-list">
+  <header class="admin-list__header">
+    <h2 class="admin-list__title">Estadísticas: {{ fundacion.nombre }}</h2>
+    <a class="admin-list__back secondary" href="/admin/fundaciones" role="button">Volver a fundaciones</a>
+  </header>
+  <p class="admin-list__empty">
+    Fundación {{ 'activa' if fundacion.activa else 'suspendida' }} · Consulta de solo lectura
+  </p>
+
+  {{ mostrar_estadisticas(stats) }}
+</article>
+{% endblock %}

@@ -14,7 +14,7 @@
         <img id="foto-principal" class="animal-sheet__image"
              src="/fotos/{{ principal.id }}" alt="Foto de {{ animal.nombre }}">
       {% else %}
-        <span aria-hidden="true">🐾</span>
+        {{ icono('huella', 'animal-sheet__placeholder') }}
       {% endif %}
     </div>
 

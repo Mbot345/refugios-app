@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Refugios App{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
@@ -12,84 +15,145 @@
   {% set es_fundacion = user and user.rol in ROLES_FUNDACION %}
   {% set es_personal = es_global or es_fundacion %}
 
-  <header class="container header">
-    <nav class="header__nav">
-      <ul class="header__list">
-        <li class="header__item">
-          <strong>
-            <a class="header__brand"
-               href="{% if es_global %}/admin{% elif es_fundacion %}/fundacion{% else %}/{% endif %}">
-              🐾 Refugios App
-            </a>
-          </strong>
-        </li>
+  {# Enlace del menú: se marca como activo si coincide con la página actual.
+     exacto=True solo marca la ruta exacta (para "/admin" y "/fundacion"). #}
+  {% macro enlace(href, texto, exacto=False) %}
+    {% set ruta = request.url.path %}
+    {% set activo = ruta == href or (not exacto and ruta.startswith(href ~ '/')) %}
+    <li class="header__item">
+      <a class="header__link{% if activo %} header__link--active{% endif %}" href="{{ href }}"
+         {% if activo %}aria-current="page"{% endif %}>{{ texto }}</a>
+    </li>
+  {% endmacro %}
 
-        {% if not es_personal %}
-          <li class="header__item"><a class="header__link" href="/animales">Animales</a></li>
-          <li class="header__item"><a class="header__link" href="/fundaciones">Fundaciones</a></li>
-          <li class="header__item"><a class="header__link" href="/eventos">Campañas</a></li>
-          <li class="header__item"><a class="header__link" href="/quienes-somos">Quiénes somos</a></li>
-          {% if user %}
-            <li class="header__item"><a class="header__link" href="/mis-solicitudes">Mis solicitudes</a></li>
-          {% endif %}
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
-        {% elif user.rol == 'admin' %}
-          <li class="header__item"><a class="header__link" href="/admin">Panel</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/usuarios">Usuarios</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/fundaciones">Fundaciones</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/animales">Animales</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/eventos">Eventos</a></li>
+  <header class="header">
+    <div class="container header__bar">
+      <a class="header__brand"
+         href="{% if es_global %}/admin{% elif es_fundacion %}/fundacion{% else %}/{% endif %}">
+        <span class="header__logo">{{ icono('huella') }}</span>
+        Refugios App
+      </a>
 
-        {% elif user.rol == 'moderador' %}
-          <li class="header__item"><a class="header__link" href="/admin">Moderación</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/fundaciones">Fundaciones</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/animales">Animales</a></li>
-          <li class="header__item"><a class="header__link" href="/admin/eventos">Eventos</a></li>
+      <nav class="header__nav" aria-label="Menú principal">
+        <ul class="header__list">
+          {% if not es_personal %}
+            {{ enlace('/animales', 'Animales') }}
+            {{ enlace('/fundaciones', 'Fundaciones') }}
+            {{ enlace('/eventos', 'Campañas') }}
+            {{ enlace('/quienes-somos', 'Quiénes somos') }}
+            {% if user %}
+              {{ enlace('/mis-solicitudes', 'Mis solicitudes') }}
+            {% endif %}
 
-        {% else %}
-          <li class="header__item"><a class="header__link" href="/fundacion">Mi fundación</a></li>
-          {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
-            <li class="header__item"><a class="header__link" href="/fundacion/animales">Animales</a></li>
-          {% endif %}
-          {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
-            <li class="header__item"><a class="header__link" href="/fundacion/solicitudes">Solicitudes</a></li>
-          {% endif %}
-          {% if user.rol in ['admin_fundacion', 'encargado_eventos'] %}
-            <li class="header__item"><a class="header__link" href="/fundacion/eventos">Eventos</a></li>
-          {% endif %}
-          {% if user.rol == 'admin_fundacion' %}
-            <li class="header__item"><a class="header__link" href="/fundacion/equipo">Equipo</a></li>
-            <li class="header__item"><a class="header__link" href="/fundacion/perfil">Perfil</a></li>
-          {% endif %}
-        {% endif %}
-      </ul>
+          {% elif user.rol == 'admin' %}
+            {{ enlace('/admin', 'Panel', exacto=True) }}
+            {{ enlace('/admin/usuarios', 'Usuarios') }}
+            {{ enlace('/admin/fundaciones', 'Fundaciones') }}
+            {{ enlace('/admin/animales', 'Animales') }}
+            {{ enlace('/admin/eventos', 'Eventos') }}
 
-      <ul class="header__list">
+          {% elif user.rol == 'moderador' %}
+            {{ enlace('/admin', 'Moderación', exacto=True) }}
+            {{ enlace('/admin/fundaciones', 'Fundaciones') }}
+            {{ enlace('/admin/animales', 'Animales') }}
+            {{ enlace('/admin/eventos', 'Eventos') }}
+
+          {% else %}
+            {{ enlace('/fundacion', 'Mi fundación', exacto=True) }}
+            {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
+              {{ enlace('/fundacion/animales', 'Animales') }}
+            {% endif %}
+            {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
+              {{ enlace('/fundacion/solicitudes', 'Solicitudes') }}
+            {% endif %}
+            {% if user.rol in ['admin_fundacion', 'encargado_eventos'] %}
+              {{ enlace('/fundacion/eventos', 'Eventos') }}
+            {% endif %}
+            {% if user.rol == 'admin_fundacion' %}
+              {{ enlace('/fundacion/equipo', 'Equipo') }}
+              {{ enlace('/fundacion/perfil', 'Perfil') }}
+            {% endif %}
+          {% endif %}
+        </ul>
+      </nav>
+
+      <div class="header__account">
         {% if user %}
-          <li class="header__item header__user">
-            Hola, {{ user.username }}
-            <span class="header__role">{{ user.rol|rol_nombre }}</span>
-          </li>
-          <li class="header__item">
-            <form class="header__form" method="post" action="/logout">
-              <button class="secondary header__logout" type="submit">Cerrar sesión</button>
-            </form>
-          </li>
+          <div class="header__user">
+            <span class="header__avatar" aria-hidden="true">{{ user.username[:1]|upper }}</span>
+            <span class="header__who">
+              <span class="header__name">{{ user.username }}</span>
+              <span class="header__role">{{ user.rol|rol_nombre }}</span>
+            </span>
+          </div>
+          <form class="header__form" method="post" action="/logout">
+            <button class="header__logout" type="submit">
+              {{ icono('salir') }}<span>Cerrar sesión</span>
+            </button>
+          </form>
         {% else %}
-          <li class="header__item"><a class="header__link" href="/login">Iniciar sesión</a></li>
-          <li class="header__item"><a class="header__link" href="/registro">Registrarse</a></li>
+          <a class="header__login" href="/login">Iniciar sesión</a>
+          <a class="header__signup" href="/registro" role="button">Crear cuenta</a>
         {% endif %}
-      </ul>
-    </nav>
+      </div>
+    </div>
   </header>
 
-  <main class="container main-content">
+  <main class="container main-content" id="contenido">
     {% for m in get_flashed_messages(request) %}
-      <article class="flash flash--{{ m.category }}">{{ m.message }}</article>
+      {% set icono_flash = {'success': 'exito', 'error': 'error', 'warning': 'alerta'}.get(m.category, 'info') %}
+      <div class="flash flash--{{ m.category }}" role="status">
+        {{ icono(icono_flash, 'flash__icon') }}
+        <p class="flash__text">{{ m.message }}</p>
+      </div>
     {% endfor %}
 
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="footer">
+    <div class="container">
+      {% if not es_personal %}
+      <div class="footer__grid">
+        <div class="footer__about">
+          <p class="footer__brand">
+            <span class="header__logo">{{ icono('huella') }}</span>
+            Refugios App
+          </p>
+          <p class="footer__text">
+            Conectamos a fundaciones de Ecuador con personas que quieren adoptar
+            de forma responsable.
+          </p>
+        </div>
+        <nav class="footer__column" aria-label="Explorar">
+          <p class="footer__title">Explorar</p>
+          <ul class="footer__list">
+            <li><a href="/animales">Animales en adopción</a></li>
+            <li><a href="/fundaciones">Fundaciones</a></li>
+            <li><a href="/eventos">Campañas y eventos</a></li>
+            <li><a href="/quienes-somos">Quiénes somos</a></li>
+          </ul>
+        </nav>
+        <nav class="footer__column" aria-label="Tu cuenta">
+          <p class="footer__title">Tu cuenta</p>
+          <ul class="footer__list">
+            {% if user %}
+              <li><a href="/mis-solicitudes">Mis solicitudes</a></li>
+            {% else %}
+              <li><a href="/login">Iniciar sesión</a></li>
+              <li><a href="/registro">Crear cuenta</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+      <p class="footer__legal">
+        © 2026 Refugios App. Proyecto académico de Ingeniería Web, UDLA.
+      </p>
+    </div>
+  </footer>
 
   {% block scripts %}{% endblock %}
 </body>

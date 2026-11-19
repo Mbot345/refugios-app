@@ -1,44 +1,70 @@
 {% extends "base.html" %}
 {% block title %}Mis solicitudes{% endblock %}
 {% block content %}
-<article class="my-requests">
+{% from "componentes/linea_tiempo.html" import mostrar_linea_tiempo %}
+{% set activas = solicitudes|selectattr('estado', 'in', ['pendiente', 'aprobada'])|list %}
+{% set anteriores = solicitudes|rejectattr('estado', 'in', ['pendiente', 'aprobada'])|list %}
+{% set etiquetas = {'pendiente': 'En revisión'} %}
+<section class="my-requests">
   <h2 class="my-requests__title">Mis solicitudes de preadopción</h2>
 
   {% if solicitudes %}
-  <div class="overflow-auto">
-    <table class="my-requests__table">
-      <thead>
-        <tr><th>Animal</th><th>Fundación</th><th>Fecha</th><th>Estado</th><th>Observación</th><th></th></tr>
-      </thead>
-      <tbody>
-        {% for s in solicitudes %}
-        <tr>
-          <td>{{ s.animal.nombre }}</td>
-          <td>{{ s.animal.fundacion.nombre }}</td>
-          <td>{{ s.fecha_solicitud.strftime('%d/%m/%Y') }}</td>
-          <td>
-            <span class="my-requests__badge my-requests__badge--{{ s.estado }}">
-              {{ s.estado|capitalize }}
-            </span>
-          </td>
-          <td>{{ s.observacion_revision or '—' }}</td>
-          <td>
-            {% if s.estado in ['pendiente', 'aprobada'] %}
-            <form method="post" action="/solicitudes/{{ s.id }}/cancelar"
-                  onsubmit="return confirm('¿Seguro que quieres cancelar esta solicitud?');">
-              <button class="secondary my-requests__cancel" type="submit">Cancelar</button>
-            </form>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <p class="my-requests__summary">
+    {{ solicitudes|length }} {{ 'solicitud' if solicitudes|length == 1 else 'solicitudes' }}
+    · {{ activas|length }} en progreso
+  </p>
+
+  {% for s in activas %}
+  <article class="my-requests__card">
+    <header class="my-requests__header">
+      <div class="my-requests__identity">
+        <span class="my-requests__avatar" aria-hidden="true">{{ s.animal.nombre[0]|upper }}</span>
+        <div>
+          <h3 class="my-requests__animal">
+            <a href="/animales/{{ s.animal.id }}">{{ s.animal.nombre }}</a>
+          </h3>
+          <p class="my-requests__meta">
+            {{ s.animal.fundacion.nombre }} · enviada el {{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}
+          </p>
+        </div>
+      </div>
+      <span class="my-requests__badge my-requests__badge--{{ s.estado }}">
+        {{ etiquetas.get(s.estado, s.estado|capitalize) }}
+      </span>
+    </header>
+
+    {{ mostrar_linea_tiempo(s) }}
+
+    <form class="my-requests__actions" method="post" action="/solicitudes/{{ s.id }}/cancelar"
+          onsubmit="return confirm('¿Seguro que quieres cancelar esta solicitud?');">
+      <button class="secondary my-requests__cancel" type="submit">Cancelar solicitud</button>
+    </form>
+  </article>
+  {% endfor %}
+
+  {% if anteriores %}
+  <h3 class="my-requests__subtitle">Anteriores</h3>
+  <div class="my-requests__history">
+    {% for s in anteriores %}
+    <details class="my-requests__past">
+      <summary class="my-requests__past-summary">
+        <span class="my-requests__past-animal">{{ s.animal.nombre }}</span>
+        <span class="my-requests__past-foundation">{{ s.animal.fundacion.nombre }}</span>
+        <span class="my-requests__past-date">{{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}</span>
+        <span class="my-requests__badge my-requests__badge--{{ s.estado }}">{{ s.estado|capitalize }}</span>
+      </summary>
+      <div class="my-requests__past-body">
+        {{ mostrar_linea_tiempo(s) }}
+      </div>
+    </details>
+    {% endfor %}
   </div>
+  {% endif %}
+
   {% else %}
   <p class="my-requests__empty">
     Aún no has enviado solicitudes. <a href="/animales">Explora los animales disponibles</a>.
   </p>
   {% endif %}
-</article>
+</section>
 {% endblock %}

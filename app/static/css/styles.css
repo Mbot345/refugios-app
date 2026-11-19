@@ -256,3 +256,50 @@
 .event-detail__cancelled { color: #d33c3c; font-weight: 600; }
 .event-detail__description { white-space: pre-line; }
 .event-detail__contact { color: #6b7280; font-size: 0.9rem; }
+
+/* ---------- Mis solicitudes: tarjetas ---------- */
+.my-requests__card { margin-bottom: 1.5rem; }
+.my-requests__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0; }
+.my-requests__animal { margin-bottom: 0.25rem; }
+.my-requests__meta { margin: 0; color: #6b7280; font-size: 0.9rem; }
+.my-requests__actions { margin: 1rem 0 0; }
+.my-requests__cancel { width: auto; margin: 0; }
+.review-detail__log { margin-top: 1rem; }
+
+/* ---------- Línea de tiempo ---------- */
+.timeline { list-style: none; margin: 1.5rem 0 0.5rem; padding: 0; display: flex; }
+.timeline__step { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 0.5rem; margin: 0; }
+.timeline__step::before { content: ""; position: absolute; top: 15px; left: -50%; width: 100%; height: 3px; background: #d1d5db; }
+.timeline__step:first-child::before { display: none; }
+.timeline__marker { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 700; color: #fff; background: #9ca3af; }
+.timeline__body { display: flex; flex-direction: column; gap: 0.15rem; margin-top: 0.5rem; font-size: 0.85rem; }
+.timeline__date, .timeline__detail { color: #6b7280; font-size: 0.8rem; }
+
+.timeline__step--hecho .timeline__marker { background: #2e9e5b; }
+.timeline__step--hecho::before, .timeline__step--actual::before { background: #2e9e5b; }
+.timeline__step--actual .timeline__marker { background: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25); }
+.timeline__step--actual .timeline__title { color: #3b82f6; }
+.timeline__step--fallido .timeline__marker, .timeline__step--fallido::before { background: #d33c3c; }
+.timeline__step--fallido .timeline__title { color: #d33c3c; }
+.timeline__step--cancelado .timeline__marker, .timeline__step--cancelado::before { background: #6b7280; }
+
+@media (max-width: 768px) {
+  .timeline { flex-direction: column; }
+  .timeline__step { flex-direction: row; align-items: flex-start; gap: 0.75rem; padding: 0 0 1.25rem; text-align: left; }
+  .timeline__step::before { display: none; }
+  .timeline__step:not(:last-child)::after { content: ""; position: absolute; left: 15px; top: 32px; bottom: 0; width: 3px; background: #d1d5db; }
+  .timeline__step--hecho:not(:last-child)::after { background: #2e9e5b; }
+  .timeline__body { margin-top: 0; }
+}
+
+/* ---------- Mis solicitudes: en progreso y anteriores ---------- */
+.my-requests__summary { margin-bottom: 1.5rem; color: #6b7280; }
+.my-requests__identity { display: flex; align-items: center; gap: 0.75rem; }
+.my-requests__avatar { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: rgba(59, 130, 246, 0.2); color: #3b82f6; font-weight: 700; }
+.my-requests__subtitle { margin: 2rem 0 0.5rem; font-size: 0.95rem; color: #6b7280; }
+.my-requests__past { margin: 0; border-bottom: 1px solid rgba(128, 128, 128, 0.3); }
+.my-requests__past-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; padding: 0.7rem 0; }
+.my-requests__past-animal { flex: 1 1 120px; font-weight: 600; }
+.my-requests__past-foundation { flex: 2 1 200px; color: #6b7280; }
+.my-requests__past-date { flex: 1 1 100px; color: #6b7280; }
+.my-requests__past-body { padding: 0 0 1rem; }

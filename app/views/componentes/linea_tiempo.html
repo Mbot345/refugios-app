@@ -1,0 +1,14 @@
+{% macro mostrar_linea_tiempo(solicitud) %}
+<ol class="timeline">
+  {% for paso in linea_tiempo(solicitud) %}
+  <li class="timeline__step timeline__step--{{ paso.situacion }}"{% if paso.situacion == 'actual' %} aria-current="step"{% endif %}>
+    <span class="timeline__marker" aria-hidden="true">{% if paso.situacion == 'hecho' %}✓{% elif paso.situacion in ['fallido', 'cancelado'] %}✕{% else %}{{ loop.index }}{% endif %}</span>
+    <div class="timeline__body">
+      <strong class="timeline__title">{{ paso.titulo }}</strong>
+      {% if paso.fecha %}<span class="timeline__date">{{ paso.fecha.strftime('%d/%m/%Y %H:%M') }}</span>{% endif %}
+      {% if paso.detalle %}<span class="timeline__detail">{{ paso.detalle }}</span>{% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ol>
+{% endmacro %}

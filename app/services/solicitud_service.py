@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, contains_eager, joinedload
+from sqlalchemy.orm import Session, contains_eager, joinedload, selectinload
 
 from app.core.constants import TENENCIAS_VIVIENDA, TIPOS_VIVIENDA
 from app.core.validators import TELEFONO_CONVENCIONAL, TELEFONO_MOVIL, cedula_valida
@@ -40,7 +40,10 @@ def tiene_pendiente(db: Session, animal_id: int, usuario_id: int) -> bool:
 def listar_de_usuario(db: Session, user: User) -> list[SolicitudPreadopcion]:
     consulta = (
         select(SolicitudPreadopcion)
-        .options(joinedload(SolicitudPreadopcion.animal).joinedload(Animal.fundacion))
+        .options(
+            joinedload(SolicitudPreadopcion.animal).joinedload(Animal.fundacion),
+            selectinload(SolicitudPreadopcion.historial),
+        )
         .where(SolicitudPreadopcion.usuario_id == user.id)
         .order_by(SolicitudPreadopcion.fecha_solicitud.desc())
     )

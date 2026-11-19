@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from app.services import correo_service
@@ -11,7 +11,7 @@ from app.models.animal import Animal
 from app.models.user import User
 from app.services import solicitud_service as service
 from app.services.revision_service import ReglaNegocio, cancelar_propia
-
+from app.services import aprobacion_pdf_service
 # Solo el rol adoptante. Sin sesión redirige a /login; con otro rol, muestra el aviso de permiso.
 router = APIRouter(dependencies=[Depends(get_adoptante)])
 
@@ -146,3 +146,24 @@ def cancelar(
     else:
         flash(request, "Solicitud cancelada.", "success")
     return RedirectResponse("/mis-solicitudes", status_code=303)
+
+@router.get("/solicitudes/{solicitud_id}/aprobacion.pdf")
+def hoja_aprobacion(
+    solicitud_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_adoptante),
+):
+    solicitud = service.obtener_con_hoja(db, user, solicitud_id)
+    if solicitud is None:
+        flash(request, "La hoja de aprobación solo está disponible para solicitudes aprobadas.", "error")
+        return RedirectResponse("/mis-solicitudes", status_code=303)
+
+    return Response(
+        aprobacion_pdf_service.generar(solicitud),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="hoja-aprobacion-{solicitud.id}.pdf"',
+            "Cache-Control": "private, no-store",  # incluye la cédula: no se guarda en cachés
+        },
+    )

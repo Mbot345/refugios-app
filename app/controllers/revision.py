@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from app.services import correo_service
@@ -10,7 +10,7 @@ from app.core.templates import templates
 from app.models.user import User
 from app.services import revision_service as service
 from app.services.revision_service import ReglaNegocio
-
+from app.services import aprobacion_pdf_service
 # Solo admin de fundación y encargado de adopciones; cada consulta se limita a su fundación
 router = APIRouter(prefix="/fundacion/solicitudes", dependencies=[Depends(get_adopciones)])
 
@@ -51,6 +51,26 @@ def detalle(
         {"user": user, "s": solicitud, "fundacion": user.fundacion},
     )
 
+@router.get("/{solicitud_id}/aprobacion.pdf")
+def hoja_aprobacion(
+    solicitud_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_adopciones),
+):
+    solicitud = service.obtener_de_fundacion(db, solicitud_id, user.fundacion_id)
+    if solicitud is None or solicitud.estado not in ("aprobada", "finalizada"):
+        flash(request, "La hoja de aprobación solo está disponible para solicitudes aprobadas.", "error")
+        return RedirectResponse("/fundacion/solicitudes", status_code=303)
+
+    return Response(
+        aprobacion_pdf_service.generar(solicitud),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="hoja-aprobacion-{solicitud.id}.pdf"',
+            "Cache-Control": "private, no-store",
+        },
+    )
 
 def _ejecutar(request, db, user, solicitud_id, accion, observacion, mensaje, tipo_correo):
     """Corre una acción del servicio, avisa por correo y vuelve al detalle."""

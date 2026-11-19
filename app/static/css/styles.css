@@ -308,3 +308,8 @@
 .animal-sheet__pdf { width: auto; margin: 0 0 1rem 0.5rem; }
 .animal-form__qr-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .animal-form__qr-actions a { margin: 0; width: auto; }
+
+/* ---------- Hoja de aprobación ---------- */
+.my-requests__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.my-requests__actions form { margin: 0; }
+.my-requests__pdf { width: auto; margin: 0; }

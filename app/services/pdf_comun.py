@@ -52,3 +52,31 @@ def tabla_datos(filas: list[tuple[str, str]], ancho_etiqueta=3.6 * cm, ancho_val
         ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
     ]))
     return tabla
+
+def marco_pagina(titulo_derecha: str, margen=1.8 * cm):
+    """Devuelve la función que dibuja la franja superior y el pie de cada página."""
+    from datetime import datetime
+
+    from reportlab.lib.pagesizes import A4
+
+    from app.core.fechas import ECUADOR
+
+    def dibujar(canvas, doc):
+        ancho, alto = A4
+        canvas.saveState()
+        canvas.setFillColor(VERDE)
+        canvas.rect(0, alto - 1.5 * cm, ancho, 1.5 * cm, stroke=0, fill=1)
+        canvas.setFillColorRGB(1, 1, 1)
+        canvas.setFont("Helvetica-Bold", 13)
+        canvas.drawString(margen, alto - 0.95 * cm, "Refugios App")
+        canvas.setFont("Helvetica", 11)
+        canvas.drawRightString(ancho - margen, alto - 0.95 * cm, titulo_derecha)
+
+        canvas.setFillColor(GRIS)
+        canvas.setFont("Helvetica", 8)
+        generado = datetime.now(ECUADOR).strftime("%d/%m/%Y %H:%M")
+        canvas.drawString(margen, 1.1 * cm, f"Documento generado el {generado} (hora de Ecuador)")
+        canvas.drawRightString(ancho - margen, 1.1 * cm, f"Página {doc.page}")
+        canvas.restoreState()
+
+    return dibujar

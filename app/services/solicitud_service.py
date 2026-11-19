@@ -206,3 +206,20 @@ def crear(
         return None
     db.refresh(solicitud)
     return solicitud
+
+def obtener_con_hoja(db: Session, user: User, solicitud_id: int) -> SolicitudPreadopcion | None:
+    """Solicitud propia aprobada o finalizada, con lo necesario para generar su hoja de aprobación."""
+    consulta = (
+        select(SolicitudPreadopcion)
+        .options(
+            joinedload(SolicitudPreadopcion.animal).joinedload(Animal.fundacion),
+            joinedload(SolicitudPreadopcion.solicitante),
+            selectinload(SolicitudPreadopcion.historial),
+        )
+        .where(
+            SolicitudPreadopcion.id == solicitud_id,
+            SolicitudPreadopcion.usuario_id == user.id,
+            SolicitudPreadopcion.estado.in_(("aprobada", "finalizada")),
+        )
+    )
+    return db.scalar(consulta)

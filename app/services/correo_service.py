@@ -6,6 +6,7 @@ from email.message import EmailMessage
 
 from app.core.config import settings
 from app.core.templates import templates
+from app.services import aprobacion_pdf_service
 
 log = logging.getLogger("correos")
 
@@ -28,10 +29,19 @@ def _a_texto(html: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lineas)).strip()
 
 
-def enviar(destino: str, asunto: str, html: str) -> bool:
-    """Envía un correo. Devuelve False si falla, sin romper la acción que lo originó."""
+def enviar(
+    destino: str,
+    asunto: str,
+    html: str,
+    adjuntos: list[tuple[str, bytes]] | None = None,
+) -> bool:
+    """Envía un correo (con adjuntos PDF opcionales). Devuelve False si falla, sin romper la acción."""
+    adjuntos = adjuntos or []
+
     if not settings.SMTP_USER:
         print(f"[correo simulado] Para: {destino} | Asunto: {asunto}")
+        for nombre, contenido in adjuntos:
+            print(f"[adjunto] {nombre} ({len(contenido) // 1024} KB)")
         print(_a_texto(html))
         print("-" * 60)
         return True
@@ -43,6 +53,10 @@ def enviar(destino: str, asunto: str, html: str) -> bool:
         mensaje["To"] = destino
         mensaje.set_content(_a_texto(html))
         mensaje.add_alternative(html, subtype="html")
+        for nombre, contenido in adjuntos:
+            mensaje.add_attachment(
+                contenido, maintype="application", subtype="pdf", filename=nombre
+            )
 
         with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as servidor:
             servidor.starttls()
@@ -68,10 +82,20 @@ def notificar(tipo: str, resultado) -> int:
 
     fallidos = 0
     for tipo_correo, s in envios:
+        adjuntos = []
+        if tipo_correo == "aprobada":
+            try:
+                adjuntos.append(
+                    (f"hoja-aprobacion-{s.id}.pdf", aprobacion_pdf_service.generar(s))
+                )
+            except Exception:  # pylint: disable=broad-exception-caught
+                # Sin la hoja el correo se envía igual; el solicitante puede descargarla desde la app
+                log.exception("No se pudo generar la hoja de aprobación de la solicitud %s", s.id)
+
         html = templates.env.get_template(PLANTILLAS[tipo_correo]).render(
             s=s, f=s.animal.fundacion, app_url=settings.APP_URL.rstrip("/")
         )
         asunto = ASUNTOS[tipo_correo].format(animal=s.animal.nombre)
-        if not enviar(s.solicitante.email, asunto, html):
+        if not enviar(s.solicitante.email, asunto, html, adjuntos):
             fallidos += 1
     return fallidos

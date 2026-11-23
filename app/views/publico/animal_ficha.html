@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ animal.nombre }}{% endblock %}
 {% block content %}
-<nav class="animal-sheet__breadcrumb" aria-label="Ruta">
-  <a href="/animales">Catálogo</a> / {{ animal.nombre }}
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/animales">{{ icono('flecha_izquierda') }} Volver al catálogo</a>
 </nav>
 
 <section class="animal-sheet">
@@ -30,71 +30,76 @@
 
   <div class="animal-sheet__info">
     <div class="animal-sheet__header">
-      <h2 class="animal-sheet__name">{{ animal.nombre }}</h2>
+      <h1 class="animal-sheet__name">{{ animal.nombre }}</h1>
       <span class="animal-sheet__status animal-sheet__status--{{ animal.estado }}">
         {{ animal.estado|replace('_', ' ')|capitalize }}
       </span>
     </div>
+    <p class="animal-sheet__foundation">{{ icono('fundacion') }} {{ animal.fundacion.nombre }}</p>
 
-    <p class="animal-sheet__data">
-      {{ animal.especie|capitalize }}
-      {% if animal.raza %} · {{ animal.raza }}{% endif %}
-      · {{ animal.sexo|capitalize }}
-      · {{ animal.tamano|capitalize }}
-      · {{ animal.edad_meses|edad }}
-      · {{ animal.fundacion.nombre }}
-    </p>
+    <dl class="facts">
+      <div class="facts__item"><dt>Especie</dt><dd>{{ animal.especie|capitalize }}</dd></div>
+      <div class="facts__item"><dt>Raza</dt><dd>{{ animal.raza or 'Sin raza definida' }}</dd></div>
+      <div class="facts__item"><dt>Sexo</dt><dd>{{ animal.sexo|capitalize }}</dd></div>
+      <div class="facts__item"><dt>Tamaño</dt><dd>{{ animal.tamano|capitalize }}</dd></div>
+      <div class="facts__item"><dt>Edad</dt><dd>{{ animal.edad_meses|edad }}</dd></div>
+      <div class="facts__item"><dt>Salud</dt><dd>{{ animal.estado_salud }}</dd></div>
+    </dl>
 
     {% if animal.descripcion %}
     <p class="animal-sheet__description">{{ animal.descripcion }}</p>
     {% endif %}
 
-    <div class="animal-sheet__health">
-      <strong>Información sanitaria</strong>
-      <p>Estado de salud: {{ animal.estado_salud }}</p>
-      {% if animal.registros_sanitarios %}
-      <ul>
-        {% for r in animal.registros_sanitarios|sort(attribute='fecha', reverse=true) %}
-        <li>
-          {{ r.fecha.strftime('%d/%m/%Y') }} ·
-          {{ r.tipo|replace('_', ' ')|capitalize }}: {{ r.descripcion }}
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p class="animal-sheet__muted">Aún no hay registros sanitarios.</p>
-      {% endif %}
-    </div>
-    <details class="animal-sheet__qr">
-      <summary class="secondary" role="button">QR</summary>
-      <img class="animal-sheet__qr-image" src="/animales/{{ animal.id }}/qr.png"
-           alt="Código QR de {{ animal.nombre }}" width="160" height="160">
-      <p class="animal-sheet__muted">Al escanearlo se abre la ficha técnica en PDF.</p>
-      <a href="/animales/{{ animal.id }}/qr.png?descargar=1">Descargar QR</a>
-    </details>
-    <a class="animal-sheet__pdf secondary" href="/animales/{{ animal.id }}/ficha.pdf"
-       target="_blank" rel="noopener" role="button">Ficha técnica (PDF)</a>
-    {% if animal.estado == 'disponible' %}
-      {% if not user or user.rol == 'adoptante' %}
-        <a class="animal-sheet__button" href="/animales/{{ animal.id }}/solicitar" role="button">
-          Solicitar preadopción
-        </a>
-        {% if not user %}
-        <p class="animal-sheet__muted">
-          Para solicitarla necesitas iniciar sesión o crear una cuenta.
-        </p>
+    <div class="animal-sheet__cta">
+      {% if animal.estado == 'disponible' %}
+        {% if not user or user.rol == 'adoptante' %}
+          <a class="animal-sheet__button" href="/animales/{{ animal.id }}/solicitar" role="button">
+            {{ icono('adopcion') }} Solicitar preadopción
+          </a>
+          {% if not user %}
+          <p class="animal-sheet__muted">Para enviarla necesitas iniciar sesión o crear una cuenta.</p>
+          {% endif %}
+        {% else %}
+          <p class="animal-sheet__muted">Solo los usuarios con rol adoptante pueden enviar solicitudes.</p>
         {% endif %}
       {% else %}
-        <p class="animal-sheet__muted">
-          Solo los usuarios con rol adoptante pueden enviar solicitudes.
-        </p>
+        <p class="animal-sheet__muted">Este animal no está disponible para solicitudes en este momento.</p>
       {% endif %}
-    {% else %}
-      <p class="animal-sheet__muted">
-        Este animal no está disponible para solicitudes en este momento.
-      </p>
-    {% endif %}
+
+      <div class="animal-sheet__extras">
+        <a class="animal-sheet__pdf secondary" href="/animales/{{ animal.id }}/ficha.pdf"
+           target="_blank" rel="noopener" role="button">{{ icono('pdf') }} Ficha técnica (PDF)</a>
+        <details class="animal-sheet__qr">
+          <summary class="secondary" role="button">{{ icono('qr') }} Código QR</summary>
+          <div class="animal-sheet__qr-box">
+            <img class="animal-sheet__qr-image" src="/animales/{{ animal.id }}/qr.png"
+                 alt="Código QR de {{ animal.nombre }}" width="150" height="150">
+            <div>
+              <p class="animal-sheet__muted">Al escanearlo se abre la ficha técnica en PDF.</p>
+              <a href="/animales/{{ animal.id }}/qr.png?descargar=1">{{ icono('descargar') }} Descargar QR</a>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
   </div>
+</section>
+
+<section class="health">
+  <h2 class="health__title">{{ icono('salud') }} Información sanitaria</h2>
+  {% if animal.registros_sanitarios %}
+  <ul class="health__list">
+    {% for r in animal.registros_sanitarios|sort(attribute='fecha', reverse=true) %}
+    <li class="health__item">
+      <span class="health__date">{{ r.fecha.strftime('%d/%m/%Y') }}</span>
+      <span class="tag">{{ r.tipo|replace('_', ' ')|capitalize }}</span>
+      <span class="health__text">{{ r.descripcion }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="animal-sheet__muted">Aún no hay registros sanitarios.</p>
+  {% endif %}
 </section>
 {% endblock %}
 

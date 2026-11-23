@@ -1,33 +1,57 @@
 {% extends "base.html" %}
 {% block title %}{{ evento.titulo }}{% endblock %}
 {% block content %}
-<nav class="events__breadcrumb" aria-label="Ruta">
-  <a href="/eventos">Eventos</a> / {{ evento.titulo }}
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/eventos">{{ icono('flecha_izquierda') }} Volver a campañas</a>
 </nav>
 
-<article class="event-detail">
-  <header class="event-detail__header">
-    <h2 class="event-detail__title">{{ evento.titulo }}</h2>
-    <span class="event-badge event-badge--{{ evento.estado_visible }}">
-      {{ evento.estado_visible|capitalize }}
-    </span>
-  </header>
+<div class="event-detail">
+  <article class="event-detail__main">
+    <div class="event-detail__header">
+      <h1 class="event-detail__title">{{ evento.titulo }}</h1>
+      <span class="event-badge event-badge--{{ evento.estado_visible }}">
+        {{ evento.estado_visible|capitalize }}
+      </span>
+    </div>
 
-  <p class="event-detail__data">
-    {{ icono('calendario') }} {{ evento.fecha.strftime('%d/%m/%Y') }}{% if evento.hora %} · {{ evento.hora.strftime('%H:%M') }}{% endif %}<br>
-    {{ icono('ubicacion') }} {{ evento.lugar }}<br>
-    {{ icono('fundacion') }} Organiza: <strong>{{ evento.fundacion.nombre }}</strong>
-  </p>
+    {% if evento.estado == 'cancelado' %}
+    <div class="flash flash--error" role="status">
+      {{ icono('error', 'flash__icon') }}
+      <p class="flash__text">Evento cancelado. Motivo: {{ evento.motivo_cancelacion }}</p>
+    </div>
+    {% endif %}
 
-  {% if evento.estado == 'cancelado' %}
-  <p class="event-detail__cancelled">Evento cancelado. Motivo: {{ evento.motivo_cancelacion }}</p>
-  {% endif %}
+    <p class="event-detail__description">{{ evento.descripcion }}</p>
+  </article>
 
-  <p class="event-detail__description">{{ evento.descripcion }}</p>
-
-  <p class="event-detail__contact">
-    Contacto de la fundación: {{ evento.fundacion.email_contacto }}
-    {% if evento.fundacion.telefono %} · {{ evento.fundacion.telefono }}{% endif %}
-  </p>
-</article>
+  <aside class="event-detail__aside">
+    <ul class="info-list">
+      <li class="info-list__item">
+        {{ icono('calendario') }}
+        <span><span class="info-list__label">Fecha</span>{{ evento.fecha.strftime('%d/%m/%Y') }}</span>
+      </li>
+      {% if evento.hora %}
+      <li class="info-list__item">
+        {{ icono('reloj') }}
+        <span><span class="info-list__label">Hora</span>{{ evento.hora.strftime('%H:%M') }}</span>
+      </li>
+      {% endif %}
+      <li class="info-list__item">
+        {{ icono('ubicacion') }}
+        <span><span class="info-list__label">Lugar</span>{{ evento.lugar }}</span>
+      </li>
+      <li class="info-list__item">
+        {{ icono('fundacion') }}
+        <span><span class="info-list__label">Organiza</span>{{ evento.fundacion.nombre }}</span>
+      </li>
+      <li class="info-list__item">
+        {{ icono('correo') }}
+        <span><span class="info-list__label">Contacto</span>
+          <a href="mailto:{{ evento.fundacion.email_contacto }}">{{ evento.fundacion.email_contacto }}</a>
+          {% if evento.fundacion.telefono %}<span class="info-list__extra">{{ evento.fundacion.telefono }}</span>{% endif %}
+        </span>
+      </li>
+    </ul>
+  </aside>
+</div>
 {% endblock %}

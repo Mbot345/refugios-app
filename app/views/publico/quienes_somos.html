@@ -2,11 +2,9 @@
 {% block title %}Quiénes somos{% endblock %}
 {% block content %}
 <section class="about">
-  <h2 class="about__title">Quiénes somos</h2>
-
-  <article class="about__block">
-    <h3 class="about__subtitle">Descripción</h3>
-    <p class="about__text">
+  <div class="about__intro">
+    <h1 class="about__title">Quiénes somos</h1>
+    <p class="about__lead">
       Refugios App es una plataforma web que centraliza la información de los animales rescatados
       y de las fundaciones y refugios de Ecuador. Reúne en un solo sitio el catálogo de animales
       disponibles y ordena el proceso de preadopción, desde la solicitud hasta la revisión de
@@ -16,11 +14,12 @@
       Es un proyecto académico de Ingeniería Web de la Universidad de las Américas, desarrollado
       por Luis Vásquez y Mateo Tipán.
     </p>
-  </article>
+  </div>
 
-  <div class="grid">
+  <div class="about__grid">
     <article class="about__block">
-      <h3 class="about__subtitle">Misión</h3>
+      <span class="about__icon">{{ icono('adopcion') }}</span>
+      <h2 class="about__subtitle">Misión</h2>
       <p class="about__text">
         Facilitar la adopción responsable de animales rescatados, conectando a las fundaciones
         con las personas interesadas mediante información clara y un proceso de preadopción
@@ -29,7 +28,8 @@
     </article>
 
     <article class="about__block">
-      <h3 class="about__subtitle">Visión</h3>
+      <span class="about__icon">{{ icono('huella') }}</span>
+      <h2 class="about__subtitle">Visión</h2>
       <p class="about__text">
         Ser el punto de encuentro de referencia para las fundaciones y refugios del país, donde
         cada animal rescatado tenga la oportunidad de encontrar un hogar responsable.

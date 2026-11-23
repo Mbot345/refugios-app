@@ -1,47 +1,104 @@
 {% extends "base.html" %}
+{% from "componentes/tarjetas.html" import tarjeta_animal, tarjeta_evento %}
 {% block content %}
+{% set con_foto = animales|selectattr('fotos')|first %}
+
 <section class="hero">
-  <h1 class="hero__title">Adopta, no compres</h1>
-  <p class="hero__text">
-    Plataforma que conecta fundaciones, adoptantes y animales rescatados de Ecuador.
-  </p>
-  <div class="hero__actions">
-    <a class="hero__button" href="/animales" role="button">Ver animales disponibles</a>
-    {% if not user %}
-      <a class="hero__button secondary" href="/registro" role="button">Crear cuenta</a>
-    {% elif user.rol in ROLES_GLOBALES %}
-      <a class="hero__button secondary" href="/admin" role="button">Ir al panel</a>
-    {% elif user.rol in ROLES_FUNDACION %}
-      <a class="hero__button secondary" href="/fundacion" role="button">Ir a mi fundación</a>
+  <div class="hero__content">
+    <h1 class="hero__title">Adopta, no compres</h1>
+    <p class="hero__text">
+      Conoce a los animales rescatados por fundaciones de Ecuador y envía tu solicitud
+      de preadopción en pocos pasos.
+    </p>
+    <div class="hero__actions">
+      <a class="hero__button" href="/animales" role="button">Ver animales disponibles</a>
+      {% if not user %}
+        <a class="hero__button secondary" href="/registro" role="button">Crear cuenta</a>
+      {% elif user.rol in ROLES_GLOBALES %}
+        <a class="hero__button secondary" href="/admin" role="button">Ir al panel</a>
+      {% elif user.rol in ROLES_FUNDACION %}
+        <a class="hero__button secondary" href="/fundacion" role="button">Ir a mi fundación</a>
+      {% else %}
+        <a class="hero__button secondary" href="/mis-solicitudes" role="button">Mis solicitudes</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="hero__visual">
+    <div class="hero__blob">
+      {% if con_foto %}
+        {% set foto = (con_foto.fotos|selectattr('es_principal')|first) or (con_foto.fotos|first) %}
+        <img class="hero__image" src="/fotos/{{ foto.id }}" alt="{{ con_foto.nombre }}, en adopción">
+      {% else %}
+        {{ icono('huella', 'hero__placeholder') }}
+      {% endif %}
+    </div>
+    {% if con_foto %}
+      <a class="hero__caption" href="/animales/{{ con_foto.id }}">
+        <strong>{{ con_foto.nombre }}</strong> busca hogar
+        {{ icono('flecha_derecha') }}
+      </a>
     {% endif %}
   </div>
 </section>
 
-<section class="home-sections">
-  <div class="grid">
-    <article class="home-sections__card">
-      <h2 class="home-sections__title">Animales</h2>
-      <p class="home-sections__text">
-        Conoce a los animales rescatados que buscan un hogar y sus características.
-      </p>
-      <a class="home-sections__button" href="/animales" role="button">Ver animales</a>
-    </article>
+<section class="home-block">
+  <h2 class="home-block__title">¿A quién buscas?</h2>
+  <ul class="species">
+    <li><a class="species__item" href="/animales?especie=Perro">
+      <span class="species__icon">{{ icono('perro') }}</span> Perros
+    </a></li>
+    <li><a class="species__item" href="/animales?especie=Gato">
+      <span class="species__icon">{{ icono('gato') }}</span> Gatos
+    </a></li>
+    <li><a class="species__item" href="/animales?especie=Otro">
+      <span class="species__icon">{{ icono('conejo') }}</span> Otros
+    </a></li>
+  </ul>
+</section>
 
-    <article class="home-sections__card">
-      <h2 class="home-sections__title">Fundaciones</h2>
-      <p class="home-sections__text">
-        Descubre las fundaciones y refugios que cuidan de ellos y cómo contactarlos.
-      </p>
-      <a class="home-sections__button" href="/fundaciones" role="button">Ver fundaciones</a>
-    </article>
-
-    <article class="home-sections__card">
-      <h2 class="home-sections__title">Campañas</h2>
-      <p class="home-sections__text">
-        Jornadas, campañas y actividades organizadas por las fundaciones.
-      </p>
-      <a class="home-sections__button" href="/eventos" role="button">Ver campañas</a>
-    </article>
+{% if animales %}
+<section class="home-block">
+  <div class="home-block__header">
+    <h2 class="home-block__title">Recién llegados</h2>
+    <a class="home-block__more" href="/animales">Ver todos</a>
+  </div>
+  <div class="card-grid">
+    {% for a in animales %}{{ tarjeta_animal(a) }}{% endfor %}
   </div>
 </section>
+{% endif %}
+
+<section class="home-block steps">
+  <h2 class="home-block__title">Cómo funciona la adopción</h2>
+  <ol class="steps__list">
+    <li class="steps__item">
+      <span class="steps__number">1</span>
+      <h3 class="steps__title">Elige a tu compañero</h3>
+      <p class="steps__text">Revisa su ficha, sus fotos y su información sanitaria.</p>
+    </li>
+    <li class="steps__item">
+      <span class="steps__number">2</span>
+      <h3 class="steps__title">Envía tu solicitud</h3>
+      <p class="steps__text">Completa el formulario de preadopción con tus datos y tu vivienda.</p>
+    </li>
+    <li class="steps__item">
+      <span class="steps__number">3</span>
+      <h3 class="steps__title">La fundación te responde</h3>
+      <p class="steps__text">Sigue el estado en Mis solicitudes y recibe la respuesta por correo.</p>
+    </li>
+  </ol>
+</section>
+
+{% if eventos %}
+<section class="home-block">
+  <div class="home-block__header">
+    <h2 class="home-block__title">Próximas campañas</h2>
+    <a class="home-block__more" href="/eventos">Ver todas</a>
+  </div>
+  <div class="event-grid">
+    {% for e in eventos %}{{ tarjeta_evento(e) }}{% endfor %}
+  </div>
+</section>
+{% endif %}
 {% endblock %}

@@ -1,75 +1,82 @@
 {% extends "base.html" %}
+{% from "componentes/tarjetas.html" import tarjeta_animal %}
 {% block title %}Animales disponibles{% endblock %}
 {% block content %}
-<section class="catalog">
-  <h2 class="catalog__title">Animales disponibles para adopción</h2>
+<header class="page-header">
+  <h1 class="page-header__title">Animales en adopción</h1>
+  <p class="page-header__text">Todos están esperando un hogar. Filtra por lo que buscas y entra a su ficha para conocerlos.</p>
+</header>
 
-  <form class="catalog__filters" method="get" action="/animales">
-    <div class="grid">
-      <select class="catalog__select" name="especie" aria-label="Especie">
-        <option value="">Todas las especies</option>
-        {% for v in opciones.especie %}
-        <option value="{{ v }}" {% if filtros.especie == v %}selected{% endif %}>{{ v|capitalize }}</option>
-        {% endfor %}
-      </select>
+<div class="catalog">
+  <aside class="catalog__aside">
+    <details class="catalog__filters" open>
+      <summary class="catalog__filters-toggle">{{ icono('filtros') }} Filtros</summary>
 
-      <select class="catalog__select" name="tamano" aria-label="Tamaño">
-        <option value="">Todos los tamaños</option>
-        {% for v in opciones.tamano %}
-        <option value="{{ v }}" {% if filtros.tamano == v %}selected{% endif %}>{{ v|capitalize }}</option>
-        {% endfor %}
-      </select>
+      <form class="catalog__form" method="get" action="/animales">
+        <label class="catalog__label">Raza
+          <input class="catalog__input" type="search" name="raza" maxlength="80"
+                 placeholder="Ej.: labrador" value="{{ filtros.raza }}">
+        </label>
 
-      <select class="catalog__select" name="sexo" aria-label="Sexo">
-        <option value="">Cualquier sexo</option>
-        {% for v in opciones.sexo %}
-        <option value="{{ v }}" {% if filtros.sexo == v %}selected{% endif %}>{{ v|capitalize }}</option>
-        {% endfor %}
-      </select>
+        <label class="catalog__label">Especie
+          <select class="catalog__select" name="especie">
+            <option value="">Todas</option>
+            {% for v in opciones.especie %}
+            <option value="{{ v }}" {% if filtros.especie == v %}selected{% endif %}>{{ v|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
 
-      <select class="catalog__select" name="edad" aria-label="Edad">
-        <option value="">Cualquier edad</option>
-        {% for clave, rango in rangos_edad.items() %}
-        <option value="{{ clave }}" {% if filtros.edad == clave %}selected{% endif %}>{{ rango[0] }}</option>
-        {% endfor %}
-      </select>
+        <label class="catalog__label">Tamaño
+          <select class="catalog__select" name="tamano">
+            <option value="">Todos</option>
+            {% for v in opciones.tamano %}
+            <option value="{{ v }}" {% if filtros.tamano == v %}selected{% endif %}>{{ v|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label class="catalog__label">Sexo
+          <select class="catalog__select" name="sexo">
+            <option value="">Cualquiera</option>
+            {% for v in opciones.sexo %}
+            <option value="{{ v }}" {% if filtros.sexo == v %}selected{% endif %}>{{ v|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label class="catalog__label">Edad
+          <select class="catalog__select" name="edad">
+            <option value="">Cualquiera</option>
+            {% for clave, rango in rangos_edad.items() %}
+            <option value="{{ clave }}" {% if filtros.edad == clave %}selected{% endif %}>{{ rango[0] }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <button class="catalog__button" type="submit">Aplicar filtros</button>
+        <a class="catalog__clear" href="/animales">Quitar filtros</a>
+      </form>
+    </details>
+  </aside>
+
+  <section class="catalog__results" aria-label="Resultados">
+    <p class="catalog__count">
+      {% if animales|length == 1 %}1 animal encontrado{% else %}{{ animales|length }} animales encontrados{% endif %}
+    </p>
+
+    {% if animales %}
+    <div class="card-grid card-grid--catalog">
+      {% for a in animales %}{{ tarjeta_animal(a) }}{% endfor %}
     </div>
-
-    <div class="catalog__filter-row">
-      <input class="catalog__input" type="search" name="raza" maxlength="80"
-             placeholder="Buscar por raza" value="{{ filtros.raza }}">
-      <button class="catalog__button" type="submit">Filtrar</button>
-      <a class="catalog__button secondary" href="/animales" role="button">Limpiar</a>
+    {% else %}
+    <div class="empty-state">
+      {{ icono('buscar', 'empty-state__icon') }}
+      <p class="empty-state__title">No hay animales con esos filtros</p>
+      <p class="empty-state__text">Prueba quitando alguno para ver más resultados.</p>
+      <a class="secondary" href="/animales" role="button">Quitar filtros</a>
     </div>
-  </form>
-
-  {% if animales %}
-  <div class="catalog__grid">
-    {% for a in animales %}
-    <a class="catalog__link" href="/animales/{{ a.id }}">
-      <article class="catalog__card">
-        {% set foto = (a.fotos|selectattr('es_principal')|first) or (a.fotos|first) %}
-        <div class="catalog__photo">
-          {% if foto %}
-            <img class="catalog__image" src="/fotos/{{ foto.id }}" alt="Foto de {{ a.nombre }}" loading="lazy">
-          {% else %}
-            {{ icono('huella', 'catalog__placeholder') }}
-          {% endif %}
-        </div>
-        <h3 class="catalog__name">{{ a.nombre }}</h3>
-        <p class="catalog__meta">
-          {{ a.especie }} · {{ a.sexo }} · {{ a.tamano|capitalize }}<br>
-          {{ a.edad_meses|edad }}
-        </p>
-        <p class="catalog__foundation">{{ a.fundacion.nombre }}</p>
-      </article>
-    </a>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p class="catalog__empty">
-    No hay animales que coincidan con tu búsqueda. Prueba quitando algún filtro.
-  </p>
-  {% endif %}
-</section>
+    {% endif %}
+  </section>
+</div>
 {% endblock %}

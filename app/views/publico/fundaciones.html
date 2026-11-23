@@ -1,28 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Fundaciones{% endblock %}
 {% block content %}
-<section class="foundations">
-  <h2 class="foundations__title">Fundaciones y refugios</h2>
+<header class="page-header">
+  <h1 class="page-header__title">Fundaciones y refugios</h1>
+  <p class="page-header__text">Ellos rescatan, cuidan y buscan hogar para cada animal. Conoce cómo contactarlos.</p>
+</header>
 
-  {% if fundaciones %}
-  <div class="foundations__grid">
-    {% for f in fundaciones %}
-    <article class="foundations__card">
-      <h3 class="foundations__name">{{ f.nombre }}</h3>
-      <p class="foundations__location">{{ icono('ubicacion') }} {{ f.ciudad.nombre }}, {{ f.ciudad.provincia.nombre }}</p>
-      {% if f.descripcion %}<p class="foundations__description">{{ f.descripcion }}</p>{% endif %}
-      <p class="foundations__contact">
-        {{ icono('correo') }} {{ f.email_contacto }}
-        {% if f.telefono %}<br>{{ icono('telefono') }} {{ f.telefono }}{% endif %}
-      </p>
-      <p class="foundations__count">
-        Animales disponibles: <strong>{{ disponibles.get(f.id, 0) }}</strong>
-      </p>
-    </article>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p class="foundations__empty">Aún no hay fundaciones registradas.</p>
-  {% endif %}
-</section>
+{% if fundaciones %}
+<div class="foundation-grid">
+  {% for f in fundaciones %}
+  <article class="foundation-card">
+    <div class="foundation-card__header">
+      <span class="foundation-card__avatar" aria-hidden="true">{{ f.nombre[:1]|upper }}</span>
+      <div>
+        <h2 class="foundation-card__name">{{ f.nombre }}</h2>
+        <p class="foundation-card__location">{{ icono('ubicacion') }} {{ f.ciudad.nombre }}, {{ f.ciudad.provincia.nombre }}</p>
+      </div>
+    </div>
+    {% if f.descripcion %}<p class="foundation-card__description">{{ f.descripcion }}</p>{% endif %}
+    <ul class="foundation-card__contact">
+      <li>{{ icono('correo') }} <a href="mailto:{{ f.email_contacto }}">{{ f.email_contacto }}</a></li>
+      {% if f.telefono %}<li>{{ icono('telefono') }} {{ f.telefono }}</li>{% endif %}
+    </ul>
+    <p class="foundation-card__count">
+      {% set total = disponibles.get(f.id, 0) %}
+      <strong>{{ total }}</strong> {% if total == 1 %}animal disponible{% else %}animales disponibles{% endif %}
+    </p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('fundacion', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no hay fundaciones registradas</p>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,36 +1,30 @@
 {% extends "base.html" %}
+{% from "componentes/tarjetas.html" import tarjeta_evento %}
 {% block title %}Campañas y eventos{% endblock %}
 {% block content %}
-<section class="events">
-  <h2 class="events__title">Campañas y eventos</h2>
+<header class="page-header">
+  <h1 class="page-header__title">Campañas y eventos</h1>
+  <p class="page-header__text">Jornadas de adopción, campañas de esterilización y actividades de las fundaciones.</p>
+</header>
 
-  <nav class="events__tabs" aria-label="Tipo de eventos">
-    <a class="events__tab {% if not pasados %}events__tab--active{% endif %}" href="/eventos">Próximos</a>
-    <a class="events__tab {% if pasados %}events__tab--active{% endif %}" href="/eventos?pasados=1">Pasados</a>
-  </nav>
+<nav class="tabs" aria-label="Tipo de eventos">
+  <a class="tabs__item{% if not pasados %} tabs__item--active{% endif %}" href="/eventos"
+     {% if not pasados %}aria-current="page"{% endif %}>Próximos</a>
+  <a class="tabs__item{% if pasados %} tabs__item--active{% endif %}" href="/eventos?pasados=1"
+     {% if pasados %}aria-current="page"{% endif %}>Pasados</a>
+</nav>
 
-  {% if eventos %}
-  <div class="events__grid">
-    {% for e in eventos %}
-    <a class="events__link" href="/eventos/{{ e.id }}">
-      <article class="events__card">
-        <p class="events__date">
-          {{ e.fecha.strftime('%d/%m/%Y') }}{% if e.hora %} · {{ e.hora.strftime('%H:%M') }}{% endif %}
-        </p>
-        <h3 class="events__name">{{ e.titulo }}</h3>
-        <p class="events__meta">{{ icono('ubicacion') }} {{ e.lugar }}</p>
-        <p class="events__foundation">{{ e.fundacion.nombre }}</p>
-        {% if e.estado == 'cancelado' %}
-          <span class="event-badge event-badge--cancelado">Cancelado</span>
-        {% endif %}
-      </article>
-    </a>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p class="events__empty">
-    {% if pasados %}Aún no hay eventos pasados.{% else %}No hay eventos próximos por ahora. ¡Vuelve pronto!{% endif %}
+{% if eventos %}
+<div class="event-grid">
+  {% for e in eventos %}{{ tarjeta_evento(e) }}{% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('calendario', 'empty-state__icon') }}
+  <p class="empty-state__title">
+    {% if pasados %}Aún no hay eventos pasados{% else %}No hay eventos próximos por ahora{% endif %}
   </p>
-  {% endif %}
-</section>
+  {% if not pasados %}<p class="empty-state__text">Las fundaciones publican nuevas campañas con frecuencia.</p>{% endif %}
+</div>
+{% endif %}
 {% endblock %}

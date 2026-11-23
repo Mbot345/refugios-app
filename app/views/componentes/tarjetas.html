@@ -1,0 +1,46 @@
+{# Tarjetas reutilizables del sitio público.
+   Uso: {% from "componentes/tarjetas.html" import tarjeta_animal, tarjeta_evento %} #}
+
+{% macro tarjeta_animal(a) %}
+{% set foto = (a.fotos|selectattr('es_principal')|first) or (a.fotos|first) %}
+<a class="animal-card" href="/animales/{{ a.id }}">
+  <div class="animal-card__photo">
+    {% if foto %}
+      <img class="animal-card__image" src="/fotos/{{ foto.id }}" alt="" loading="lazy">
+    {% else %}
+      {{ icono('huella', 'animal-card__placeholder') }}
+    {% endif %}
+  </div>
+  <div class="animal-card__body">
+    <h3 class="animal-card__name">{{ a.nombre }}</h3>
+    <ul class="animal-card__tags">
+      <li class="tag">{{ a.especie|capitalize }}</li>
+      <li class="tag">{{ a.sexo|capitalize }}</li>
+      <li class="tag">{{ a.tamano|capitalize }}</li>
+    </ul>
+    <p class="animal-card__age">{{ a.edad_meses|edad }}</p>
+    <p class="animal-card__foundation">{{ icono('fundacion') }} {{ a.fundacion.nombre }}</p>
+  </div>
+</a>
+{% endmacro %}
+
+{% macro tarjeta_evento(e) %}
+{% set meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'] %}
+<a class="event-card" href="/eventos/{{ e.id }}">
+  <span class="event-card__date" aria-hidden="true">
+    <span class="event-card__day">{{ e.fecha.day }}</span>
+    <span class="event-card__month">{{ meses[e.fecha.month - 1] }}</span>
+  </span>
+  <span class="event-card__body">
+    <span class="event-card__name">{{ e.titulo }}</span>
+    <span class="event-card__meta">
+      {{ icono('calendario') }} {{ e.fecha.strftime('%d/%m/%Y') }}{% if e.hora %}, {{ e.hora.strftime('%H:%M') }}{% endif %}
+    </span>
+    <span class="event-card__meta">{{ icono('ubicacion') }} {{ e.lugar }}</span>
+    <span class="event-card__meta">{{ icono('fundacion') }} {{ e.fundacion.nombre }}</span>
+    {% if e.estado == 'cancelado' %}
+      <span class="event-badge event-badge--cancelado">Cancelado</span>
+    {% endif %}
+  </span>
+</a>
+{% endmacro %}

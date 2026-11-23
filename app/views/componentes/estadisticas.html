@@ -1,12 +1,15 @@
+{% from "componentes/barras.html" import barras %}
 {% macro mostrar_estadisticas(stats, enlaces=False) %}
 <div class="stats">
   <div class="stats__cards">
     <article class="stats__card">
+      <span class="stats__icon">{{ icono('huella') }}</span>
       <span class="stats__number">{{ stats.total_animales }}</span>
       <span class="stats__label">Animales registrados</span>
     </article>
 
     <article class="stats__card {% if stats.por_revisar %}stats__card--alert{% endif %}">
+      <span class="stats__icon">{{ icono('solicitudes') }}</span>
       <span class="stats__number">{{ stats.por_revisar }}</span>
       <span class="stats__label">Solicitudes por revisar</span>
       {% if enlaces and stats.por_revisar %}
@@ -15,42 +18,21 @@
     </article>
 
     <article class="stats__card">
+      <span class="stats__icon">{{ icono('adopcion') }}</span>
       <span class="stats__number">{{ stats.adopciones }}</span>
       <span class="stats__label">Adopciones concretadas</span>
     </article>
 
     <article class="stats__card">
+      <span class="stats__icon">{{ icono('evento') }}</span>
       <span class="stats__number">{{ stats.eventos_proximos }}</span>
       <span class="stats__label">Eventos próximos</span>
     </article>
   </div>
 
-  <div class="grid">
-    <article class="stats__panel">
-      <h3 class="stats__title">Animales por estado</h3>
-      {% for fila in stats.animales %}
-      <div class="stats__row">
-        <span class="stats__row-label">{{ fila.estado|replace('_', ' ')|capitalize }}</span>
-        <span class="stats__bar" role="img" aria-label="{{ fila.porcentaje }} %">
-          <span class="stats__bar-fill stats__bar-fill--{{ fila.estado }}" style="width: {{ fila.porcentaje }}%"></span>
-        </span>
-        <span class="stats__row-value">{{ fila.total }}</span>
-      </div>
-      {% endfor %}
-    </article>
-
-    <article class="stats__panel">
-      <h3 class="stats__title">Solicitudes por estado</h3>
-      {% for fila in stats.solicitudes %}
-      <div class="stats__row">
-        <span class="stats__row-label">{{ fila.estado|capitalize }}</span>
-        <span class="stats__bar" role="img" aria-label="{{ fila.porcentaje }} %">
-          <span class="stats__bar-fill stats__bar-fill--{{ fila.estado }}" style="width: {{ fila.porcentaje }}%"></span>
-        </span>
-        <span class="stats__row-value">{{ fila.total }}</span>
-      </div>
-      {% endfor %}
-    </article>
+  <div class="stats__panels">
+    {{ barras('Animales por estado', stats.animales) }}
+    {{ barras('Solicitudes por estado', stats.solicitudes) }}
   </div>
 </div>
 {% endmacro %}

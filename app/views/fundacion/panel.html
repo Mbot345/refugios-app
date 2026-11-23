@@ -1,56 +1,50 @@
 {% extends "base.html" %}
+{% from "componentes/estadisticas.html" import mostrar_estadisticas %}
 {% block title %}Mi fundación{% endblock %}
 {% block content %}
-{% from "componentes/estadisticas.html" import mostrar_estadisticas %}
-<section class="foundation-panel">
-  <h2 class="foundation-panel__title">{{ fundacion.nombre }}</h2>
-  <p class="foundation-panel__role">
-    Tu rol: <strong>{{ user.rol|rol_nombre }}</strong>
-    {% if not fundacion.activa %} · <strong>Fundación suspendida: solo consulta</strong>{% endif %}
-  </p>
+{% macro acceso(href, icono_nombre, titulo, texto) %}
+<a class="shortcut" href="{{ href }}">
+  <span class="shortcut__icon">{{ icono(icono_nombre) }}</span>
+  <span class="shortcut__body">
+    <span class="shortcut__title">{{ titulo }}</span>
+    <span class="shortcut__text">{{ texto }}</span>
+  </span>
+  {{ icono('chevron_derecha', 'shortcut__arrow') }}
+</a>
+{% endmacro %}
 
-  <div class="foundation-panel__grid">
-    {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
-    <article class="foundation-panel__card">
-      <h3 class="foundation-panel__card-title">Animales</h3>
-      <p>Registra y actualiza los animales de tu fundación.</p>
-      <a href="/fundacion/animales" role="button">Gestionar animales</a>
-    </article>
-    {% endif %}
+<header class="page-header">
+  <h1 class="page-header__title">{{ fundacion.nombre }}</h1>
+  <p class="page-header__text">Tu rol: <strong>{{ user.rol|rol_nombre }}</strong></p>
+</header>
 
-    {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
-    <article class="foundation-panel__card">
-      <h3 class="foundation-panel__card-title">Solicitudes</h3>
-      <p>Revisión y seguimiento de las solicitudes de preadopción.</p>
-      <a href="/fundacion/solicitudes" role="button">Revisar solicitudes</a>
-    </article>
-    {% endif %}
+{% if not fundacion.activa %}
+<div class="flash flash--warning" role="status">
+  {{ icono('alerta', 'flash__icon') }}
+  <p class="flash__text">Fundación suspendida: solo puedes consultar la información.</p>
+</div>
+{% endif %}
 
-    {% if user.rol in ['admin_fundacion', 'encargado_eventos'] %}
-    <article class="foundation-panel__card">
-      <h3 class="foundation-panel__card-title">Eventos</h3>
-      <p>Campañas, jornadas y actividades de tu fundación.</p>
-      <a href="/fundacion/eventos" role="button">Gestionar eventos</a>
-    </article>
-    {% endif %}
-
-    {% if user.rol == 'admin_fundacion' %}
-    <article class="foundation-panel__card">
-      <h3 class="foundation-panel__card-title">Equipo</h3>
-      <p>Asigna roles a los miembros de tu fundación.</p>
-      <a href="/fundacion/equipo" role="button">Gestionar equipo</a>
-    </article>
-
-    <article class="foundation-panel__card">
-      <h3 class="foundation-panel__card-title">Perfil</h3>
-      <p>Descripción, dirección y datos de contacto.</p>
-      <a href="/fundacion/perfil" role="button">Editar perfil</a>
-    </article>
-    {% endif %}
-  </div>
-  {% if stats %}
-  <h3 class="foundation-panel__subtitle">Resumen de mi fundación</h3>
-  {{ mostrar_estadisticas(stats, true) }}
+<div class="shortcut-grid">
+  {% if user.rol in ['admin_fundacion', 'encargado_animales'] %}
+    {{ acceso('/fundacion/animales', 'huella', 'Animales', 'Registra y actualiza los animales de tu fundación.') }}
   {% endif %}
+  {% if user.rol in ['admin_fundacion', 'encargado_adopciones'] %}
+    {{ acceso('/fundacion/solicitudes', 'solicitudes', 'Solicitudes', 'Revisa y da seguimiento a las solicitudes de preadopción.') }}
+  {% endif %}
+  {% if user.rol in ['admin_fundacion', 'encargado_eventos'] %}
+    {{ acceso('/fundacion/eventos', 'evento', 'Eventos', 'Campañas, jornadas y actividades de tu fundación.') }}
+  {% endif %}
+  {% if user.rol == 'admin_fundacion' %}
+    {{ acceso('/fundacion/equipo', 'equipo', 'Equipo', 'Asigna roles a los miembros de tu fundación.') }}
+    {{ acceso('/fundacion/perfil', 'fundacion', 'Perfil', 'Descripción, dirección y datos de contacto.') }}
+  {% endif %}
+</div>
+
+{% if stats %}
+<section class="panel-block">
+  <h2 class="panel-block__title">Resumen de mi fundación</h2>
+  {{ mostrar_estadisticas(stats, true) }}
 </section>
+{% endif %}
 {% endblock %}

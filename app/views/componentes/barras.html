@@ -1,0 +1,16 @@
+{# Barras horizontales de conteo por estado.
+   filas: lista de {estado, total, porcentaje}. etiquetas: nombres opcionales para mostrar. #}
+{% macro barras(titulo, filas, etiquetas={}) %}
+<article class="stats__panel">
+  <h3 class="stats__title">{{ titulo }}</h3>
+  {% for fila in filas %}
+  <div class="stats__row">
+    <span class="stats__row-label">{{ etiquetas.get(fila.estado, fila.estado|replace('_', ' ')|capitalize) }}</span>
+    <span class="stats__bar" role="img" aria-label="{{ fila.porcentaje }} %">
+      <span class="stats__bar-fill stats__bar-fill--{{ fila.estado }}" style="width: {{ fila.porcentaje }}%"></span>
+    </span>
+    <span class="stats__row-value">{{ fila.total }}</span>
+  </div>
+  {% endfor %}
+</article>
+{% endmacro %}

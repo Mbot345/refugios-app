@@ -1,26 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Panel de administración{% endblock %}
+{% from "componentes/barras.html" import barras %}
+{% block title %}{% if user.rol == 'admin' %}Panel de administración{% else %}Panel de moderación{% endif %}{% endblock %}
 {% block content %}
-<section class="admin-panel">
-    <h2 class="admin-panel__title">
-    {% if user.rol == 'admin' %}Panel de administración{% else %}Panel de moderación{% endif %}
-  </h2>
+{% set total_animales = stats.animales.values()|sum %}
+{% set total_solicitudes = stats.solicitudes.values()|sum %}
+{% set filas_animales = [] %}
+{% for estado, total in stats.animales.items() %}
+  {% set _ = filas_animales.append({'estado': estado, 'total': total,
+       'porcentaje': ((total * 100 / total_animales)|round|int) if total_animales else 0}) %}
+{% endfor %}
+{% set filas_solicitudes = [] %}
+{% for estado, total in stats.solicitudes.items() %}
+  {% set _ = filas_solicitudes.append({'estado': estado, 'total': total,
+       'porcentaje': ((total * 100 / total_solicitudes)|round|int) if total_solicitudes else 0}) %}
+{% endfor %}
 
-  <div class="admin-panel__links">
-    {% if user.rol == 'admin' %}
-      <a class="admin-panel__link" href="/admin/usuarios" role="button">Usuarios</a>
-    {% endif %}
-    <a class="admin-panel__link secondary" href="/admin/fundaciones" role="button">Fundaciones</a>
-    <a class="admin-panel__link secondary" href="/admin/animales" role="button">Animales</a>
-    <a class="admin-panel__link secondary" href="/admin/eventos" role="button">Eventos</a>
+<header class="page-header">
+  <h1 class="page-header__title">
+    {% if user.rol == 'admin' %}Panel de administración{% else %}Panel de moderación{% endif %}
+  </h1>
+  <p class="page-header__text">Resumen de toda la plataforma.</p>
+</header>
+
+<div class="stats__cards">
+  <article class="stats__card">
+    <span class="stats__icon">{{ icono('equipo') }}</span>
+    <span class="stats__number">{{ stats.usuarios_total }}</span>
+    <span class="stats__label">Usuarios registrados ({{ stats.usuarios_activos }} activos)</span>
+  </article>
+  <article class="stats__card">
+    <span class="stats__icon">{{ icono('fundacion') }}</span>
+    <span class="stats__number">{{ stats.actividad|length }}</span>
+    <span class="stats__label">Fundaciones</span>
+  </article>
+  <article class="stats__card">
+    <span class="stats__icon">{{ icono('huella') }}</span>
+    <span class="stats__number">{{ total_animales }}</span>
+    <span class="stats__label">Animales</span>
+  </article>
+  <article class="stats__card">
+    <span class="stats__icon">{{ icono('solicitudes') }}</span>
+    <span class="stats__number">{{ total_solicitudes }}</span>
+    <span class="stats__label">Solicitudes</span>
+  </article>
+</div>
+
+<div class="stats__panels">
+  {{ barras('Animales por estado', filas_animales) }}
+  {{ barras('Solicitudes por estado', filas_solicitudes) }}
+</div>
+
+<section class="panel-block">
+  <h2 class="panel-block__title">Actividad por fundación</h2>
+  <div class="table-card">
+    <table class="table-card__table">
+      <thead><tr><th>Fundación</th><th>Estado</th><th>Animales</th><th>Solicitudes</th></tr></thead>
+      <tbody>
+        {% for f in stats.actividad %}
+        <tr>
+          <td><strong>{{ f.fundacion }}</strong></td>
+          <td>
+            <span class="badge badge--{{ 'activa' if f.activa else 'suspendida' }}">
+              {{ 'Activa' if f.activa else 'Suspendida' }}
+            </span>
+          </td>
+          <td>{{ f.animales }}</td>
+          <td>{{ f.solicitudes }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="table-card__empty">Aún no hay fundaciones registradas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-  <p>Usuarios registrados: <strong>{{ stats.usuarios_total }}</strong> ({{ stats.usuarios_activos }} activos)</p>
-  <div class="grid">
-    <article><h3>Animales por estado</h3><table><tbody>{% for estado, total in stats.animales.items() %}<tr><td>{{ estado|replace('_', ' ')|capitalize }}</td><td>{{ total }}</td></tr>{% endfor %}</tbody></table></article>
-    <article><h3>Solicitudes por estado</h3><table><tbody>{% for estado, total in stats.solicitudes.items() %}<tr><td>{{ estado|capitalize }}</td><td>{{ total }}</td></tr>{% endfor %}</tbody></table></article>
-  </div>
-  <article><h3>Actividad por fundación</h3><div class="overflow-auto"><table><thead><tr><th>Fundación</th><th>Estado</th><th>Animales</th><th>Solicitudes</th></tr></thead><tbody>
-  {% for f in stats.actividad %}<tr><td>{{ f.fundacion }}</td><td>{{ 'Activa' if f.activa else 'Inactiva' }}</td><td>{{ f.animales }}</td><td>{{ f.solicitudes }}</td></tr>{% else %}<tr><td colspan="4">Aún no hay fundaciones registradas.</td></tr>{% endfor %}
-  </tbody></table></div></article>
 </section>
 {% endblock %}

@@ -1,76 +1,83 @@
 {% extends "base.html" %}
+{% from "componentes/linea_tiempo.html" import mostrar_linea_tiempo %}
 {% block title %}Mis solicitudes{% endblock %}
 {% block content %}
-{% from "componentes/linea_tiempo.html" import mostrar_linea_tiempo %}
 {% set activas = solicitudes|selectattr('estado', 'in', ['pendiente', 'aprobada'])|list %}
 {% set anteriores = solicitudes|rejectattr('estado', 'in', ['pendiente', 'aprobada'])|list %}
 {% set etiquetas = {'pendiente': 'En revisión'} %}
-<section class="my-requests">
-  <h2 class="my-requests__title">Mis solicitudes de preadopción</h2>
 
+<header class="page-header">
+  <h1 class="page-header__title">Mis solicitudes</h1>
   {% if solicitudes %}
-  <p class="my-requests__summary">
-    {{ solicitudes|length }} {{ 'solicitud' if solicitudes|length == 1 else 'solicitudes' }}
-    · {{ activas|length }} en progreso
+  <p class="page-header__text">
+    {{ solicitudes|length }} {{ 'solicitud enviada' if solicitudes|length == 1 else 'solicitudes enviadas' }},
+    {{ activas|length }} en curso.
   </p>
+  {% endif %}
+</header>
 
+{% if solicitudes %}
   {% for s in activas %}
-  <article class="my-requests__card">
-    <header class="my-requests__header">
-      <div class="my-requests__identity">
-        <span class="my-requests__avatar" aria-hidden="true">{{ s.animal.nombre[0]|upper }}</span>
+  {% set foto = (s.animal.fotos|selectattr('es_principal')|first) or (s.animal.fotos|first) %}
+  <article class="request-card">
+    <div class="request-card__header">
+      <div class="request-card__identity">
+        {% if foto %}
+          <img class="request-card__avatar" src="/fotos/{{ foto.id }}" alt="">
+        {% else %}
+          <span class="request-card__avatar request-card__avatar--empty" aria-hidden="true">{{ icono('huella') }}</span>
+        {% endif %}
         <div>
-          <h3 class="my-requests__animal">
-            <a href="/animales/{{ s.animal.id }}">{{ s.animal.nombre }}</a>
-          </h3>
-          <p class="my-requests__meta">
-            {{ s.animal.fundacion.nombre }} · enviada el {{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}
+          <h2 class="request-card__animal"><a href="/animales/{{ s.animal.id }}">{{ s.animal.nombre }}</a></h2>
+          <p class="request-card__meta">
+            {{ s.animal.fundacion.nombre }}, enviada el {{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}
           </p>
         </div>
       </div>
-      <span class="my-requests__badge my-requests__badge--{{ s.estado }}">
-        {{ etiquetas.get(s.estado, s.estado|capitalize) }}
-      </span>
-    </header>
+      <span class="badge badge--{{ s.estado }}">{{ etiquetas.get(s.estado, s.estado|capitalize) }}</span>
+    </div>
 
     {{ mostrar_linea_tiempo(s) }}
 
-    <div class="my-requests__actions">
+    <div class="request-card__actions">
       {% if s.estado == 'aprobada' %}
-      <a class="my-requests__pdf" href="/solicitudes/{{ s.id }}/aprobacion.pdf"
-         target="_blank" rel="noopener" role="button">Descargar hoja de aprobación</a>
+      <a href="/solicitudes/{{ s.id }}/aprobacion.pdf" target="_blank" rel="noopener" role="button">
+        {{ icono('descargar') }} Hoja de aprobación (PDF)
+      </a>
       {% endif %}
-      <form method="post" action="/solicitudes/{{ s.id }}/cancelar"
+      <form class="row-actions__form" method="post" action="/solicitudes/{{ s.id }}/cancelar"
             onsubmit="return confirm('¿Seguro que quieres cancelar esta solicitud?');">
-        <button class="secondary my-requests__cancel" type="submit">Cancelar solicitud</button>
+        <button class="row-actions__link row-actions__link--danger" type="submit">Cancelar solicitud</button>
       </form>
     </div>
   </article>
   {% endfor %}
 
   {% if anteriores %}
-  <h3 class="my-requests__subtitle">Anteriores</h3>
-  <div class="my-requests__history">
-    {% for s in anteriores %}
-    <details class="my-requests__past">
-      <summary class="my-requests__past-summary">
-        <span class="my-requests__past-animal">{{ s.animal.nombre }}</span>
-        <span class="my-requests__past-foundation">{{ s.animal.fundacion.nombre }}</span>
-        <span class="my-requests__past-date">{{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}</span>
-        <span class="my-requests__badge my-requests__badge--{{ s.estado }}">{{ s.estado|capitalize }}</span>
-      </summary>
-      <div class="my-requests__past-body">
-        {{ mostrar_linea_tiempo(s) }}
-      </div>
-    </details>
-    {% endfor %}
-  </div>
+  <section class="panel-block">
+    <h2 class="panel-block__title">Anteriores</h2>
+    <div class="past-list">
+      {% for s in anteriores %}
+      <details class="past-list__item">
+        <summary class="past-list__summary">
+          <span class="past-list__animal">{{ s.animal.nombre }}</span>
+          <span class="past-list__muted">{{ s.animal.fundacion.nombre }}</span>
+          <span class="past-list__muted">{{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}</span>
+          <span class="badge badge--{{ s.estado }}">{{ s.estado|capitalize }}</span>
+        </summary>
+        <div class="past-list__body">{{ mostrar_linea_tiempo(s) }}</div>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
   {% endif %}
 
-  {% else %}
-  <p class="my-requests__empty">
-    Aún no has enviado solicitudes. <a href="/animales">Explora los animales disponibles</a>.
-  </p>
-  {% endif %}
-</section>
+{% else %}
+<div class="empty-state">
+  {{ icono('solicitudes', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no has enviado solicitudes</p>
+  <p class="empty-state__text">Elige un animal del catálogo y envía tu solicitud desde su ficha.</p>
+  <a href="/animales" role="button">Ver animales disponibles</a>
+</div>
+{% endif %}
 {% endblock %}

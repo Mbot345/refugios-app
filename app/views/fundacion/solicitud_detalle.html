@@ -1,130 +1,144 @@
 {% extends "base.html" %}
+{% from "componentes/linea_tiempo.html" import mostrar_linea_tiempo %}
 {% block title %}Solicitud #{{ s.id }}{% endblock %}
 {% block content %}
-{% from "componentes/linea_tiempo.html" import mostrar_linea_tiempo %}
-<article class="review-detail">
-  <header class="review-detail__header">
-    <h2 class="review-detail__title">
-      Solicitud #{{ s.id }}
-      <span class="review__badge review__badge--{{ s.estado }}">{{ s.estado|capitalize }}</span>
-    </h2>
-    <a class="review-detail__back secondary" href="/fundacion/solicitudes" role="button">Volver a la lista</a>
-  </header>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/fundacion/solicitudes">{{ icono('flecha_izquierda') }} Volver a solicitudes</a>
+</nav>
 
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Animal</h3>
-    <p>
+<header class="page-header page-header--row">
+  <div>
+    <h1 class="page-header__title">Solicitud #{{ s.id }}</h1>
+    <p class="page-header__text">
+      {{ s.nombres_completos }} quiere adoptar a
       <a href="/animales/{{ s.animal.id }}">{{ s.animal.nombre }}</a>
-      · {{ s.animal.especie }} · Estado actual:
-      <strong>{{ s.animal.estado|replace('_', ' ')|capitalize }}</strong>
     </p>
-  </section>
+  </div>
+  <span class="badge badge--{{ s.estado }} badge--large">{{ s.estado|capitalize }}</span>
+</header>
 
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Datos del solicitante</h3>
-    <dl class="review-detail__data">
-      <dt>Nombres</dt><dd>{{ s.nombres_completos }}</dd>
-      <dt>Cédula</dt><dd>{{ s.cedula }}</dd>
-      <dt>Fecha de nacimiento</dt><dd>{{ s.fecha_nacimiento.strftime('%d/%m/%Y') }}</dd>
-      <dt>Correo</dt><dd>{{ s.solicitante.email }}</dd>
-      <dt>Teléfono móvil</dt><dd>{{ s.telefono_movil }}</dd>
-      <dt>Teléfono convencional</dt><dd>{{ s.telefono_convencional or '—' }}</dd>
-      <dt>Dirección</dt><dd>{{ s.direccion_vivienda }}</dd>
-      <dt>Ocupación</dt><dd>{{ s.ocupacion }}</dd>
-    </dl>
-  </section>
+<div class="review">
+  <div class="review__main">
+    <section class="form-card">
+      <h2 class="form-card__title">Datos del solicitante</h2>
+      <dl class="data-list">
+        <div class="data-list__row"><dt>Nombres</dt><dd>{{ s.nombres_completos }}</dd></div>
+        <div class="data-list__row"><dt>Cédula</dt><dd>{{ s.cedula }}</dd></div>
+        <div class="data-list__row"><dt>Fecha de nacimiento</dt><dd>{{ s.fecha_nacimiento.strftime('%d/%m/%Y') }}</dd></div>
+        <div class="data-list__row"><dt>Correo</dt><dd>{{ s.solicitante.email }}</dd></div>
+        <div class="data-list__row"><dt>Teléfono móvil</dt><dd>{{ s.telefono_movil }}</dd></div>
+        <div class="data-list__row"><dt>Teléfono convencional</dt><dd>{{ s.telefono_convencional or '—' }}</dd></div>
+        <div class="data-list__row"><dt>Ocupación</dt><dd>{{ s.ocupacion }}</dd></div>
+      </dl>
+    </section>
 
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Vivienda</h3>
-    <dl class="review-detail__data">
-      <dt>Tipo</dt><dd>{{ s.tipo_vivienda|replace('_', ' ')|capitalize }}</dd>
-      <dt>Tenencia</dt><dd>{{ s.tenencia_vivienda|capitalize }}</dd>
-      <dt>Metros de vivienda</dt><dd>{{ s.metros_vivienda }} m²</dd>
-      <dt>Área verde</dt><dd>{{ s.metros_area_verde }} m²</dd>
-      <dt>Área comunal</dt><dd>{{ s.dimension_area_comunal or '—' }}</dd>
-    </dl>
-  </section>
+    <section class="form-card">
+      <h2 class="form-card__title">Vivienda</h2>
+      <dl class="data-list">
+        <div class="data-list__row"><dt>Dirección</dt><dd>{{ s.direccion_vivienda }}</dd></div>
+        <div class="data-list__row"><dt>Tipo</dt><dd>{{ s.tipo_vivienda|replace('_', ' ')|capitalize }}</dd></div>
+        <div class="data-list__row"><dt>Tenencia</dt><dd>{{ s.tenencia_vivienda|capitalize }}</dd></div>
+        <div class="data-list__row"><dt>Vivienda</dt><dd>{{ s.metros_vivienda }} m²</dd></div>
+        <div class="data-list__row"><dt>Área verde</dt><dd>{{ s.metros_area_verde }} m²</dd></div>
+        <div class="data-list__row"><dt>Área comunal</dt><dd>{{ s.dimension_area_comunal or '—' }}</dd></div>
+      </dl>
+    </section>
 
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Motivos</h3>
-    <p>{{ s.motivo_adopcion }}</p>
-    <p><strong>Experiencia previa:</strong> {{ s.experiencia_previa or '—' }}</p>
-    <p>
-      <strong>Acepta visitas de seguimiento:</strong>
-      {% if s.acepta_visitas %}Sí{% else %}<span class="review-detail__warning">No</span>{% endif %}
-    </p>
-  </section>
+    <section class="form-card">
+      <h2 class="form-card__title">Motivos</h2>
+      <p class="review__quote">{{ s.motivo_adopcion }}</p>
+      <dl class="data-list">
+        <div class="data-list__row"><dt>Experiencia previa</dt><dd>{{ s.experiencia_previa or '—' }}</dd></div>
+        <div class="data-list__row">
+          <dt>Acepta visitas de seguimiento</dt>
+          <dd>{% if s.acepta_visitas %}Sí{% else %}<span class="badge badge--rechazada">No</span>{% endif %}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
 
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Seguimiento</h3>
-    {{ mostrar_linea_tiempo(s) }}
-    {% if s.estado in ['aprobada', 'finalizada'] %}
-    <p>
-      <a class="secondary" href="/fundacion/solicitudes/{{ s.id }}/aprobacion.pdf"
-         target="_blank" rel="noopener" role="button">Hoja de aprobación (PDF)</a>
-    </p>
-    {% endif %}
-    <details class="review-detail__log">
-      <summary>Registro detallado</summary>
-      <ul class="review-detail__history">
-        {% for h in s.historial %}
-        <li>
-          {{ (h.fecha|hora_ec).strftime('%d/%m/%Y %H:%M') }} ·
-          {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} {{ icono('flecha_derecha') }}
-          <strong>{{ h.estado_nuevo|capitalize }}</strong>
-          {% if h.observacion %} · {{ h.observacion }}{% endif %}
-        </li>
-        {% endfor %}
-      </ul>
-    </details>
-  </section>
+  <aside class="review__aside">
+    <section class="form-card">
+      <h2 class="form-card__title">Animal</h2>
+      <p class="review__animal">
+        <a href="/animales/{{ s.animal.id }}"><strong>{{ s.animal.nombre }}</strong></a>, {{ s.animal.especie|lower }}
+      </p>
+      <p class="review__animal">
+        Estado actual: <span class="badge badge--{{ s.animal.estado }}">{{ s.animal.estado|replace('_', ' ')|capitalize }}</span>
+      </p>
+    </section>
 
-  {% if not fundacion.activa %}
-    <p class="review-detail__warning">Tu fundación está suspendida: solo puedes consultar.</p>
+    {% if not fundacion.activa %}
+    <div class="flash flash--warning" role="status">
+      {{ icono('alerta', 'flash__icon') }}
+      <p class="flash__text">Tu fundación está suspendida: solo puedes consultar.</p>
+    </div>
 
-  {% elif s.estado == 'pendiente' %}
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Decisión</h3>
-    <div class="grid">
+    {% elif s.estado == 'pendiente' %}
+    <section class="form-card decision">
+      <h2 class="form-card__title">Decisión</h2>
       <form method="post" action="/fundacion/solicitudes/{{ s.id }}/aprobar">
-        <label>Observación (opcional)
+        <label>Observación <span class="form-optional">(opcional)</span>
           <textarea name="observacion" rows="2" maxlength="500"></textarea>
         </label>
-        <button type="submit">Aprobar</button>
+        <button class="decision__button" type="submit">{{ icono('check') }} Aprobar</button>
       </form>
-      <form method="post" action="/fundacion/solicitudes/{{ s.id }}/rechazar">
-        <label>Motivo del rechazo *
-          <textarea name="observacion" rows="2" maxlength="500" required minlength="5"></textarea>
-        </label>
-        <button class="secondary" type="submit">Rechazar</button>
-      </form>
-    </div>
-    <p class="review-detail__note">
-      Al aprobar, el animal pasa a «en proceso» y las demás solicitudes pendientes de este animal se rechazan automáticamente.
-    </p>
-  </section>
+      <p class="form-card__hint">{{ icono('info') }} Al aprobar, el animal pasa a «en proceso» y las demás solicitudes pendientes de este animal se rechazan automáticamente.</p>
+      <details class="decision__other">
+        <summary>Rechazar solicitud</summary>
+        <form method="post" action="/fundacion/solicitudes/{{ s.id }}/rechazar">
+          <label>Motivo del rechazo *
+            <textarea name="observacion" rows="2" maxlength="500" required minlength="5"></textarea>
+          </label>
+          <button class="decision__button button--danger" type="submit">Rechazar</button>
+        </form>
+      </details>
+    </section>
 
-  {% elif s.estado == 'aprobada' %}
-  <section class="review-detail__section">
-    <h3 class="review-detail__subtitle">Seguimiento</h3>
-    <div class="grid">
+    {% elif s.estado == 'aprobada' %}
+    <section class="form-card decision">
+      <h2 class="form-card__title">Cierre de la adopción</h2>
       <form method="post" action="/fundacion/solicitudes/{{ s.id }}/finalizar">
-        <label>Observación (opcional)
+        <label>Observación <span class="form-optional">(opcional)</span>
           <textarea name="observacion" rows="2" maxlength="500"></textarea>
         </label>
-        <button type="submit">Confirmar adopción</button>
+        <button class="decision__button" type="submit">{{ icono('check') }} Confirmar adopción</button>
       </form>
-      <form method="post" action="/fundacion/solicitudes/{{ s.id }}/revocar">
-        <label>Motivo de la revocación *
-          <textarea name="observacion" rows="2" maxlength="500" required minlength="5"></textarea>
-        </label>
-        <button class="secondary" type="submit">Revocar aprobación</button>
-      </form>
-    </div>
-    <p class="review-detail__note">
-      Confirmar la adopción deja al animal como «adoptado». Revocar lo devuelve a «disponible».
-    </p>
-  </section>
-  {% endif %}
-</article>
+      <p class="form-card__hint">{{ icono('info') }} Confirmar deja al animal como «adoptado». Revocar lo devuelve a «disponible».</p>
+      <details class="decision__other">
+        <summary>Revocar aprobación</summary>
+        <form method="post" action="/fundacion/solicitudes/{{ s.id }}/revocar">
+          <label>Motivo de la revocación *
+            <textarea name="observacion" rows="2" maxlength="500" required minlength="5"></textarea>
+          </label>
+          <button class="decision__button button--danger" type="submit">Revocar aprobación</button>
+        </form>
+      </details>
+    </section>
+    {% endif %}
+
+    {% if s.estado in ['aprobada', 'finalizada'] %}
+    <a class="secondary review__pdf" href="/fundacion/solicitudes/{{ s.id }}/aprobacion.pdf"
+       target="_blank" rel="noopener" role="button">{{ icono('pdf') }} Hoja de aprobación (PDF)</a>
+    {% endif %}
+  </aside>
+</div>
+
+<section class="form-card review__tracking">
+  <h2 class="form-card__title">Seguimiento</h2>
+  {{ mostrar_linea_tiempo(s) }}
+  <details class="review__log">
+    <summary>Registro detallado</summary>
+    <ul class="review__history">
+      {% for h in s.historial %}
+      <li>
+        <span class="review__history-date">{{ (h.fecha|hora_ec).strftime('%d/%m/%Y %H:%M') }}</span>
+        {{ h.estado_anterior|capitalize if h.estado_anterior else 'Inicio' }} {{ icono('flecha_derecha') }}
+        <strong>{{ h.estado_nuevo|capitalize }}</strong>
+        {% if h.observacion %}<span class="review__history-note">{{ h.observacion }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </details>
+</section>
 {% endblock %}

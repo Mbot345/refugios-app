@@ -1,188 +1,194 @@
 {% extends "base.html" %}
 {% block title %}{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}{% endblock %}
 {% block content %}
-<article class="animal-form">
-  <h2 class="animal-form__title">{% if animal %}Editar animal{% else %}Nuevo animal{% endif %}</h2>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/fundacion/animales">{{ icono('flecha_izquierda') }} Volver a animales</a>
+</nav>
 
-  <form id="animal-form" class="animal-form__form" method="post"
-        action="{% if animal %}/fundacion/animales/{{ animal.id }}/editar{% else %}/fundacion/animales{% endif %}">
-
-    <label class="animal-form__label">Nombre
-      <input class="animal-form__input" type="text" name="nombre" maxlength="80"
-             value="{{ datos.nombre or '' }}" required autofocus>
-    </label>
-
-    <div class="grid">
-      <label class="animal-form__label">Especie
-        <select class="animal-form__select" name="especie" required>
-          <option value="" disabled {% if not datos.especie %}selected{% endif %}>Selecciona...</option>
-          {% for e in especies %}
-            <option value="{{ e }}" {% if datos.especie == e %}selected{% endif %}>{{ e }}</option>
-          {% endfor %}
-        </select>
-      </label>
-
-      <label class="animal-form__label">Sexo
-        <select class="animal-form__select" name="sexo" required>
-          <option value="" disabled {% if not datos.sexo %}selected{% endif %}>Selecciona...</option>
-          {% for s in sexos %}
-            <option value="{{ s }}" {% if datos.sexo == s %}selected{% endif %}>{{ s }}</option>
-          {% endfor %}
-        </select>
-      </label>
-    </div>
-
-    <div class="grid">
-      <label class="animal-form__label">Raza (opcional)
-        <input class="animal-form__input" type="text" name="raza" maxlength="80"
-               value="{{ datos.raza or '' }}">
-      </label>
-
-      <label class="animal-form__label">Tamaño
-        <select class="animal-form__select" name="tamano" required>
-          <option value="" disabled {% if not datos.tamano %}selected{% endif %}>Selecciona...</option>
-          {% for t in tamanos %}
-            <option value="{{ t }}" {% if datos.tamano == t %}selected{% endif %}>{{ t|capitalize }}</option>
-          {% endfor %}
-        </select>
-      </label>
-    </div>
-
-    <div class="grid">
-      <label class="animal-form__label">Edad aproximada en meses (opcional)
-        <input class="animal-form__input" type="number" name="edad_meses" min="0" max="360"
-               value="{{ datos.edad_meses or '' }}">
-      </label>
-
-      <label class="animal-form__label">Estado de salud
-        <input class="animal-form__input" type="text" name="estado_salud" maxlength="100"
-               value="{{ datos.estado_salud or '' }}" required>
-      </label>
-    </div>
-
-    <p class="animal-form__info">Fundación: <strong>{{ user.fundacion.nombre }}</strong></p>
-
-    {% if animal %}
-    <p class="animal-form__info">Estado actual:
-      <strong>{{ animal.estado|replace('_', ' ')|capitalize }}</strong>
-      (cambia automáticamente con las solicitudes de preadopción)
+<header class="page-header page-header--row">
+  <div>
+    <h1 class="page-header__title">{% if animal %}{{ animal.nombre }}{% else %}Nuevo animal{% endif %}</h1>
+    <p class="page-header__text">
+      {{ user.fundacion.nombre }}
+      {% if animal %}
+        · Estado: <span class="badge badge--{{ animal.estado }}">{{ animal.estado|replace('_', ' ')|capitalize }}</span>
+      {% endif %}
     </p>
-    {% endif %}
+  </div>
+  {% if animal %}
+  <a class="page-header__action secondary" href="/animales/{{ animal.id }}" target="_blank" rel="noopener" role="button">
+    {{ icono('ver') }} Ver ficha pública
+  </a>
+  {% endif %}
+</header>
 
-    <label class="animal-form__label">Descripción (opcional)
-      <textarea class="animal-form__textarea" name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
-    </label>
-  </form>
+<div class="form-stack">
+  <section class="form-card">
+    <h2 class="form-card__title">Datos del animal</h2>
+    <form id="animal-form" method="post"
+          action="{% if animal %}/fundacion/animales/{{ animal.id }}/editar{% else %}/fundacion/animales{% endif %}">
+
+      <label>Nombre
+        <input type="text" name="nombre" maxlength="80" value="{{ datos.nombre or '' }}" required autofocus>
+      </label>
+
+      <div class="form-grid">
+        <label>Especie
+          <select name="especie" required>
+            <option value="" disabled {% if not datos.especie %}selected{% endif %}>Selecciona...</option>
+            {% for e in especies %}
+              <option value="{{ e }}" {% if datos.especie == e %}selected{% endif %}>{{ e }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label>Sexo
+          <select name="sexo" required>
+            <option value="" disabled {% if not datos.sexo %}selected{% endif %}>Selecciona...</option>
+            {% for s in sexos %}
+              <option value="{{ s }}" {% if datos.sexo == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label>Raza <span class="form-optional">(opcional)</span>
+          <input type="text" name="raza" maxlength="80" value="{{ datos.raza or '' }}">
+        </label>
+
+        <label>Tamaño
+          <select name="tamano" required>
+            <option value="" disabled {% if not datos.tamano %}selected{% endif %}>Selecciona...</option>
+            {% for t in tamanos %}
+              <option value="{{ t }}" {% if datos.tamano == t %}selected{% endif %}>{{ t|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label>Edad aproximada en meses <span class="form-optional">(opcional)</span>
+          <input type="number" name="edad_meses" min="0" max="360" value="{{ datos.edad_meses or '' }}">
+        </label>
+
+        <label>Estado de salud
+          <input type="text" name="estado_salud" maxlength="100" value="{{ datos.estado_salud or '' }}" required>
+        </label>
+      </div>
+
+      <label>Descripción <span class="form-optional">(opcional)</span>
+        <textarea name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
+      </label>
+
+      {% if animal %}
+      <p class="form-card__hint">{{ icono('info') }} El estado cambia automáticamente con las solicitudes de preadopción.</p>
+      {% endif %}
+    </form>
+  </section>
 
   {% if animal %}
-  <section class="animal-form__section">
-    <h3 class="animal-form__subtitle">Fotografías ({{ animal.fotos|length }}/4)</h3>
+  <section class="form-card">
+    <h2 class="form-card__title">Fotografías <span class="form-card__count">{{ animal.fotos|length }} de 4</span></h2>
 
     {% if animal.fotos %}
-    <div class="animal-form__photos">
+    <div class="photo-grid">
       {% for foto in animal.fotos %}
-      <figure class="animal-form__photo">
-        <img class="animal-form__photo-image" src="/fotos/{{ foto.id }}" alt="Foto de {{ animal.nombre }}">
-        <figcaption class="animal-form__photo-actions">
+      <figure class="photo-grid__item">
+        <img class="photo-grid__image" src="/fotos/{{ foto.id }}" alt="Foto {{ loop.index }} de {{ animal.nombre }}">
+        <figcaption class="photo-grid__actions">
           {% if foto.es_principal %}
-            <strong>Principal</strong>
+            <span class="badge badge--aprobada">Principal</span>
           {% else %}
-            <form method="post" action="/fundacion/animales/{{ animal.id }}/fotos/{{ foto.id }}/principal">
-              <button class="secondary animal-form__mini" type="submit">Hacer principal</button>
+            <form class="row-actions__form" method="post" action="/fundacion/animales/{{ animal.id }}/fotos/{{ foto.id }}/principal">
+              <button class="row-actions__link" type="submit">Hacer principal</button>
             </form>
           {% endif %}
-          <form method="post" action="/fundacion/animales/{{ animal.id }}/fotos/{{ foto.id }}/eliminar"
+          <form class="row-actions__form" method="post" action="/fundacion/animales/{{ animal.id }}/fotos/{{ foto.id }}/eliminar"
                 onsubmit="return confirm('¿Eliminar esta foto?')">
-            <button class="animal-form__delete" type="submit">Eliminar</button>
+            <button class="row-actions__link row-actions__link--danger" type="submit" aria-label="Eliminar foto {{ loop.index }}">
+              {{ icono('eliminar') }}
+            </button>
           </form>
         </figcaption>
       </figure>
       {% endfor %}
     </div>
     {% else %}
-    <p class="animal-form__muted">Aún no hay fotos.</p>
+    <p class="form-card__muted">Aún no hay fotos.</p>
     {% endif %}
 
     {% if animal.fotos|length < 4 %}
-    <form class="animal-form__upload" method="post" enctype="multipart/form-data"
-          action="/fundacion/animales/{{ animal.id }}/fotos">
-      <input type="file" name="archivo" accept="image/jpeg,image/png,image/webp" required>
-      <button class="secondary" type="submit">Subir foto</button>
-      <small>JPG, PNG o WEBP, máximo 3 MB. La primera foto queda como principal.</small>
+    <form class="upload" method="post" enctype="multipart/form-data" action="/fundacion/animales/{{ animal.id }}/fotos">
+      <input class="upload__input" type="file" name="archivo" accept="image/jpeg,image/png,image/webp"
+             aria-label="Elegir foto" aria-describedby="ayuda-foto" required>
+      <button class="upload__button secondary" type="submit">{{ icono('imagen') }} Subir foto</button>
+      <small id="ayuda-foto" class="upload__help">JPG, PNG o WEBP, máximo 3 MB. La primera foto queda como principal.</small>
     </form>
     {% endif %}
   </section>
-  
-  <section class="animal-form__section">
-    <h3 class="animal-form__subtitle">Información sanitaria</h3>
+
+  <section class="form-card">
+    <h2 class="form-card__title">Información sanitaria</h2>
 
     {% if animal.registros_sanitarios %}
-    <div class="overflow-auto">
-      <table class="animal-form__table">
-        <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th></th></tr></thead>
-        <tbody>
-          {% for r in animal.registros_sanitarios|sort(attribute='fecha', reverse=true) %}
-          <tr>
-            <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
-            <td>{{ r.tipo|capitalize }}</td>
-            <td>{{ r.descripcion }}</td>
-            <td>
-              <form method="post"
-                    action="/fundacion/animales/{{ animal.id }}/sanitario/{{ r.id }}/eliminar"
-                    onsubmit="return confirm('¿Eliminar este registro sanitario?')">
-                <button class="animal-form__delete" type="submit">Eliminar</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <ul class="record-list">
+      {% for r in animal.registros_sanitarios|sort(attribute='fecha', reverse=true) %}
+      <li class="record-list__item">
+        <span class="record-list__date">{{ r.fecha.strftime('%d/%m/%Y') }}</span>
+        <span class="tag">{{ r.tipo|replace('_', ' ')|capitalize }}</span>
+        <span class="record-list__text">{{ r.descripcion }}</span>
+        <form class="row-actions__form" method="post"
+              action="/fundacion/animales/{{ animal.id }}/sanitario/{{ r.id }}/eliminar"
+              onsubmit="return confirm('¿Eliminar este registro sanitario?')">
+          <button class="row-actions__link row-actions__link--danger" type="submit"
+                  aria-label="Eliminar registro del {{ r.fecha.strftime('%d/%m/%Y') }}">{{ icono('eliminar') }}</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
     {% else %}
-    <p class="animal-form__muted">Aún no hay registros sanitarios.</p>
+    <p class="form-card__muted">Aún no hay registros sanitarios.</p>
     {% endif %}
 
-    <form class="animal-form__sanitary" method="post"
-          action="/fundacion/animales/{{ animal.id }}/sanitario">
-      <div class="grid">
-        <select name="tipo" aria-label="Tipo de registro" required>
-          <option value="" disabled selected>Tipo...</option>
+    <form class="inline-form inline-form--flat" method="post" action="/fundacion/animales/{{ animal.id }}/sanitario">
+      <label class="inline-form__field inline-form__field--small">Tipo
+        <select name="tipo" required>
+          <option value="" disabled selected>Selecciona...</option>
           {% for t in tipos_sanitarios %}
-            <option value="{{ t }}">{{ t|capitalize }}</option>
+            <option value="{{ t }}">{{ t|replace('_', ' ')|capitalize }}</option>
           {% endfor %}
         </select>
-        <input type="text" name="descripcion" maxlength="300" placeholder="Descripción" required>
-        <input type="date" name="fecha" aria-label="Fecha" required>
-      </div>
-      <button class="secondary" type="submit">+ Agregar</button>
+      </label>
+      <label class="inline-form__field">Descripción
+        <input type="text" name="descripcion" maxlength="300" placeholder="Ej.: antirrábica" required>
+      </label>
+      <label class="inline-form__field inline-form__field--small">Fecha
+        <input type="date" name="fecha" required>
+      </label>
+      <button class="inline-form__button secondary" type="submit">{{ icono('mas') }} Agregar</button>
     </form>
   </section>
 
-  <section class="animal-form__section">
-    <h3 class="animal-form__subtitle">Código QR</h3>
-    <div class="animal-form__qr">
-      <img class="animal-form__qr-image" src="/animales/{{ animal.id }}/qr.png"
-           alt="Código QR de {{ animal.nombre }}" width="160" height="160">
+  <section class="form-card">
+    <h2 class="form-card__title">Código QR</h2>
+    <div class="qr-block">
+      <img class="qr-block__image" src="/animales/{{ animal.id }}/qr.png"
+           alt="Código QR de {{ animal.nombre }}" width="150" height="150">
       <div>
-        <p class="animal-form__muted">
+        <p class="form-card__muted">
           Al escanearlo se abre la ficha técnica del animal en PDF. Puedes imprimirlo para el refugio o el collar.
         </p>
-        <div class="animal-form__qr-actions">
-          <a class="secondary" href="/animales/{{ animal.id }}/qr.png?descargar=1" role="button">Descargar QR</a>
-          <a class="secondary" href="/animales/{{ animal.id }}/ficha.pdf" target="_blank" rel="noopener" role="button">Ver ficha técnica</a>
+        <div class="button-row">
+          <a class="secondary" href="/animales/{{ animal.id }}/qr.png?descargar=1" role="button">{{ icono('descargar') }} Descargar QR</a>
+          <a class="secondary" href="/animales/{{ animal.id }}/ficha.pdf" target="_blank" rel="noopener" role="button">{{ icono('pdf') }} Ver ficha técnica</a>
         </div>
       </div>
     </div>
   </section>
   {% else %}
-  <p class="animal-form__muted">
-    Después de guardar podrás agregar fotos, información sanitaria y descargar el código QR del animal.
-  </p>
+  <p class="form-card__hint">{{ icono('info') }} Después de guardar podrás agregar fotos, información sanitaria y descargar el código QR.</p>
   {% endif %}
 
-  <div class="animal-form__actions">
-    <button class="animal-form__button" type="submit" form="animal-form">Guardar</button>
-    <a class="animal-form__button animal-form__button--cancel secondary" href="/fundacion/animales" role="button">Cancelar</a>
+  <div class="form-actions">
+    <a class="secondary" href="/fundacion/animales" role="button">Cancelar</a>
+    <button type="submit" form="animal-form">Guardar</button>
   </div>
-</article>
+</div>
 {% endblock %}

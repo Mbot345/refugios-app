@@ -1,33 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Eventos{% endblock %}
 {% block content %}
-<article class="admin-list">
-  <header class="admin-list__header">
-    <h2 class="admin-list__title">Eventos (supervisión)</h2>
-    <a class="admin-list__back secondary" href="/admin" role="button">Volver al panel</a>
-  </header>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/admin">{{ icono('flecha_izquierda') }} Volver al panel</a>
+</nav>
 
-  {% if eventos %}
-  <div class="overflow-auto">
-    <table class="admin-list__table">
-      <thead>
-        <tr><th>Fecha</th><th>Título</th><th>Fundación</th><th>Lugar</th><th>Estado</th></tr>
-      </thead>
-      <tbody>
-        {% for e in eventos %}
-        <tr>
-          <td>{{ e.fecha.strftime('%d/%m/%Y') }}</td>
-          <td>{{ e.titulo }}</td>
-          <td>{{ e.fundacion.nombre }}</td>
-          <td>{{ e.lugar }}</td>
-          <td>{{ e.estado_visible|capitalize }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-  <p class="admin-list__empty">Aún no hay eventos registrados.</p>
-  {% endif %}
-</article>
+<header class="page-header">
+  <h1 class="page-header__title">Eventos</h1>
+  <p class="page-header__text">Supervisión de los eventos de todas las fundaciones. Solo lectura.</p>
+</header>
+
+{% if eventos %}
+<div class="table-card">
+  <table class="table-card__table">
+    <thead><tr><th>Fecha</th><th>Título</th><th>Fundación</th><th>Lugar</th><th>Estado</th></tr></thead>
+    <tbody>
+      {% for e in eventos %}
+      <tr>
+        <td class="table-card__nowrap">{{ e.fecha.strftime('%d/%m/%Y') }}</td>
+        <td><strong>{{ e.titulo }}</strong></td>
+        <td>{{ e.fundacion.nombre }}</td>
+        <td>{{ e.lugar }}</td>
+        <td><span class="badge badge--{{ e.estado_visible }}">{{ e.estado_visible|capitalize }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('calendario', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no hay eventos registrados</p>
+</div>
+{% endif %}
 {% endblock %}

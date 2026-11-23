@@ -1,42 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Solicitudes{% endblock %}
 {% block content %}
-<article class="review-list">
-  <header class="review-list__header">
-    <h2 class="review-list__title">Solicitudes de preadopción</h2>
-    <a class="review-list__back secondary" href="/fundacion" role="button">Volver al panel</a>
-  </header>
+<header class="page-header">
+  <h1 class="page-header__title">Solicitudes de preadopción</h1>
+  <p class="page-header__text">Entra a cada solicitud para ver los datos del solicitante y decidir.</p>
+</header>
 
-  <form class="review-list__filter" method="get" action="/fundacion/solicitudes">
-    <select name="estado" aria-label="Estado" onchange="this.form.submit()">
-      <option value="">Todos los estados</option>
-      {% for e in estados %}
-      <option value="{{ e }}" {% if estado == e %}selected{% endif %}>{{ e|capitalize }}</option>
+<nav class="tabs tabs--wrap" aria-label="Filtrar por estado">
+  <a class="tabs__item{% if not estado %} tabs__item--active{% endif %}" href="/fundacion/solicitudes"
+     {% if not estado %}aria-current="page"{% endif %}>Todas</a>
+  {% for e in estados %}
+  <a class="tabs__item{% if estado == e %} tabs__item--active{% endif %}" href="/fundacion/solicitudes?estado={{ e }}"
+     {% if estado == e %}aria-current="page"{% endif %}>{{ e|capitalize }}</a>
+  {% endfor %}
+</nav>
+
+{% if solicitudes %}
+<div class="table-card">
+  <table class="table-card__table">
+    <thead>
+      <tr><th>Fecha</th><th>Animal</th><th>Solicitante</th><th>Estado</th><th><span class="visually-hidden">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for s in solicitudes %}
+      <tr>
+        <td class="table-card__nowrap">{{ (s.fecha_solicitud|hora_ec).strftime('%d/%m/%Y') }}</td>
+        <td><strong>{{ s.animal.nombre }}</strong></td>
+        <td>{{ s.nombres_completos }}</td>
+        <td><span class="badge badge--{{ s.estado }}">{{ s.estado|capitalize }}</span></td>
+        <td>
+          <div class="row-actions">
+            <a class="row-actions__link" href="/fundacion/solicitudes/{{ s.id }}">
+              {% if s.estado == 'pendiente' %}Revisar{% else %}Ver detalle{% endif %} {{ icono('chevron_derecha') }}
+            </a>
+          </div>
+        </td>
+      </tr>
       {% endfor %}
-    </select>
-  </form>
-
-  {% if solicitudes %}
-  <div class="overflow-auto">
-    <table class="review-list__table">
-      <thead>
-        <tr><th>Fecha</th><th>Animal</th><th>Solicitante</th><th>Estado</th><th></th></tr>
-      </thead>
-      <tbody>
-        {% for s in solicitudes %}
-        <tr>
-          <td>{{ s.fecha_solicitud.strftime('%d/%m/%Y') }}</td>
-          <td>{{ s.animal.nombre }}</td>
-          <td>{{ s.nombres_completos }}</td>
-          <td><span class="review__badge review__badge--{{ s.estado }}">{{ s.estado|capitalize }}</span></td>
-          <td><a href="/fundacion/solicitudes/{{ s.id }}">Revisar</a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-  <p class="review-list__empty">No hay solicitudes con ese filtro.</p>
-  {% endif %}
-</article>
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('solicitudes', 'empty-state__icon') }}
+  <p class="empty-state__title">No hay solicitudes {% if estado %}en estado «{{ estado }}»{% endif %}</p>
+  {% if estado %}<a class="secondary" href="/fundacion/solicitudes" role="button">Ver todas</a>{% endif %}
+</div>
+{% endif %}
 {% endblock %}

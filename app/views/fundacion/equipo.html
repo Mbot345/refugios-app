@@ -1,63 +1,69 @@
 {% extends "base.html" %}
 {% block title %}Equipo{% endblock %}
 {% block content %}
-<article class="foundation-team">
-  <header class="foundation-team__header">
-    <h2 class="foundation-team__title">Equipo de {{ fundacion.nombre }}</h2>
-    <a class="foundation-team__back secondary" href="/fundacion" role="button">Volver</a>
-  </header>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/fundacion">{{ icono('flecha_izquierda') }} Volver a mi fundación</a>
+</nav>
 
-  <form class="foundation-team__add" method="post" action="/fundacion/equipo/agregar">
-    <div class="grid">
-      <label class="foundation-team__label">Usuario o correo (debe estar registrado)
-        <input class="foundation-team__input" type="text" name="identificador"
-               value="{{ datos.identificador or '' }}" required>
-      </label>
-      <label class="foundation-team__label">Rol
-        <select class="foundation-team__select" name="rol" required>
-          <option value="" disabled {% if not datos.rol %}selected{% endif %}>Selecciona...</option>
-          {% for r in roles %}
-            <option value="{{ r }}" {% if datos.rol == r %}selected{% endif %}>{{ r|rol_nombre }}</option>
-          {% endfor %}
-        </select>
-      </label>
-    </div>
-    <button class="foundation-team__button" type="submit">Agregar al equipo</button>
-  </form>
+<header class="page-header">
+  <h1 class="page-header__title">Equipo de {{ fundacion.nombre }}</h1>
+  <p class="page-header__text">Agrega a personas que ya tengan cuenta y dales un rol.</p>
+</header>
 
-  <div class="overflow-auto">
-    <table class="foundation-team__table">
-      <thead>
-        <tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr>
-      </thead>
-      <tbody>
-        {% for m in equipo %}
-        <tr>
-          <td>{{ m.username }}</td>
-          <td>{{ m.email }}</td>
-          <td>{{ m.rol|rol_nombre }}</td>
-          <td>
-            {% if m.id == user.id %}
-              <span class="foundation-team__you">Tú</span>
-            {% else %}
-              <form class="foundation-team__inline-form" method="post" action="/fundacion/equipo/{{ m.id }}/rol">
-                <select class="foundation-team__select foundation-team__select--small" name="rol">
-                  {% for r in roles %}
-                    <option value="{{ r }}" {% if m.rol == r %}selected{% endif %}>{{ r|rol_nombre }}</option>
-                  {% endfor %}
-                </select>
-                <button class="foundation-team__button foundation-team__button--small" type="submit">Cambiar</button>
-              </form>
-              <form class="foundation-team__inline-form" method="post" action="/fundacion/equipo/{{ m.id }}/quitar"
-                    onsubmit="return confirm('¿Quitar a este miembro del equipo?')">
-                <button class="foundation-team__button foundation-team__button--small secondary" type="submit">Quitar</button>
-              </form>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</article>
+<form class="inline-form" method="post" action="/fundacion/equipo/agregar">
+  <label class="inline-form__field">Usuario o correo
+    <input type="text" name="identificador" value="{{ datos.identificador or '' }}"
+           aria-describedby="ayuda-identificador" required>
+    <small id="ayuda-identificador">Debe estar registrado en la plataforma.</small>
+  </label>
+  <label class="inline-form__field">Rol
+    <select name="rol" required>
+      <option value="" disabled {% if not datos.rol %}selected{% endif %}>Selecciona...</option>
+      {% for r in roles %}
+        <option value="{{ r }}" {% if datos.rol == r %}selected{% endif %}>{{ r|rol_nombre }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button class="inline-form__button" type="submit">{{ icono('mas') }} Agregar al equipo</button>
+</form>
+
+<div class="table-card">
+  <table class="table-card__table">
+    <thead>
+      <tr><th>Usuario</th><th>Correo</th><th>Rol</th><th><span class="visually-hidden">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for m in equipo %}
+      <tr>
+        <td><strong>{{ m.username }}</strong></td>
+        <td>{{ m.email }}</td>
+        <td>
+          {% if m.id == user.id %}
+            {{ m.rol|rol_nombre }} <span class="tag">Tú</span>
+          {% else %}
+            <form id="rol-{{ m.id }}" class="row-actions__form" method="post" action="/fundacion/equipo/{{ m.id }}/rol">
+              <select class="table-card__select" name="rol" aria-label="Rol de {{ m.username }}">
+                {% for r in roles %}
+                  <option value="{{ r }}" {% if m.rol == r %}selected{% endif %}>{{ r|rol_nombre }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          {% endif %}
+        </td>
+        <td>
+          {% if m.id != user.id %}
+          <div class="row-actions">
+            <button class="row-actions__link" type="submit" form="rol-{{ m.id }}">{{ icono('check') }} Guardar rol</button>
+            <form class="row-actions__form" method="post" action="/fundacion/equipo/{{ m.id }}/quitar"
+                  onsubmit="return confirm('¿Quitar a este miembro del equipo?')">
+              <button class="row-actions__link row-actions__link--danger" type="submit">Quitar</button>
+            </form>
+          </div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

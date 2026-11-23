@@ -1,47 +1,64 @@
 {% extends "base.html" %}
 {% block title %}Fundaciones{% endblock %}
-{% block content %}<article class="admin-list">
-    <header class="admin-list__header">
-        <h2>Fundaciones</h2>
-        <div>
-            <a href="/admin" role="button" class="secondary">Volver al panel</a>
+{% block content %}
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/admin">{{ icono('flecha_izquierda') }} Volver al panel</a>
+</nav>
+
+<header class="page-header page-header--row">
+  <div>
+    <h1 class="page-header__title">Fundaciones</h1>
+    <p class="page-header__text">Fundaciones registradas en la plataforma.</p>
+  </div>
+  {% if user.rol == 'admin' %}
+  <a class="page-header__action" href="/admin/fundaciones/nueva" role="button">{{ icono('mas') }} Nueva fundación</a>
+  {% endif %}
+</header>
+
+{% if fundaciones %}
+<div class="table-card">
+  <table class="table-card__table">
+    <thead>
+      <tr><th>Nombre</th><th>Ubicación</th><th>Contacto</th><th>Estado</th><th><span class="visually-hidden">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for f in fundaciones %}
+      <tr>
+        <td><strong>{{ f.nombre }}</strong></td>
+        <td>{{ f.ciudad.nombre }}, {{ f.ciudad.provincia.nombre }}</td>
+        <td>
+          {{ f.email_contacto }}
+          {% if f.telefono %}<span class="table-card__sub">{{ f.telefono }}</span>{% endif %}
+        </td>
+        <td>
+          <span class="badge badge--{{ 'activa' if f.activa else 'suspendida' }}">
+            {{ 'Activa' if f.activa else 'Suspendida' }}
+          </span>
+        </td>
+        <td>
+          <div class="row-actions">
+            <a class="row-actions__link" href="/admin/fundaciones/{{ f.id }}/estadisticas">{{ icono('estadisticas') }} Estadísticas</a>
             {% if user.rol == 'admin' %}
-            <a href="/admin/fundaciones/nueva" role="button">+ Nueva fundación</a>
+            <a class="row-actions__link" href="/admin/fundaciones/{{ f.id }}/editar">{{ icono('editar') }} Editar</a>
             {% endif %}
-        </div>
-    </header>
-    {% if fundaciones %}<div class="overflow-auto">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Ubicación</th>
-                    <th>Contacto</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for f in fundaciones %}<tr>
-                    <td>{{ f.nombre }}</td>
-                    <td>{{ f.ciudad.nombre }}, {{ f.ciudad.provincia.nombre }}</td>
-                    <td>{{ f.email_contacto }}<br>{{ f.telefono or '' }}</td>
-                    <td>{{ 'Activa' if f.activa else 'Suspendida' }}</td>
-                    <td class="admin-list__actions">
-                        <a class="admin-list__action" href="/admin/fundaciones/{{ f.id }}/estadisticas">Estadísticas</a>
-                        {% if user.rol == 'admin' %}
-                        <a class="admin-list__action" href="/admin/fundaciones/{{ f.id }}/editar">Editar</a>
-                        {% endif %}
-                        {% if f.activa or user.rol == 'admin' %}
-                        <form class="admin-list__form" method="post" action="/admin/fundaciones/{{ f.id }}/estado">
-                            <button class="admin-list__action admin-list__action--danger" type="submit">
-                                {{ 'Suspender' if f.activa else 'Reactivar' }}
-                            </button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>{% endfor %}
-            </tbody>
-        </table>
-    </div>{% else %}<p class="admin-list__empty">Aún no hay fundaciones registradas.</p>{% endif %}
-</article>{% endblock %}
+            {% if f.activa or user.rol == 'admin' %}
+            <form class="row-actions__form" method="post" action="/admin/fundaciones/{{ f.id }}/estado">
+              <button class="row-actions__link {% if f.activa %}row-actions__link--danger{% endif %}" type="submit">
+                {{ 'Suspender' if f.activa else 'Reactivar' }}
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('fundacion', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no hay fundaciones registradas</p>
+</div>
+{% endif %}
+{% endblock %}

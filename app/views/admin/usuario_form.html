@@ -1,42 +1,43 @@
 {% extends "base.html" %}
-
 {% block title %}Editar usuario{% endblock %}
-
 {% block content %}
-<article class="admin-form">
-    <h2>Editar usuario</h2>
-    <p><strong>{{ objetivo.username }}</strong> · {{ objetivo.email }}</p>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/admin/usuarios">{{ icono('flecha_izquierda') }} Volver a usuarios</a>
+</nav>
 
-    <form method="post" action="/admin/usuarios/{{ objetivo.id }}/editar">
-        <label>
-            Rol
-            <select id="rol" name="rol" data-roles-fundacion="{{ ROLES_FUNDACION|join(',') }}" required>
-                {% for r in roles %}
-                <option value="{{ r }}" {% if datos.rol == r %}selected{% endif %}>
-                    {{ r|rol_nombre }}
-                </option>
-                {% endfor %}
-            </select>
-        </label>
+<header class="page-header">
+  <h1 class="page-header__title">Editar usuario</h1>
+  <p class="page-header__text"><strong>{{ objetivo.username }}</strong>, {{ objetivo.email }}</p>
+</header>
 
-        <label id="fundacion-wrapper">
-            Fundación (solo para roles de fundación)
-            <select name="fundacion_id">
-                <option value="">Selecciona...</option>
-                {% for f in fundaciones %}
-                <option value="{{ f.id }}" {% if datos.fundacion_id|string == f.id|string %}selected{% endif %}>
-                    {{ f.nombre }}
-                </option>
-                {% endfor %}
-            </select>
-        </label>
+<div class="form-stack">
+  <section class="form-card">
+    <form id="usuario-form" class="admin-form" method="post" action="/admin/usuarios/{{ objetivo.id }}/editar">
+      <label>Rol
+        <select id="rol" name="rol" data-roles-fundacion="{{ ROLES_FUNDACION|join(',') }}" required>
+          {% for r in roles %}
+          <option value="{{ r }}" {% if datos.rol == r %}selected{% endif %}>{{ r|rol_nombre }}</option>
+          {% endfor %}
+        </select>
+      </label>
 
-        <div class="admin-form__actions">
-            <button type="submit">Guardar</button>
-            <a href="/admin/usuarios" role="button" class="secondary">Cancelar</a>
-        </div>
+      <label id="fundacion-wrapper">Fundación
+        <select name="fundacion_id" aria-describedby="ayuda-fundacion">
+          <option value="">Selecciona...</option>
+          {% for f in fundaciones %}
+          <option value="{{ f.id }}" {% if datos.fundacion_id|string == f.id|string %}selected{% endif %}>{{ f.nombre }}</option>
+          {% endfor %}
+        </select>
+        <small id="ayuda-fundacion">Solo para los roles de fundación.</small>
+      </label>
     </form>
-</article>
+  </section>
+
+  <div class="form-actions">
+    <a class="secondary" href="/admin/usuarios" role="button">Cancelar</a>
+    <button type="submit" form="usuario-form">Guardar</button>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

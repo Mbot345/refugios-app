@@ -1,33 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Animales{% endblock %}
 {% block content %}
-<article class="admin-list">
-  <header class="admin-list__header">
-    <h2 class="admin-list__title">Animales (supervisión)</h2>
-    <a class="admin-list__back secondary" href="/admin" role="button">Volver al panel</a>
-  </header>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/admin">{{ icono('flecha_izquierda') }} Volver al panel</a>
+</nav>
 
-  {% if animales %}
-  <div class="overflow-auto">
-    <table class="admin-list__table">
-      <thead>
-        <tr><th>Nombre</th><th>Especie</th><th>Tamaño</th><th>Fundación</th><th>Estado</th></tr>
-      </thead>
-      <tbody>
-        {% for a in animales %}
-        <tr>
-          <td>{{ a.nombre }}</td>
-          <td>{{ a.especie }}</td>
-          <td>{{ a.tamano|capitalize }}</td>
-          <td>{{ a.fundacion.nombre }}</td>
-          <td>{{ a.estado|replace('_', ' ')|capitalize }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-  <p class="admin-list__empty">Aún no hay animales registrados.</p>
-  {% endif %}
-</article>
+<header class="page-header">
+  <h1 class="page-header__title">Animales</h1>
+  <p class="page-header__text">Supervisión de los animales de todas las fundaciones. Solo lectura.</p>
+</header>
+
+{% if animales %}
+<div class="table-card">
+  <table class="table-card__table">
+    <thead><tr><th>Nombre</th><th>Especie</th><th>Tamaño</th><th>Fundación</th><th>Estado</th></tr></thead>
+    <tbody>
+      {% for a in animales %}
+      <tr>
+        <td><strong>{{ a.nombre }}</strong></td>
+        <td>{{ a.especie }}</td>
+        <td>{{ a.tamano|capitalize }}</td>
+        <td>{{ a.fundacion.nombre }}</td>
+        <td><span class="badge badge--{{ a.estado }}">{{ a.estado|replace('_', ' ')|capitalize }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('huella', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no hay animales registrados</p>
+</div>
+{% endif %}
 {% endblock %}

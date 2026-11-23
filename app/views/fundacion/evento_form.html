@@ -1,44 +1,45 @@
 {% extends "base.html" %}
 {% block title %}{% if evento %}Editar evento{% else %}Nuevo evento{% endif %}{% endblock %}
 {% block content %}
-<article class="event-form">
-  <h2 class="event-form__title">{% if evento %}Editar evento{% else %}Nuevo evento{% endif %}</h2>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/fundacion/eventos">{{ icono('flecha_izquierda') }} Volver a eventos</a>
+</nav>
 
-  <form class="event-form__form" method="post"
-        action="{% if evento %}/fundacion/eventos/{{ evento.id }}/editar{% else %}/fundacion/eventos{% endif %}">
+<header class="page-header">
+  <h1 class="page-header__title">{% if evento %}Editar evento{% else %}Nuevo evento{% endif %}</h1>
+  <p class="page-header__text">{{ user.fundacion.nombre }}</p>
+</header>
 
-    <label class="event-form__label">Título
-      <input class="event-form__input" type="text" name="titulo" maxlength="120"
-             value="{{ datos.titulo or '' }}" required autofocus>
-    </label>
-
-    <label class="event-form__label">Descripción
-      <textarea class="event-form__textarea" name="descripcion" rows="5" maxlength="2000"
-                required>{{ datos.descripcion or '' }}</textarea>
-    </label>
-
-    <div class="grid">
-      <label class="event-form__label">Fecha
-        <input class="event-form__input" type="date" name="fecha"
-               value="{{ datos.fecha or '' }}" required>
+<div class="form-stack">
+  <section class="form-card">
+    <form id="evento-form" method="post"
+          action="{% if evento %}/fundacion/eventos/{{ evento.id }}/editar{% else %}/fundacion/eventos{% endif %}">
+      <label>Título
+        <input type="text" name="titulo" maxlength="120" value="{{ datos.titulo or '' }}" required autofocus>
       </label>
 
-      <label class="event-form__label">Hora (opcional)
-        <input class="event-form__input" type="time" name="hora" value="{{ datos.hora or '' }}">
+      <label>Descripción
+        <textarea name="descripcion" rows="5" maxlength="2000" required>{{ datos.descripcion or '' }}</textarea>
       </label>
-    </div>
 
-    <label class="event-form__label">Lugar
-      <input class="event-form__input" type="text" name="lugar" maxlength="200"
-             value="{{ datos.lugar or '' }}" required>
-    </label>
+      <div class="form-grid">
+        <label>Fecha
+          <input type="date" name="fecha" value="{{ datos.fecha or '' }}" required>
+        </label>
+        <label>Hora <span class="form-optional">(opcional)</span>
+          <input type="time" name="hora" value="{{ datos.hora or '' }}">
+        </label>
+      </div>
 
-    <p class="event-form__info">Fundación: <strong>{{ user.fundacion.nombre }}</strong></p>
+      <label>Lugar
+        <input type="text" name="lugar" maxlength="200" value="{{ datos.lugar or '' }}" required>
+      </label>
+    </form>
+  </section>
 
-    <div class="event-form__actions">
-      <button class="event-form__button" type="submit">Guardar</button>
-      <a class="event-form__button secondary" href="/fundacion/eventos" role="button">Volver</a>
-    </div>
-  </form>
-</article>
+  <div class="form-actions">
+    <a class="secondary" href="/fundacion/eventos" role="button">Cancelar</a>
+    <button type="submit" form="evento-form">Guardar</button>
+  </div>
+</div>
 {% endblock %}

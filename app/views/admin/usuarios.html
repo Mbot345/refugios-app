@@ -1,36 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Usuarios{% endblock %}
 {% block content %}
-<article class="admin-list">
-    <header class="admin-list__header">
-        <h2>Usuarios</h2><a href="/admin" role="button" class="secondary">Volver al panel</a>
-    </header>
-    <div class="overflow-auto">
-        <table>
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Fundación</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in usuarios %}<tr>
-                    <td>{{ u.username }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>{{ u.rol|rol_nombre }}</td>
-                    <td>{{ u.fundacion.nombre if u.fundacion else '—' }}</td>
-                    <td>{{ 'Activo' if u.activo else 'Inactivo' }}</td>
-                    <td><a href="/admin/usuarios/{{ u.id }}/editar">Editar</a>{% if u.id != user.id %}<form
-                            class="admin-list__form" method="post" action="/admin/usuarios/{{ u.id }}/estado"><button
-                                class="admin-list__action admin-list__action--danger" type="submit">{{ 'Desactivar' if
-                                u.activo else 'Activar' }}</button></form>{% endif %}</td>
-                </tr>{% endfor %}
-            </tbody>
-        </table>
-    </div>
-</article>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/admin">{{ icono('flecha_izquierda') }} Volver al panel</a>
+</nav>
+
+<header class="page-header">
+  <h1 class="page-header__title">Usuarios</h1>
+  <p class="page-header__text">Cambia el rol de un usuario o desactiva su cuenta.</p>
+</header>
+
+<div class="table-card">
+  <table class="table-card__table">
+    <thead>
+      <tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Fundación</th><th>Estado</th><th><span class="visually-hidden">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios %}
+      <tr>
+        <td><strong>{{ u.username }}</strong></td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.rol|rol_nombre }}</td>
+        <td>{{ u.fundacion.nombre if u.fundacion else '—' }}</td>
+        <td>
+          <span class="badge badge--{{ 'activa' if u.activo else 'suspendida' }}">
+            {{ 'Activo' if u.activo else 'Inactivo' }}
+          </span>
+        </td>
+        <td>
+          <div class="row-actions">
+            <a class="row-actions__link" href="/admin/usuarios/{{ u.id }}/editar">{{ icono('editar') }} Editar</a>
+            {% if u.id != user.id %}
+            <form class="row-actions__form" method="post" action="/admin/usuarios/{{ u.id }}/estado">
+              <button class="row-actions__link {% if u.activo %}row-actions__link--danger{% endif %}" type="submit">
+                {{ 'Desactivar' if u.activo else 'Activar' }}
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

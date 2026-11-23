@@ -1,38 +1,42 @@
 {% extends "base.html" %}
 {% block title %}Perfil de la fundación{% endblock %}
 {% block content %}
-<article class="foundation-profile">
-  <h2 class="foundation-profile__title">Perfil de {{ fundacion.nombre }}</h2>
-  <p class="foundation-profile__info">
-    El nombre y la ubicación los gestiona un administrador general de la plataforma.
-  </p>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/fundacion">{{ icono('flecha_izquierda') }} Volver a mi fundación</a>
+</nav>
 
-  <form class="foundation-profile__form" method="post" action="/fundacion/perfil">
-    <label class="foundation-profile__label">Descripción (opcional)
-      <textarea class="foundation-profile__textarea" name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
-    </label>
+<header class="page-header">
+  <h1 class="page-header__title">Perfil de {{ fundacion.nombre }}</h1>
+  <p class="page-header__text">Esta información aparece en la página pública de fundaciones.</p>
+</header>
 
-    <label class="foundation-profile__label">Dirección
-      <input class="foundation-profile__input" type="text" name="direccion" maxlength="200"
-             value="{{ datos.direccion or '' }}" required>
-    </label>
-
-    <div class="grid">
-      <label class="foundation-profile__label">Teléfono (opcional)
-        <input class="foundation-profile__input" type="text" name="telefono" maxlength="20"
-               placeholder="0991234567" value="{{ datos.telefono or '' }}">
+<div class="form-stack">
+  <section class="form-card">
+    <form id="perfil-form" method="post" action="/fundacion/perfil">
+      <label>Descripción <span class="form-optional">(opcional)</span>
+        <textarea name="descripcion" rows="4">{{ datos.descripcion or '' }}</textarea>
       </label>
 
-      <label class="foundation-profile__label">Correo de contacto
-        <input class="foundation-profile__input" type="email" name="email_contacto" maxlength="120"
-               value="{{ datos.email_contacto or '' }}" required>
+      <label>Dirección
+        <input type="text" name="direccion" maxlength="200" value="{{ datos.direccion or '' }}" required>
       </label>
-    </div>
 
-    <div class="foundation-profile__actions">
-      <button class="foundation-profile__button" type="submit">Guardar</button>
-      <a class="foundation-profile__button secondary" href="/fundacion" role="button">Cancelar</a>
-    </div>
-  </form>
-</article>
+      <div class="form-grid">
+        <label>Teléfono <span class="form-optional">(opcional)</span>
+          <input type="text" name="telefono" maxlength="20" placeholder="0991234567" value="{{ datos.telefono or '' }}">
+        </label>
+        <label>Correo de contacto
+          <input type="email" name="email_contacto" maxlength="120" value="{{ datos.email_contacto or '' }}" required>
+        </label>
+      </div>
+
+      <p class="form-card__hint">{{ icono('info') }} El nombre y la ubicación los gestiona un administrador de la plataforma.</p>
+    </form>
+  </section>
+
+  <div class="form-actions">
+    <a class="secondary" href="/fundacion" role="button">Cancelar</a>
+    <button type="submit" form="perfil-form">Guardar</button>
+  </div>
+</div>
 {% endblock %}

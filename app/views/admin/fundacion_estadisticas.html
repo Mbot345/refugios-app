@@ -1,16 +1,20 @@
 {% extends "base.html" %}
+{% from "componentes/estadisticas.html" import mostrar_estadisticas %}
 {% block title %}Estadísticas de {{ fundacion.nombre }}{% endblock %}
 {% block content %}
-{% from "componentes/estadisticas.html" import mostrar_estadisticas %}
-<article class="admin-list">
-  <header class="admin-list__header">
-    <h2 class="admin-list__title">Estadísticas: {{ fundacion.nombre }}</h2>
-    <a class="admin-list__back secondary" href="/admin/fundaciones" role="button">Volver a fundaciones</a>
-  </header>
-  <p class="admin-list__empty">
-    Fundación {{ 'activa' if fundacion.activa else 'suspendida' }} · Consulta de solo lectura
-  </p>
+<nav class="breadcrumb" aria-label="Ruta">
+  <a href="/admin/fundaciones">{{ icono('flecha_izquierda') }} Volver a fundaciones</a>
+</nav>
 
-  {{ mostrar_estadisticas(stats) }}
-</article>
+<header class="page-header">
+  <h1 class="page-header__title">{{ fundacion.nombre }}</h1>
+  <p class="page-header__text">
+    <span class="badge badge--{{ 'activa' if fundacion.activa else 'suspendida' }}">
+      {{ 'Activa' if fundacion.activa else 'Suspendida' }}
+    </span>
+    Estadísticas de solo lectura.
+  </p>
+</header>
+
+{{ mostrar_estadisticas(stats) }}
 {% endblock %}

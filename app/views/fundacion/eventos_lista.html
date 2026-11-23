@@ -1,54 +1,59 @@
 {% extends "base.html" %}
 {% block title %}Eventos{% endblock %}
 {% block content %}
-<article class="event-admin">
-  <header class="event-admin__header">
-    <h2 class="event-admin__title">Eventos de mi fundación</h2>
-    <a class="event-admin__new" href="/fundacion/eventos/nuevo" role="button">+ Nuevo evento</a>
-  </header>
-
-  {% if eventos %}
-  <div class="overflow-auto">
-    <table class="event-admin__table">
-      <thead>
-        <tr><th>Fecha</th><th>Título</th><th>Lugar</th><th>Estado</th><th>Acciones</th></tr>
-      </thead>
-      <tbody>
-        {% for e in eventos %}
-        <tr>
-          <td>
-            {{ e.fecha.strftime('%d/%m/%Y') }}
-            {% if e.hora %}<br><small>{{ e.hora.strftime('%H:%M') }}</small>{% endif %}
-          </td>
-          <td>{{ e.titulo }}</td>
-          <td>{{ e.lugar }}</td>
-          <td>
-            <span class="event-badge event-badge--{{ e.estado_visible }}">
-              {{ e.estado_visible|capitalize }}
-            </span>
-          </td>
-          <td>
-            {% if e.estado_visible == 'programado' %}
-              <a href="/fundacion/eventos/{{ e.id }}/editar">Editar</a>
-              <details class="event-admin__cancel">
-                <summary>Cancelar</summary>
-                <form method="post" action="/fundacion/eventos/{{ e.id }}/cancelar">
-                  <input type="text" name="motivo" maxlength="300" minlength="5"
-                         placeholder="Motivo de la cancelación" required>
-                  <button class="secondary" type="submit">Confirmar cancelación</button>
-                </form>
-              </details>
-            {% elif e.estado == 'cancelado' %}
-              <small>Motivo: {{ e.motivo_cancelacion }}</small>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<header class="page-header page-header--row">
+  <div>
+    <h1 class="page-header__title">Eventos de mi fundación</h1>
+    <p class="page-header__text">Los eventos programados aparecen en la página pública de campañas.</p>
   </div>
-  {% else %}
-  <p class="event-admin__empty">Aún no has creado eventos.</p>
-  {% endif %}
-</article>
+  <a class="page-header__action" href="/fundacion/eventos/nuevo" role="button">{{ icono('mas') }} Nuevo evento</a>
+</header>
+
+{% if eventos %}
+<div class="table-card">
+  <table class="table-card__table">
+    <thead>
+      <tr><th>Fecha</th><th>Título</th><th>Lugar</th><th>Estado</th><th><span class="visually-hidden">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for e in eventos %}
+      <tr>
+        <td class="table-card__nowrap">
+          {{ e.fecha.strftime('%d/%m/%Y') }}
+          {% if e.hora %}<span class="table-card__sub">{{ e.hora.strftime('%H:%M') }}</span>{% endif %}
+        </td>
+        <td><strong>{{ e.titulo }}</strong></td>
+        <td>{{ e.lugar }}</td>
+        <td><span class="badge badge--{{ e.estado_visible }}">{{ e.estado_visible|capitalize }}</span></td>
+        <td>
+          {% if e.estado_visible == 'programado' %}
+          <div class="row-actions">
+            <a class="row-actions__link" href="/fundacion/eventos/{{ e.id }}/editar">{{ icono('editar') }} Editar</a>
+            <details class="row-actions__details">
+              <summary class="row-actions__link row-actions__link--danger">Cancelar</summary>
+              <form class="row-actions__popover" method="post" action="/fundacion/eventos/{{ e.id }}/cancelar">
+                <label>Motivo de la cancelación
+                  <input type="text" name="motivo" maxlength="300" minlength="5" required>
+                </label>
+                <button class="button--danger" type="submit">Confirmar cancelación</button>
+              </form>
+            </details>
+          </div>
+          {% elif e.estado == 'cancelado' %}
+            <span class="table-card__sub">Motivo: {{ e.motivo_cancelacion }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('calendario', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no has creado eventos</p>
+  <p class="empty-state__text">Publica una jornada de adopción o una campaña.</p>
+  <a href="/fundacion/eventos/nuevo" role="button">{{ icono('mas') }} Nuevo evento</a>
+</div>
+{% endif %}
 {% endblock %}

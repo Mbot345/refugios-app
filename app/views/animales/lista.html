@@ -1,53 +1,58 @@
 {% extends "base.html" %}
 {% block title %}Animales{% endblock %}
 {% block content %}
-<article class="animals-section">
-  <header class="animals-section__header">
-        <h2 class="animals-section__title">Animales de mi fundación</h2>
-    <a class="animals-section__new" href="/fundacion/animales/nuevo" role="button">+ Nuevo animal</a>
-  </header>
-
-  {% if animales %}
-  <div class="overflow-auto">
-    <table class="animals-section__table">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Especie</th>
-          <th>Tamaño</th>
-          <th>Edad aprox.</th>
-          <th>Fundación</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for a in animales %}
-        <tr>
-          <td>{{ a.nombre }}</td>
-          <td>{{ a.especie }}</td>
-          <td>{{ a.tamano|capitalize }}</td>
-          <td>{% if a.edad_meses is not none %}{{ a.edad_meses }} meses{% else %}—{% endif %}</td>
-          <td>{{ a.fundacion.nombre }}</td>
-          <td>
-            <span class="animals-section__badge animals-section__badge--{{ a.estado }}">
-              {{ a.estado|replace('_', ' ')|capitalize }}
-            </span>
-          </td>
-          <td class="animals-section__actions">
-            <a class="animals-section__action" href="/fundacion/animales/{{ a.id }}/editar">Editar</a>
-            <form class="animals-section__delete-form" method="post" action="/fundacion/animales/{{ a.id }}/eliminar"
-                  onsubmit="return confirm('¿Seguro que quieres eliminar este animal?')">
-              <button class="animals-section__action animals-section__action--danger" type="submit">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<header class="page-header page-header--row">
+  <div>
+    <h1 class="page-header__title">Animales de mi fundación</h1>
+    <p class="page-header__text">El estado cambia solo, según las solicitudes de preadopción.</p>
   </div>
-  {% else %}
-  <p class="animals-section__empty">Aún no hay animales registrados.</p>
-  {% endif %}
-</article>
+  <a class="page-header__action" href="/fundacion/animales/nuevo" role="button">{{ icono('mas') }} Nuevo animal</a>
+</header>
+
+{% if animales %}
+<div class="table-card">
+  <table class="table-card__table">
+    <thead>
+      <tr><th>Animal</th><th>Especie</th><th>Tamaño</th><th>Edad aprox.</th><th>Estado</th><th><span class="visually-hidden">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for a in animales %}
+      {% set foto = (a.fotos|selectattr('es_principal')|first) or (a.fotos|first) %}
+      <tr>
+        <td>
+          <div class="table-card__identity">
+            {% if foto %}
+              <img class="table-card__thumb" src="/fotos/{{ foto.id }}" alt="" loading="lazy">
+            {% else %}
+              <span class="table-card__thumb table-card__thumb--empty">{{ icono('huella') }}</span>
+            {% endif %}
+            <strong>{{ a.nombre }}</strong>
+          </div>
+        </td>
+        <td>{{ a.especie }}</td>
+        <td>{{ a.tamano|capitalize }}</td>
+        <td>{% if a.edad_meses is not none %}{{ a.edad_meses|edad }}{% else %}—{% endif %}</td>
+        <td><span class="badge badge--{{ a.estado }}">{{ a.estado|replace('_', ' ')|capitalize }}</span></td>
+        <td>
+          <div class="row-actions">
+            <a class="row-actions__link" href="/fundacion/animales/{{ a.id }}/editar">{{ icono('editar') }} Editar</a>
+            <form class="row-actions__form" method="post" action="/fundacion/animales/{{ a.id }}/eliminar"
+                  onsubmit="return confirm('¿Seguro que quieres eliminar este animal?')">
+              <button class="row-actions__link row-actions__link--danger" type="submit">{{ icono('eliminar') }} Eliminar</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  {{ icono('huella', 'empty-state__icon') }}
+  <p class="empty-state__title">Aún no hay animales registrados</p>
+  <p class="empty-state__text">Registra el primero para que aparezca en el catálogo.</p>
+  <a href="/fundacion/animales/nuevo" role="button">{{ icono('mas') }} Nuevo animal</a>
+</div>
+{% endif %}
 {% endblock %}
